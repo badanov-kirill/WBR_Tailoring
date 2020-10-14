@@ -1,0 +1,5 @@
+﻿CREATE LOGIN [User1C] WITH PASSWORD = 'MyPassword';
+GO
+
+CREATE USER [User1C] FOR LOGIN [User1C];
+

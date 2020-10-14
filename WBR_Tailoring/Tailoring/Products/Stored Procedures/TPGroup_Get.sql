@@ -1,0 +1,8 @@
+﻿CREATE PROCEDURE [Products].[TPGroup_Get]
+AS
+	SET NOCOUNT ON
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	
+	SELECT	t.tpgroup_id,
+			t.tpgroup_name
+	FROM	Products.TPGroup t

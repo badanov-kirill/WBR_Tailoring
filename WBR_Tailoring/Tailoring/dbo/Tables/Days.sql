@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[Days]
+(
+	[dt] DATE NOT NULL,
+	CONSTRAINT [PK_Days] PRIMARY KEY CLUSTERED(dt ASC)
+)

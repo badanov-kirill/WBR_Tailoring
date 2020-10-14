@@ -1,0 +1,6 @@
+﻿CREATE TABLE [Synchro].[ERP_NM]
+(
+	nm_id       INT CONSTRAINT [PK_ERP_NM] PRIMARY KEY CLUSTERED,
+	imt_id      INT NOT NULL,
+	sa          VARCHAR(36) NOT NULL
+)

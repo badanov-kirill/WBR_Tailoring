@@ -1,0 +1,8 @@
+﻿CREATE PROCEDURE [RefBook].[SpaceUnit_Get]
+AS
+	SET NOCOUNT ON
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	
+	SELECT	su.su_id,
+			su.su_name
+	FROM	RefBook.SpaceUnit su

@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[Number]
+(
+	[id] INT IDENTITY(1, 1) NOT NULL,
+	CONSTRAINT [PK_Number] PRIMARY KEY CLUSTERED([id] ASC)
+)

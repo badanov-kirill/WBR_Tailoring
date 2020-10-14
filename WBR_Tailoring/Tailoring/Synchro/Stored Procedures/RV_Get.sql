@@ -1,0 +1,9 @@
+﻿CREATE PROCEDURE [Synchro].[RV_Get]
+	@ob_name VARCHAR(10)
+AS
+	SET NOCOUNT ON
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	
+	SELECT	CAST(r.object_rv AS VARCHAR(20)) rv_bigint
+	FROM	Synchro.RV r
+	WHERE	r.ob_name = @ob_name

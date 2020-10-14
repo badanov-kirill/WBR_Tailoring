@@ -1,0 +1,7 @@
+﻿CREATE PROCEDURE [Technology].[Discharge_Get]
+AS
+	SET NOCOUNT ON
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	
+	SELECT	d.discharge_id
+	FROM	Technology.Discharge d

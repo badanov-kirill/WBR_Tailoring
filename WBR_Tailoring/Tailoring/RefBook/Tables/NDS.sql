@@ -1,0 +1,6 @@
+﻿CREATE TABLE [RefBook].[NDS]
+(
+	nds            TINYINT CONSTRAINT [PK_NDS] PRIMARY KEY CLUSTERED NOT NULL,
+	is_deleted     BIT NOT NULL,
+	nds_do_id      TINYINT NOT NULL
+)

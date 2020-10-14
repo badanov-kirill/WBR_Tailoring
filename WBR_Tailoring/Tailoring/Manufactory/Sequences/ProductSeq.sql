@@ -1,0 +1,4 @@
+﻿CREATE SEQUENCE [Manufactory].[ProductSeq]
+    AS INT
+    START WITH 500000
+    INCREMENT BY 1;

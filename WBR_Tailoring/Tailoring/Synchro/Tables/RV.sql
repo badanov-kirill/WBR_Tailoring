@@ -1,0 +1,6 @@
+﻿CREATE TABLE [Synchro].[RV]
+(
+	ob_name       VARCHAR(10) CONSTRAINT [PK_RV] PRIMARY KEY CLUSTERED NOT NULL,
+	object_rv     BIGINT NOT NULL,
+	dt            DATETIME2(0) NOT NULL
+)

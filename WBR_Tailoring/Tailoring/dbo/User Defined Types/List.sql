@@ -1,0 +1,9 @@
+﻿CREATE TYPE [dbo].[List] AS TABLE (
+    [id] INT NOT NULL,
+    PRIMARY KEY CLUSTERED ([id] ASC));
+GO
+
+GRANT EXECUTE
+    ON TYPE::[dbo].[List] TO PUBLIC;
+GO
+

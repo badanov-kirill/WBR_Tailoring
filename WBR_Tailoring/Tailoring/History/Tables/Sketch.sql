@@ -1,0 +1,30 @@
+﻿CREATE TABLE [History].[Sketch]
+(
+	hsketch_id                  INT IDENTITY(1, 1) CONSTRAINT [PK_History_Sketch] PRIMARY KEY CLUSTERED NOT NULL,
+	sketch_id                   INT NOT NULL,
+	is_deleted                  BIT NOT NULL,
+	st_id                       INT NOT NULL,
+	pic_count                   TINYINT NOT NULL,
+	tech_design                 BIT NOT NULL,
+	kind_id                     INT NULL,
+	subject_id                  INT NOT NULL,
+	employee_id                 INT NOT NULL,
+	dt                          dbo.SECONDSTIME NOT NULL,
+	qp_id                       TINYINT NOT NULL,
+	model_year                  SMALLINT NULL,
+	model_number                INT NULL,
+	brand_id                    INT NULL,
+	season_id                   INT NULL,
+	style_id                    INT NULL,
+	wb_size_group_id            INT NULL,
+	art_name_id                 INT NULL,
+	constructor_employee_id     INT NULL,
+	pattern_name                VARCHAR(15) NULL,
+	sa_local                    VARCHAR(15) NULL,
+	sa                          VARCHAR(15) NULL,
+	ct_id                       INT NULL,
+	direction_id                INT NULL,
+	imt_name                    VARCHAR(100) NULL,
+	base_sketch_id              INT
+)
+GO

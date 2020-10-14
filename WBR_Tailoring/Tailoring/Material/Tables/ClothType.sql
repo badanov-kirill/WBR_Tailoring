@@ -1,0 +1,5 @@
+﻿CREATE TABLE [Material].[ClothType]
+(
+	ct_id       INT IDENTITY(1, 1) CONSTRAINT [PK_ClothType] PRIMARY KEY CLUSTERED NOT NULL,
+	ct_name     VARCHAR(50) NOT NULL
+)

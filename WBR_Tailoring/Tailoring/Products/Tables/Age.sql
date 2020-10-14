@@ -1,0 +1,5 @@
+﻿CREATE TABLE [Products].[Age]
+(
+	age_id       INT CONSTRAINT [PK_Age] PRIMARY KEY CLUSTERED NOT NULL,
+	age_name     VARCHAR(50) NOT NULL
+)
