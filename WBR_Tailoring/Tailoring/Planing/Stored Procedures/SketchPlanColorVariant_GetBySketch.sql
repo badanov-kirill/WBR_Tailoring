@@ -38,7 +38,8 @@ AS
 			spcvc.cost_add,
 			spcvc.price_ru,
 			spcvc.cost_cutting,
-			spcvc.cost_rm_without_nds
+			spcvc.cost_rm_without_nds,
+			sl.season_local_name
 	FROM	Planing.SketchPlan sp   
 			INNER JOIN	Planing.PlanStatus ps
 				ON	ps.ps_id = sp.ps_id   
@@ -59,7 +60,9 @@ AS
 			LEFT JOIN	Products.[Collection] coll
 				ON	coll.collection_id = pa.collection_id   
 			LEFT JOIN	Planing.SketchPlanColorVariantCost spcvc
-				ON	spcvc.spcv_id = spcv.spcv_id   
+				ON	spcvc.spcv_id = spcv.spcv_id 
+			LEFT JOIN Products.SeasonLocal sl
+				ON sl.season_local_id = sp.season_local_id  
 			OUTER APPLY (
 			      	SELECT	SUM(ca.actual_count) actual_count
 			      	FROM	Manufactory.CuttingActual ca   

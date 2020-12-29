@@ -14,10 +14,13 @@ AS
 			os.office_name                  src_office_name,
 			CAST(s.plan_dt AS DATETIME)     plan_dt,
 			oap.cnt                         box_count,
-			s.order_wb
+			s.order_wb,
+			s2.supplier_name
 	FROM	Logistics.ShipmentFinishedProducts s   
 			INNER JOIN	Settings.OfficeSetting os
 				ON	s.src_office_id = os.office_id   
+			LEFT JOIN Suppliers.Supplier s2
+				ON s2.supplier_id = s.supplier_id
 			OUTER APPLY (
 			      	SELECT	COUNT(1) cnt
 			      	FROM	Logistics.PlanShipmentFinishedProductsPackingBox psfppb

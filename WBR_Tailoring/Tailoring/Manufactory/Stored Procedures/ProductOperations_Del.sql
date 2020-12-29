@@ -125,51 +125,43 @@ AS
 		IF @spcv_id IS NOT NULL
 		   AND @operation_id IN (@packaging_operation, @cancellation_operation, @cut_wtite_off_operation)
 		BEGIN
-		    UPDATE	Planing.SketchPlanColorVariantCounter
-		    SET 	packaging     = CASE 
-		        	                 WHEN @operation_id = @packaging_operation THEN packaging - 1
-		        	                 ELSE packaging
-		        	            END,
-		    		write_off     = CASE 
-		    		                 WHEN @operation_id = @cancellation_operation THEN write_off - 1
-		    		                 ELSE write_off
-		    		            END,
-		    		cut_write_off =  CASE 
-		    		                 WHEN @operation_id = @cut_wtite_off_operation THEN cut_write_off - 1
-		    		                 ELSE cut_write_off
-		    		            END,
-		    		finished = CASE 
-		    		                 WHEN @operation_id IN (@packaging_operation, @cancellation_operation, @cut_wtite_off_operation) THEN finished - 1
-		    		                 ELSE finished
-		    		            END,
-		    		dt_close = CASE 
-		    		                WHEN cutting_qty <= CASE 
-		    		                                         WHEN @operation_id IN (@packaging_operation, @cancellation_operation, @cut_wtite_off_operation) THEN 
-		    		                                              finished - 1
-		    		                                         ELSE finished
-		    		                                    END THEN ISNULL(dt_close, @dt)
-		    		                ELSE NULL
-		    		           END 
-		    WHERE	spcv_id       = @spcv_id
 		    
-		    UPDATE	Planing.SketchPlanColorVariantTSCounter
-		    SET 	packaging     = CASE 
-		        	                 WHEN @operation_id = @packaging_operation THEN packaging - 1
-		        	                 ELSE packaging
-		        	            END,
-		    		write_off     = CASE 
-		    		                 WHEN @operation_id = @cancellation_operation THEN write_off - 1
-		    		                 ELSE write_off
-		    		            END,
-		    		cut_write_off =  CASE 
-		    		                 WHEN @operation_id = @cut_wtite_off_operation THEN cut_write_off - 1
-		    		                 ELSE cut_write_off
-		    		            END,
-		    		finished = CASE 
-		    		                 WHEN @operation_id IN (@packaging_operation, @cancellation_operation, @cut_wtite_off_operation) THEN finished - 1
-		    		                 ELSE finished
-		    		            END
-		    WHERE	spcvts_id       = @spcvts_id
+		    UPDATE	spcvt
+		    SET 	packaging     = oa.packaging,
+		    		finished      = oa.finished,
+		    		write_off	  = oa.write_off,
+		    		cut_write_off = oa.cut_write_off
+		    FROM	Planing.SketchPlanColorVariantTSCounter spcvt
+		    		OUTER APPLY (
+		    		      	SELECT	SUM(CASE WHEN puc.operation_id = @packaging_operation THEN 1 ELSE 0 END) packaging,
+		    		      			SUM(CASE WHEN puc.operation_id = @cancellation_operation THEN 1 ELSE 0 END) write_off,
+		    		      			SUM(CASE WHEN puc.operation_id = @cut_wtite_off_operation THEN 1 ELSE 0 END) cut_write_off,
+		    		      			SUM(CASE WHEN puc.operation_id IN (@packaging_operation, @cancellation_operation, @cut_wtite_off_operation) THEN 1 ELSE 0 END) finished
+		    		      	FROM	Manufactory.Cutting c   
+		    		      			INNER JOIN	Manufactory.ProductUnicCode puc
+		    		      				ON	puc.cutting_id = c.cutting_id
+		    		      	WHERE	c.spcvts_id = spcvt.spcvts_id
+		    		      ) oa
+		    WHERE	spcvt.spcvts_id = @spcvts_id
+		    
+		    UPDATE	spcvc
+		    SET 	write_off     = oa.write_off,
+		    		packaging     = oa.packaging,
+		    		finished      = oa.finished,
+		    		cut_write_off = oa.cut_write_off
+		    FROM	Planing.SketchPlanColorVariantCounter spcvc
+		    		OUTER APPLY (
+		    		      	SELECT	SUM(spcvt.packaging) packaging,
+		    		      			SUM(spcvt.finished) finished,
+		    		      			SUM(spcvt.write_off) write_off,
+		    		      			SUM(spcvt.cut_write_off) cut_write_off
+		    		      	FROM	Planing.SketchPlanColorVariantTSCounter spcvt   
+		    		      			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt2
+		    		      				ON	spcvt2.spcvts_id = spcvt.spcvts_id
+		    		      	WHERE	spcvt2.spcv_id = spcvc.spcv_id
+		    		      ) oa
+		    WHERE spcvc.spcv_id = @spcv_id
+		    
 		END
 		COMMIT TRANSACTION
 	END TRY

@@ -7,7 +7,8 @@
 	isdeleted       BIT NOT NULL,
 	erp_id          INT NOT NULL,
 	age_id          INT CONSTRAINT [FK_Kind_age_id] FOREIGN KEY REFERENCES Products.Age(age_id) NULL,
-	gender_id       INT CONSTRAINT [FK_Kind_gendr_id] FOREIGN KEY REFERENCES Products.Gender(gender_id) NULL
+	gender_id       INT CONSTRAINT [FK_Kind_gendr_id] FOREIGN KEY REFERENCES Products.Gender(gender_id) NULL,
+	gs1_id			VARCHAR(20) NULL
 );
 
 GO

@@ -1,8 +1,18 @@
 ﻿CREATE PROCEDURE [Logistics].[FindPackingBoxByBarcode_v2]
-@barcode VARCHAR(13)
+	@barcode VARCHAR(13) = NULL,
+	@art_name VARCHAR(50) = NULL,
+	@pants_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	
+	IF @barcode IS NULL
+	   AND @art_name IS NULL
+	   AND @pants_id IS NULL
+	BEGIN
+	    RAISERROR('не передано ни одного отбра', 16, 1)
+	    RETURN
+	END
 	
 	SELECT	b.brand_name,
 			sj.subject_name,
@@ -16,18 +26,16 @@ AS
 				3
 			)                       packing_box,
 			COUNT(puc.pants_id)     cnt,
+			os.office_name,
+			sp.place_name,
 			CASE 
 			     WHEN psfppb.packing_box_id IS NOT NULL THEN 1
 			     ELSE 0
-			END                     is_plan_shipping,
-			CASE 
-			     WHEN sfppb.packing_box_id IS NOT NULL THEN 1
-			     ELSE 0
-			END                     is_fact_shipping
+			END                     is_plan_shipping
 	FROM	Logistics.PackingBoxDetail pbd   
 			INNER JOIN	Manufactory.ProductUnicCode puc
 				ON	puc.product_unic_code = pbd.product_unic_code   
-			LEFT JOIN	Products.ProdArticleNomenclatureTechSize pants   
+			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants   
 			INNER JOIN	Products.ProdArticleNomenclature pan
 				ON	pan.pan_id = pants.pan_id   
 			INNER JOIN	Products.ProdArticle pa
@@ -45,17 +53,19 @@ AS
 			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants.ts_id
 				ON	pants.pants_id = puc.pants_id   
-			LEFT JOIN	Manufactory.Cutting c   
-			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt   
-			INNER JOIN	Planing.SketchPlanColorVariant spcv
-				ON	spcv.spcv_id = spcvt.spcv_id
-				ON	spcvt.spcvts_id = c.spcvts_id
-				ON	c.cutting_id = puc.cutting_id   
 			LEFT JOIN	Logistics.PlanShipmentFinishedProductsPackingBox psfppb
 				ON	psfppb.packing_box_id = pbd.packing_box_id   
-			LEFT JOIN	Logistics.ShipmentFinishedProductsPackingBox sfppb
-				ON	sfppb.packing_box_id = pbd.packing_box_id
-	WHERE	pbd.barcode = @barcode
+			INNER JOIN	Warehouse.PackingBoxOnPlace pbop
+				ON	pbop.packing_box_id = pbd.packing_box_id   
+			INNER JOIN	Warehouse.StoragePlace sp
+				ON	sp.place_id = pbop.place_id   
+			INNER JOIN	Warehouse.ZoneOfResponse zor
+				ON	zor.zor_id = sp.zor_id   
+			LEFT JOIN	Settings.OfficeSetting os
+				ON	os.office_id = zor.office_id
+	WHERE	(@barcode IS NULL OR pbd.barcode = @barcode)
+			AND	(@art_name IS NULL OR (an.art_name = @art_name AND psfppb.packing_box_id IS NULL))
+			AND (@pants_id IS NULL OR pants.pants_id = @pants_id)
 	GROUP BY
 		b.brand_name,
 		sj.subject_name,
@@ -65,11 +75,9 @@ AS
 		ts.ts_name,
 		k.kind_name,
 		pbd.packing_box_id,
+		os.office_name,
+		sp.place_name,
 		CASE 
 		     WHEN psfppb.packing_box_id IS NOT NULL THEN 1
 		     ELSE 0
-		END,
-		CASE 
-		     WHEN sfppb.packing_box_id IS NOT NULL THEN 1
-		     ELSE 0
-		END                
+		END       

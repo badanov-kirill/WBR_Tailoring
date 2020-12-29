@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [Planing].[SketchPlanColorVariant_GetForLayout_v3]
+	@art_name VARCHAR(100) = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -12,6 +13,7 @@ AS
 			s.sa_local,
 			CASE 
 			     WHEN s.ss_id = @state_appointed_layout THEN 1
+			     WHEN @art_name IS NOT NULL THEN 1
 			     ELSE 0
 			END is_pre_layout
 	FROM	Products.Sketch s   
@@ -23,7 +25,7 @@ AS
 				ON	s2.subject_id = s.subject_id   
 			INNER JOIN	Products.ArtName an
 				ON	an.art_name_id = s.art_name_id
-	WHERE	EXISTS (
+	WHERE	((EXISTS (
 	     		SELECT	1
 	     		FROM	Planing.SketchPlanColorVariant spcv   
 	     				INNER JOIN	Planing.SketchPlan sp
@@ -32,6 +34,8 @@ AS
 	     				AND	spcv.is_deleted = 0
 	     				AND	spcv.cvs_id = @cv_status_to_layout
 	     	)
-			OR	s.ss_id = @state_appointed_layout
+			OR	s.ss_id = @state_appointed_layout) AND @art_name IS NULL)
+			OR an.art_name = @art_name
+			
 
 		

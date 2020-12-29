@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>REP_Tailoring</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{7b0e8c28-12ad-4113-bc65-d031daa82e75}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>REP_Tailoring</RootNamespace>
+    <AssemblyName>REP_Tailoring</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Security\" />
+    <Folder Include="Sale" />
+    <Folder Include="Warehouse" />
+    <Folder Include="Sale\Tables" />
+    <Folder Include="Sale\Stored Procedures" />
+    <Folder Include="Warehouse\Stored Procedures" />
+    <Folder Include="Warehouse\Tables" />
+    <Folder Include="Sale\User Defined Types" />
+    <Folder Include="Products" />
+    <Folder Include="RefBook" />
+    <Folder Include="RefBook\Tables" />
+    <Folder Include="Products\Tables" />
+    <Folder Include="Storage\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Security\ExecAll.sql" />
+    <Build Include="Security\WILDBERRIES_USR1CV8.sql" />
+    <Build Include="Security\WILDBERRIES_Tailoring.sql" />
+    <Build Include="Security\Warehouse.sql" />
+    <Build Include="Security\Sale.sql" />
+    <Build Include="Sale\Tables\MonthReport.sql" />
+    <Build Include="Sale\Tables\MonthReportDetail.sql" />
+    <Build Include="Sale\User Defined Types\MonthReportDetailType.sql" />
+    <Build Include="Security\Poducts.sql" />
+    <Build Include="Security\RefBook.sql" />
+    <Build Include="Products\Tables\Brands.sql" />
+    <Build Include="Storage\Indexes.sql" />
+    <Build Include="Storage\Data.sql" />
+    <Build Include="RefBook\Tables\SupplierContract.sql" />
+    <Build Include="Products\Tables\Subjects.sql" />
+    <Build Include="Products\Tables\TechSize.sql" />
+    <Build Include="Products\Tables\Barcodes.sql" />
+    <Build Include="RefBook\Tables\DocTypes.sql" />
+    <Build Include="RefBook\Tables\Offices.sql" />
+    <Build Include="RefBook\Tables\SupplierOper.sql" />
+    <Build Include="RefBook\Tables\GoodsIncomeBoxType.sql" />
+    <Build Include="Products\Tables\SupplierArticle.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReport_Load.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReport_GetByDT.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_GetByID.sql" />
+    <Build Include="Security\Badanov.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_GetByPeriod.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReport_GetByPeriod.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_ArticleGet.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_GetByID_v2.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v2.sql" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,2 @@
+﻿CREATE SCHEMA [RefBook]
+AUTHORIZATION [dbo];

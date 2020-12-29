@@ -9,7 +9,8 @@ AS
 			os.office_name,
 			oa.x                             art_names,
 			oasj.x							 subject_names,
-			oa_d.deadline_package_dt
+			oa_d.deadline_package_dt,
+			oa_d.season_local_id
 	FROM	Planing.Covering c   
 			INNER JOIN	Settings.OfficeSetting os
 				ON	os.office_id = c.office_id   
@@ -52,10 +53,12 @@ AS
 			      	FOR XML	PATH('')
 			      ) oasj(x)
 			 OUTER APPLY (
-			      	SELECT	CAST(max(spcv.deadline_package_dt) AS DATETIME) deadline_package_dt
+			      	SELECT	CAST(max(spcv.deadline_package_dt) AS DATETIME) deadline_package_dt, MAX(sp.season_local_id) season_local_id
 			      	    	 FROM	Planing.CoveringDetail cd   
 			      	    	 		INNER JOIN	Planing.SketchPlanColorVariant spcv
-			      	    	 			ON	spcv.spcv_id = cd.spcv_id 			      	    	 		
+			      	    	 			ON	spcv.spcv_id = cd.spcv_id 
+			      	    	 		INNER JOIN Planing.SketchPlan sp
+			      	    	 			ON sp.sp_id = spcv.sp_id			      	    	 		
 			      	    	 WHERE	cd.covering_id = c.covering_id
 			      	    	 		AND	cd.is_deleted = 0
 			      ) oa_d

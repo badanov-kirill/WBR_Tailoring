@@ -12,7 +12,7 @@ AS
 	FROM	Products.ProdArticleNomenclatureTechSize pants   
 			LEFT JOIN	Synchro.ProductsForEAN pfe
 				ON	pfe.pants_id = pants.pants_id
-	WHERE	pfe.pants_id = @pants_id
+	WHERE	pants.pants_id = @pants_id
 			AND	pfe.pants_id IS NULL
 	
 	SELECT	pants.pants_id,

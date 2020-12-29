@@ -17,7 +17,11 @@ AS
 			CASE 
 			     WHEN sfppb.packing_box_id IS NOT NULL THEN 1
 			     ELSE 0
-			END                           shipping
+			END                           shipping,
+			CASE 
+			     WHEN oa.have_cz IS NULL THEN 0
+			     ELSE 1
+			END have_cz
 	FROM	Warehouse.PackingBoxOnPlace pbop   
 			INNER JOIN	Warehouse.StoragePlace sp
 				ON	sp.place_id = pbop.place_id   
@@ -30,7 +34,14 @@ AS
 			LEFT JOIN	Logistics.PlanShipmentFinishedProductsPackingBox psfppb
 				ON	psfppb.packing_box_id = pb.packing_box_id   
 			LEFT JOIN	Logistics.ShipmentFinishedProductsPackingBox sfppb
-				ON	sfppb.packing_box_id = pb.packing_box_id
+				ON	sfppb.packing_box_id = pb.packing_box_id   
+			OUTER APPLY (
+			      	SELECT	TOP(1) 1 have_cz
+			      	FROM	Logistics.PackingBoxDetail pbd   
+			      			INNER JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+			      				ON	pucczi.product_unic_code = pbd.product_unic_code
+			      	WHERE	pbd.packing_box_id = pb.packing_box_id
+			      )                       oa
 	WHERE	(@office_id IS NULL OR zor.office_id = @office_id)
 			AND	psfppb.packing_box_id IS NULL
 			AND	sfppb.packing_box_id IS NULL

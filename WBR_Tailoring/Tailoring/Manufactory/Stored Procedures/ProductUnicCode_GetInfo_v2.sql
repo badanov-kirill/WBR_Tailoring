@@ -5,13 +5,25 @@ AS
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	DECLARE @lining_ao_id INT = 4
 	DECLARE @error_text VARCHAR(MAX)
+	DECLARE @need_chectny_znak BIT = 0
+	DECLARE @dt DATETIME2(0) = GETDATE()
+	DECLARE @spcvts_id INT 
+	DECLARE @oczdi_id INT
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN puc.product_unic_code IS NULL THEN 'Такого ШК ' + CAST(v.product_unic_code AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN puc.product_unic_code IS NOT NULL AND e.ean IS NULL AND tnvds.ts_id IS NULL THEN 'Для ШК ' + CAST(v.product_unic_code AS VARCHAR(10)) 
 	      	                        + ' арт: ' + pa.sa + pan.sa + ' не удалось определить ТНВД. Обратесь к руководителю'
+	      	                   WHEN tcz.tnved_id IS NOT NULL AND tcz.start_dt < @dt AND ISNULL(oa_czd.cnt_km, 0) = 0 AND pucczi.oczdi_id IS NULL THEN 'Требует маркировки Честный знак, но на артикул не загружены коды маркировки. ШК ' + CAST(v.product_unic_code AS VARCHAR(10))
+	      	                   WHEN tcz.tnved_id IS NOT NULL AND tcz.start_dt < @dt AND ISNULL(oa_czd.cnt_km, 0) > 0 AND ISNULL(oa_czd.cnt_free_km, 0) = 0 AND pucczi.oczdi_id IS NULL THEN 'Требует маркировки Честный знак, но все коды маркировки израсходованы. ШК ' + CAST(v.product_unic_code AS VARCHAR(10))
 	      	                   ELSE NULL
-	      	              END
+	      	              END,
+	      	@need_chectny_znak = CASE 
+	      	                          WHEN tcz.tnved_id IS NOT NULL AND tcz.start_dt < @dt THEN 1
+	      	                          ELSE 0
+	      	                     END,
+	      	@spcvts_id = c.spcvts_id,
+	      	@oczdi_id = pucczi.oczdi_id
 	FROM	(VALUES(@product_unic_code))v(product_unic_code)   
 			LEFT JOIN	Manufactory.ProductUnicCode puc   
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
@@ -25,6 +37,12 @@ AS
 				ON	puc.product_unic_code = v.product_unic_code   
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = puc.pants_id   
+			LEFT JOIN Manufactory.Cutting c
+				ON c.cutting_id = puc.cutting_id
+			LEFT JOIN Planing.SketchPlanColorVariantTS spcvt
+				ON spcvt.spcvts_id = c.spcvts_id
+			LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				ON pucczi.product_unic_code = puc.product_unic_code
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -34,10 +52,25 @@ AS
 			      	ORDER BY
 			      		pac.percnt DESC
 			      ) oa_ct
-	LEFT JOIN	Products.TNVED_Settigs tnvds
+			LEFT JOIN	Products.TNVED_Settigs tnvds
 				ON	tnvds.subject_id = s.subject_id
 				AND	tnvds.ct_id = s.ct_id
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id	
+			LEFT JOIN Products.TNVDFromChestnyZnak tcz
+				ON tcz.tnved_id = tnvds.tnved_id
+			OUTER APPLY (
+			      	SELECT	oczd.spcvts_id,
+			      			SUM(CASE WHEN oczdi.oczdi_id IS NOT NULL THEN 1 ELSE 0 END) cnt_km,
+			      			SUM(CASE WHEN oczdi.oczdi_id IS NOT NULL AND pucczi.oczdi_id IS NULL THEN 1 ELSE 0 END) cnt_free_km
+			      	FROM	Manufactory.OrderChestnyZnakDetail oczd   
+			      			LEFT JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
+			      				ON	oczdi.oczd_id = oczd.oczd_id   
+			      			LEFT JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+			      				ON	pucczi.oczdi_id = oczdi.oczdi_id
+			      	WHERE	tcz.tnved_id IS NOT NULL AND oczd.spcvts_id = spcvt.spcvts_id
+			      	GROUP BY
+			      		oczd.spcvts_id
+			      ) oa_czd
 	
 	IF @error_text IS NOT NULL
 	BEGIN
@@ -61,6 +94,39 @@ AS
 		WHERE	puc.product_unic_code = @product_unic_code
 				AND	pfe.pants_id IS NULL
 		
+		IF @need_chectny_znak = 1 AND @oczdi_id IS NULL
+		BEGIN 
+			INSERT INTO Manufactory.ProductUnicCode_ChestnyZnakItem
+				(
+					product_unic_code,
+					oczdi_id
+				)
+			SELECT TOP(1)	@product_unic_code,
+					oczdi.oczdi_id
+			FROM	Manufactory.OrderChestnyZnakDetail oczd   
+					INNER JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
+						ON	oczdi.oczd_id = oczd.oczd_id
+					LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+						ON pucczi.oczdi_id = oczdi.oczdi_id
+			WHERE	oczd.spcvts_id = @spcvts_id
+					AND pucczi.oczdi_id IS NULL
+					AND	NOT EXISTS(
+				   			SELECT	1
+				   			FROM	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				   			WHERE	pucczi.product_unic_code = @product_unic_code
+					)
+					
+			SELECT	@oczdi_id = pucczi.oczdi_id
+			FROM	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+			WHERE	pucczi.product_unic_code = @product_unic_code
+			
+			IF @oczdi_id IS NULL
+			BEGIN 
+				RAISERROR('Ну удалось забронировать код маркировки Честный знак, попробуйте снова',16,1)
+				RETURN
+			END
+		END 
+		
 		SELECT	puc.product_unic_code,
 				pants.pants_id,
 				pa.sa + pan.sa              sa,
@@ -77,7 +143,12 @@ AS
 				                              ELSE ''
 				                         END consists,
 				STUFF(oact.x, 1, 1, '')     carething,
-				os.organization_name + ' ' + CHAR(10) + os.label_address organization
+				os.organization_name + ' ' + CHAR(10) + os.label_address organization,
+				@need_chectny_znak need_chectny_znak,
+				oczdi.gtin01, 
+				oczdi.serial21, 
+				oczdi.intrnal91, 
+				oczdi.intrnal92
 		FROM	Manufactory.ProductUnicCode puc   
 				LEFT JOIN	Manufactory.EANCode e
 					ON	e.pants_id = puc.pants_id   
@@ -114,7 +185,9 @@ AS
 					ON	(spcv.sew_office_id IS NOT NULL
 					AND	os.office_id = spcv.sew_office_id)
 					OR	(spcv.sew_office_id IS NULL
-					AND	os.is_main_wh = 1)   
+					AND	os.is_main_wh = 1) 
+				LEFT JOIN Manufactory.OrderChestnyZnakDetailItem oczdi
+					ON  oczdi.oczdi_id = @oczdi_id 
 				OUTER APPLY (
 				      	SELECT	', ' + c.consist_name + ' ' + CASE 
 				      	      	                                   WHEN ISNULL(pac.percnt, 0) = 0 THEN ''

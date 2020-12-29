@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [Logistics].[ShipmentFinishedProducts_Add_v2]
 	@employee_id INT,
 	@office_id INT,
-	@plan_dt DATE
+	@plan_dt DATE,
+	@supplier_id INT = NULL
 AS
 	SET NOCOUNT ON
 	DECLARE @dt DATETIME2(0) = GETDATE()
@@ -31,6 +32,12 @@ AS
 	    RETURN
 	END
 	
+	IF @supplier_id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Suppliers.Supplier s WHERE s.supplier_id = @supplier_id)
+	BEGIN
+	    RAISERROR('Нет контрагента с кодом %d', 16, 1, @supplier_id)
+	    RETURN
+	END
+	
 	BEGIN TRY
 		INSERT INTO Logistics.ShipmentFinishedProducts
 			(
@@ -40,7 +47,8 @@ AS
 				create_dt,
 				src_office_id,
 				is_deleted,
-				plan_dt
+				plan_dt,
+				supplier_id
 			)
 		VALUES
 			(
@@ -50,7 +58,8 @@ AS
 				@dt,
 				@office_id,
 				0,
-				@plan_dt
+				@plan_dt,
+				@supplier_id
 			)
 	END TRY
 	BEGIN CATCH

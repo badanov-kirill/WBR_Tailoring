@@ -6,7 +6,9 @@
 	dt                  dbo.SECONDSTIME NOT NULL,
 	isdeleted           BIT NOT NULL,
 	subject_name_sf     VARCHAR(50) NULL,
-	erp_id              INT NOT NULL
+	erp_id              INT NOT NULL,
+	subject_gs1_id      INT NOT NULL CONSTRAINT [FK_Subject_subject_gs1_id] FOREIGN KEY REFERENCES Products.SubjectsGS1(subject_gs1_id),
+	block_gs1           VARCHAR(25) NOT NULL
 )
 GO
 

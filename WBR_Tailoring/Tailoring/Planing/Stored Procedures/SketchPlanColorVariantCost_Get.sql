@@ -28,7 +28,8 @@ AS
 			spcvcn.cut_write_off,
 			spcvcn.write_off,
 			spcvcn.packaging,
-			spcvcn.finished
+			spcvcn.finished,
+			ct.ct_name
 	FROM	Planing.SketchPlanColorVariantCost spcvc   
 			INNER JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = spcvc.spcv_id   
@@ -55,6 +56,8 @@ AS
 			--	ON	ts.ts_id = spcvt.ts_id   
 			LEFT JOIN	Planing.SketchPlanColorVariantCounter spcvcn
 				ON	spcvcn.spcv_id = spcv.spcv_id   
+			LEFT JOIN Material.ClothType ct
+				ON ct.ct_id = s.ct_id
 			OUTER APPLY (
 			      	SELECT	ISNULL(SUM(ca.actual_count), 0) actual_count
 			      	FROM	Manufactory.Cutting cut   

@@ -17,7 +17,8 @@
 	rv                       ROWVERSION NOT NULL,
 	plan_dt                  DATE NULL,
 	close_planing_dt         DATETIME2(0) NULL,
-	order_wb                 INT NULL
+	order_wb                 INT NULL,
+	supplier_id				 INT CONSTRAINT [FK_ShipmentFinishedProducts_supplier_id] FOREIGN KEY REFERENCES Suppliers.Supplier(supplier_id) NULL
 )
 
 GO 

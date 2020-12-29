@@ -10,6 +10,10 @@ AS
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
 	DECLARE @spcv_tab TABLE (spcv_id INT, pan_id INT, cost_rm DECIMAL(9, 2), cost_work DECIMAL(9, 2), cost_fix DECIMAL(9, 2), cost_add DECIMAL(9, 2), price_ru DECIMAL(9, 2), cost_cutting     DECIMAL(9, 2), cost_rm_without_nds DECIMAL(9, 2) )
+	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, order_num INT )
+	DECLARE @order_chestny_znak_out TABLE (ocz_id INT, order_num INT)
+	DECLARE @count_spcv_cz INT
+	DECLARE @season_local_id INT
 	
 	DECLARE @sketch_tab TABLE (sketch_id INT, cutting_cnt SMALLINT, amount_rm DECIMAL(9, 2), amount_cutting     DECIMAL(9, 2))
 	DECLARE @proc_id INT	
@@ -61,7 +65,7 @@ AS
 	      	                   WHEN c.covering_id IS NULL THEN 'Выдачи с кодом ' + CAST(v.covering_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN c.close_dt IS NULL THEN 'Выдачи с кодом ' + CAST(v.covering_id AS VARCHAR(10)) +
 	      	                        ' не закрыта. Записывать себистоимость нельзя'
-	      	                   WHEN ISNULL(oaa.covering_issue_amount, 0) = 0 THEN 
+	      	                   WHEN ISNULL(oaa.covering_issue_amount, 0) = 0 AND ISNULL(oa_d.season_local_id, 0) != 7 THEN 
 	      	                        'По этой выдаче стоимость выданных материалов = 0. Записывать себистоимость нельзя'
 	      	                   WHEN oaa.cnt_no_return != 0 THEN 'В выдаче есть шк, которые не вернули на склад. Записывать себистоимость нельзя'
 	      	                   WHEN oaa.no_close_price != 0 THEN 'В выдаче есть шк, с незакрытым поступлением. Записывать себистоимость нельзя'
@@ -72,7 +76,8 @@ AS
 	      	                   ELSE NULL
 	      	              END,
 	      	 @office_id = c.office_id,
-	      	 @doc_dt	= c.create_dt
+	      	 @doc_dt	= c.create_dt,
+	      	 @season_local_id = ISNULL(oa_d.season_local_id, 0)
 	FROM	(VALUES(@covering_id))v(covering_id)   
 			LEFT JOIN	Planing.Covering c
 				ON	c.covering_id = v.covering_id   
@@ -105,6 +110,16 @@ AS
 	      			SELECT	SUM(skt.amount_rm)     amount_rm
 	      			FROM	@sketch_tab            skt
 				  ) oast
+			OUTER APPLY (
+			      	SELECT	MAX(sp.season_local_id) season_local_id
+			      	    	 FROM	Planing.CoveringDetail cd   
+			      	    	 		INNER JOIN	Planing.SketchPlanColorVariant spcv
+			      	    	 			ON	spcv.spcv_id = cd.spcv_id 
+			      	    	 		INNER JOIN Planing.SketchPlan sp
+			      	    	 			ON sp.sp_id = spcv.sp_id			      	    	 		
+			      	    	 WHERE	cd.covering_id = c.covering_id
+			      	    	 		AND	cd.is_deleted = 0
+			      ) oa_d
 	
 	IF @error_text IS NOT NULL
 	BEGIN
@@ -132,19 +147,22 @@ AS
 	FROM	@spcv_tab st   
 			LEFT JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = st.spcv_id   
+			LEFT JOIN Planing.SketchPlan sp
+				ON sp.sp_id = spcv.sp_id
 			LEFT JOIN	Products.ProdArticleNomenclature pan
 				ON	pan.pan_id = spcv.pan_id   
 			LEFT JOIN	Planing.CoveringDetail cd
 				ON	cd.spcv_id = spcv.spcv_id
 				AND	cd.covering_id = @covering_id
-	WHERE	spcv.spcv_id IS NULL
+	WHERE	ISNULL(sp.season_local_id, 0) != 7 
+	 		AND( spcv.spcv_id IS NULL
 			OR	st.pan_id IS NULL
 			OR	pan.nm_id IS NULL
 			OR	cd.cd_id IS NULL
 			OR	ISNULL(st.cost_rm, 0) = 0
 			OR	ISNULL(st.cost_work, 0) = 0
 			OR	ISNULL(st.cost_fix, 0) = 0
-			OR	ISNULL(st.price_ru, 0) = 0
+			OR	ISNULL(st.price_ru, 0) = 0)
 	
 	IF @error_text IS NOT NULL
 	BEGIN
@@ -152,9 +170,30 @@ AS
 	    RETURN
 	END
 	
+	INSERT INTO Synchro.ProductsForEAN
+		(
+			pants_id
+		)
+	SELECT	pants.pants_id
+	FROM	@spcv_tab st   
+			INNER JOIN	Planing.SketchPlanColorVariant spcv
+				ON	spcv.spcv_id = st.spcv_id   
+			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+				ON	spcvt.spcv_id = spcv.spcv_id   
+			INNER JOIN	Products.ProdArticleNomenclature pan
+				ON	pan.pan_id = spcv.pan_id   
+			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
+				ON	pants.pan_id = pan.pan_id
+				AND	pants.ts_id = spcvt.ts_id   
+			LEFT JOIN	Manufactory.EANCode e
+				ON	e.pants_id = pants.pants_id
+	WHERE	e.pants_id IS NULL
+	
 	SELECT	@error_text = CASE 
 	      	                   WHEN st.spcv_id IS NULL THEN 'Цветовариант в выдаче, с кодом ' + CAST(st.spcv_id AS VARCHAR(10)) + ' не имеет себестомости'
 	      	                   WHEN skt.sketch_id IS NULL THEN 'Для эскиза с кодом ' + CAST(skt.sketch_id AS VARCHAR(10)) + ' нет данных '
+	      	                   WHEN pan.pan_id IS NULL THEN 'Цветовариант в выдаче, с кодом ' + CAST(st.spcv_id AS VARCHAR(10)) + ' не связан с артикулом сайта'
+	      	                   WHEN pan.pan_id IS NOT NULL AND tnvds.ts_id IS NULL THEN 'На артикул ' + pa.sa + pan.sa + ' не удалось определить код ТНВД, обратитесь к руководителю'
 	      	                   ELSE NULL
 	      	              END
 	FROM	Planing.CoveringDetail cd   
@@ -166,8 +205,27 @@ AS
 				ON	st.spcv_id = cd.spcv_id   
 			LEFT JOIN	@sketch_tab skt
 				ON	skt.sketch_id = sp.sketch_id
+			LEFT JOIN Products.ProdArticleNomenclature pan
+				ON pan.pan_id = spcv.pan_id
+			LEFT JOIN Products.ProdArticle pa
+				ON pa.pa_id = pan.pa_id
+			LEFT JOIN Products.Sketch s
+				ON s.sketch_id = sp.sketch_id
+			OUTER APPLY (
+				      	SELECT	TOP(1) c.consist_type_id
+				      	FROM	Products.ProdArticleConsist pac   
+				      			INNER JOIN	Products.Consist c
+				      				ON	c.consist_id = pac.consist_id
+				      	WHERE	pac.pa_id = pa.pa_id
+				      	ORDER BY
+				      		pac.percnt DESC
+				      ) oa_ct
+			LEFT JOIN	Products.TNVED_Settigs tnvds   
+					ON	tnvds.subject_id = s.subject_id
+					AND	tnvds.ct_id = s.ct_id
+					AND	tnvds.consist_type_id = oa_ct.consist_type_id
 	WHERE	cd.covering_id = @covering_id
-			AND	(st.spcv_id IS NULL OR skt.sketch_id IS NULL) 
+			AND	(st.spcv_id IS NULL OR skt.sketch_id IS NULL OR pan.pan_id IS NULL OR tnvds.ts_id IS NULL) 
 	
 	IF @error_text IS NOT NULL
 	BEGIN
@@ -178,8 +236,8 @@ AS
 	SELECT	@error_text = CASE 
 	      	                   WHEN s.sketch_id IS NULL THEN 'Эскиза с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN s.sketch_id IS NOT NULL AND oa.sketch_id IS NULL THEN 'Эскиз с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) + ' нет в выдаче'
-	      	                   WHEN ISNULL(st.cutting_cnt, 0) = 0 THEN 'У эскиза с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) + ' не указано количество кроя'
-	      	                   WHEN ISNULL(st.amount_rm, 0) = 0 THEN 'У эскиза с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) +
+	      	                   WHEN ISNULL(st.cutting_cnt, 0) = 0 AND @season_local_id != 7 THEN 'У эскиза с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) + ' не указано количество кроя'
+	      	                   WHEN ISNULL(st.amount_rm, 0) = 0 AND @season_local_id != 7 THEN 'У эскиза с кодом ' + CAST(st.sketch_id AS VARCHAR(10)) +
 	      	                        ' не указана стоимость материалов'
 	      	                   ELSE NULL
 	      	              END
@@ -206,6 +264,86 @@ AS
 	    RETURN
 	END
 	
+	INSERT INTO @spcv_need_chestny_znak
+		(
+			spcv_id,
+			spcvts_id, 
+			ean,
+			cnt
+		)
+	SELECT	st.spcv_id,
+			spcvt.spcvts_id,
+			e.ean,
+			ISNULL(oa_ac.actual_count, 0) - ISNULL(oa_cwo.write_off, 0) cnt
+	FROM	@spcv_tab st   
+			INNER JOIN	Planing.SketchPlanColorVariant spcv
+				ON	spcv.spcv_id = st.spcv_id   
+			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+				ON	spcvt.spcv_id = spcv.spcv_id 
+			INNER JOIN Products.ProdArticleNomenclature pan
+				ON pan.pan_id = spcv.pan_id 
+			INNER JOIN Products.ProdArticleNomenclatureTechSize pants
+				ON pants.pan_id = pan.pan_id AND pants.ts_id = spcvt.ts_id
+			LEFT JOIN Manufactory.EANCode e
+				ON e.pants_id = pants.pants_id 
+			OUTER APPLY (
+			      	SELECT	ISNULL(SUM(ca.actual_count), 0) actual_count
+			      	FROM	Manufactory.Cutting cut   
+			      			INNER JOIN	Manufactory.CuttingActual ca
+			      				ON	ca.cutting_id = cut.cutting_id
+			      	WHERE	cut.spcvts_id = spcvt.spcvts_id
+			      ) oa_ac 
+			OUTER APPLY (
+	      			SELECT	SUM(1) write_off
+	      			FROM	Manufactory.Cutting cut   
+	      					INNER JOIN	Manufactory.ProductUnicCode puc
+	      						ON	puc.cutting_id = cut.cutting_id
+	      			WHERE	cut.spcvts_id = spcvt.spcvts_id
+	      					AND	puc.operation_id IN (12, 3)
+				  ) oa_cwo
+	WHERE	EXISTS (
+	     		SELECT	1
+	     		FROM	Products.ProdArticle pa  
+	     				INNER JOIN	Products.Sketch s
+	     					ON	s.sketch_id = pa.sketch_id   
+	     				OUTER APPLY (
+	     				      	SELECT	TOP(1) c.consist_type_id
+	     				      	FROM	Products.ProdArticleConsist pac   
+	     				      			INNER JOIN	Products.Consist c
+	     				      				ON	c.consist_id = pac.consist_id
+	     				      	WHERE	pac.pa_id = pa.pa_id
+	     				      	ORDER BY
+	     				      		pac.percnt DESC
+	     				      ) oa_ct
+	     				INNER JOIN	Products.TNVED_Settigs tnvds
+	     					ON	tnvds.subject_id = s.subject_id
+	     					AND	tnvds.ct_id = s.ct_id
+	     					AND	tnvds.consist_type_id = oa_ct.consist_type_id   
+	     				INNER JOIN	Products.TNVDFromChestnyZnak tcz
+	     					ON	tnvds.tnved_id = tcz.tnved_id
+	     		WHERE	pa.pa_id = pan.pa_id 
+	)
+	AND ISNULL(oa_ac.actual_count, 0) - ISNULL(oa_cwo.write_off, 0) > 0
+	
+	IF EXISTS(SELECT 1 FROM @spcv_need_chestny_znak WHERE ean IS NULL)
+	BEGIN
+		RAISERROR('Не подгружены коды ЕАН, обратитесь к разработчику',16,1)
+		RETURN
+	END
+	
+	SELECT @count_spcv_cz = COUNT(1)
+	FROM @spcv_need_chestny_znak sncz
+	
+	;WITH cte AS
+ 		(
+ 			SELECT	NTILE((@count_spcv_cz -1) / 10 + 1) OVER(ORDER BY sncz.spcvts_id) order_num, sncz.spcvts_id
+ 			FROM	@spcv_need_chestny_znak sncz
+ 		)
+	 UPDATE	sncz
+	 SET 	sncz.order_num = c.order_num
+	 FROM	@spcv_need_chestny_znak sncz
+ 			INNER JOIN	cte c
+ 				ON	sncz.spcvts_id = c.spcvts_id	
 	
 	BEGIN TRY
 		BEGIN TRANSACTION 
@@ -401,6 +539,64 @@ AS
 			@dt
 		)
 		
+		IF EXISTS(
+		   	SELECT	1
+		   	FROM	@spcv_need_chestny_znak sncz
+		) AND NOT EXISTS (
+		         		SELECT	1
+		         		FROM	Manufactory.OrderChestnyZnak ocz
+		         		WHERE	ocz.covering_id = @covering_id
+		         	)
+		BEGIN
+		    ;
+		    MERGE Manufactory.OrderChestnyZnak t
+		    USING (
+		          	SELECT	sncz.order_num
+		          	FROM	@spcv_need_chestny_znak sncz
+		          	GROUP BY
+		          		sncz.order_num
+		          ) s
+				ON t.ocz_id = NULL
+		    WHEN NOT MATCHED THEN
+		    INSERT
+		    	(
+		    		covering_id,
+		    		create_dt,
+		    		dt,
+		    		employee_id,
+		    		is_deleted
+		    	)
+		    VALUES
+		    	(
+		    		@covering_id,
+		    		@dt,
+		    		@dt,
+		    		@employee_id,
+		    		0
+		    	)
+		    OUTPUT	INSERTED.ocz_id,
+		    		s.order_num
+		    INTO	@order_chestny_znak_out (
+		    		ocz_id,
+		    		order_num
+		    	);
+
+		   INSERT INTO Manufactory.OrderChestnyZnakDetail
+		        	(
+		        		ocz_id,
+		        		spcvts_id,
+		        		ean,
+		        		cnt
+		        	)
+		   SELECT	oczo.ocz_id,
+		        		spcvcz.spcvts_id,
+		        		spcvcz.ean,
+		        		spcvcz.cnt
+		        FROM	@spcv_need_chestny_znak spcvcz   
+		        		INNER JOIN	@order_chestny_znak_out oczo
+		        			ON	oczo.order_num = spcvcz.order_num
+
+		END
 		
 		COMMIT TRANSACTION
 	END TRY

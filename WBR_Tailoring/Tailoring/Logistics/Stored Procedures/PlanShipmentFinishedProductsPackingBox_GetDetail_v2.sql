@@ -42,7 +42,7 @@ AS
 				ON	k.kind_id = s.kind_id   
 			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants.ts_id
-				ON	pants.pants_id = puc.pants_id   
+				ON	pants.pants_id = puc.pants_id  
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -51,7 +51,7 @@ AS
 			      	WHERE	pac.pa_id = pa.pa_id
 			      	ORDER BY
 			      		pac.percnt DESC
-			      ) oa_ct
+			      ) oa_ct     
 	LEFT JOIN	Products.TNVED_Settigs tnvds   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id
@@ -79,7 +79,11 @@ AS
 	SELECT	pbd.barcode item_code,
 			COUNT(1) cnt,
 			wtb.box_name, 
-			psfppb.packing_box_id packing_box_id
+			psfppb.packing_box_id packing_box_id,
+			pa.sa + pan.sa sa,
+			ts.ts_name,
+			an.art_name,
+			MAX(CASE WHEN pucczi.product_unic_code IS NOT NULL THEN 1 ELSE 0 END) have_cz
 	FROM	Logistics.PlanShipmentFinishedProductsPackingBox psfppb   
 			INNER JOIN	Logistics.PackingBoxDetail pbd
 				ON	pbd.packing_box_id = psfppb.packing_box_id   
@@ -87,14 +91,29 @@ AS
 				ON	puc.product_unic_code = pbd.product_unic_code   
 			LEFT JOIN	Products.ProdArticleNomenclatureTechSize pants   
 			INNER JOIN	Products.ProdArticleNomenclature pan
+			INNER JOIN Products.ProdArticle pa
+			INNER JOIN Products.Sketch s
+			INNER JOIN Products.ArtName an
+				ON an.art_name_id = s.art_name_id
+				ON s.sketch_id = pa.sketch_id
+				ON pa.pa_id = pan.pa_id
 				ON	pan.pan_id = pants.pan_id
 				ON	pants.pants_id = puc.pants_id
-			LEFT JOIN Wildberries.WB_TransferBox wtb ON psfppb.packing_box_id = wtb.packing_box_id
+			LEFT JOIN Products.TechSize ts
+				ON ts.ts_id = pants.ts_id
+			LEFT JOIN Wildberries.WB_TransferBox wtb 
+				ON psfppb.packing_box_id = wtb.packing_box_id
+			LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				ON pucczi.product_unic_code = puc.product_unic_code 
 	WHERE	psfppb.sfp_id = @sfp_id
 	GROUP BY
 		pbd.barcode,
 		wtb.box_name,
-		psfppb.packing_box_id
+		psfppb.packing_box_id,
+		pa.sa,
+		pan.sa,
+		ts.ts_name,
+		an.art_name
 	ORDER BY
 		wtb.box_name,
 		psfppb.packing_box_id,

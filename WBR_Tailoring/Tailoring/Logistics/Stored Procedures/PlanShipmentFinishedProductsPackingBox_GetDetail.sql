@@ -33,7 +33,8 @@ AS
 			k.kind_name,
 			pan.whprice,
 			pan.price_ru,
-			COUNT(pbd.pbd_id)     cnt
+			COUNT(pbd.pbd_id)     cnt,
+			MAX(CASE WHEN pucczi.product_unic_code IS NOT NULL THEN 1 ELSE 0 END) have_cz
 	FROM	Logistics.PlanShipmentFinishedProductsPackingBox psfppb   
 			INNER JOIN	Logistics.PackingBoxDetail pbd
 				ON	pbd.packing_box_id = psfppb.packing_box_id   
@@ -57,6 +58,8 @@ AS
 			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants.ts_id
 				ON	pants.pants_id = puc.pants_id
+			LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				ON pucczi.product_unic_code = puc.product_unic_code
 	WHERE	psfppb.sfp_id = @sfp_id
 	GROUP BY
 		b.brand_name,

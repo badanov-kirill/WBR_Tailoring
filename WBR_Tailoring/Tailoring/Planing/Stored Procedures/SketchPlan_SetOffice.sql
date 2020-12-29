@@ -100,6 +100,20 @@ AS
 						proc_id
 					)
 		WHERE	sp_id = @sp_id
+		
+		UPDATE	c
+		SET 	office_id          = spcv.sew_office_id,
+				cutting_tariff     = os.cutting_tariff
+		FROM	Manufactory.Cutting c
+				INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+					ON	spcvt.spcvts_id = c.spcvts_id
+				INNER JOIN	Planing.SketchPlanColorVariant spcv
+					ON	spcv.spcv_id = spcvt.spcv_id
+				INNER JOIN	Planing.SketchPlan sp
+					ON	sp.sp_id = spcv.sp_id
+				INNER JOIN	Settings.OfficeSetting os
+					ON	os.office_id = spcv.sew_office_id
+		WHERE	sp.sp_id = @sp_id
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

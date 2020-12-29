@@ -132,6 +132,7 @@
     <Folder Include="Wildberries\Tables" />
     <Folder Include="Wildberries\Stored Procedures" />
     <Folder Include="Wildberries\User Defined Types" />
+    <Folder Include="dbo\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Storage\Indexes.sql" />
@@ -1479,6 +1480,47 @@
     <Build Include="Synchro\Stored Procedures\ProductsForEAN_PubLoad.sql" />
     <Build Include="Synchro\Stored Procedures\ProductsForEAN_ErrorSet.sql" />
     <Build Include="Logistics\Stored Procedures\FindPackingBoxByBarcode_v2.sql" />
+    <Build Include="Synchro\Stored Procedures\NM_Load.sql" />
+    <Build Include="Synchro\User Defined Types\NM_Load_Type.sql" />
+    <Build Include="Logistics\Stored Procedures\PackingBoxDetail_ToBox_v3.sql" />
+    <Build Include="Products\Tables\SubjectsGS1.sql" />
+    <Build Include="Manufactory\Tables\OrderChestnyZnak.sql" />
+    <Build Include="Manufactory\Tables\OrderChestnyZnakDetail.sql" />
+    <Build Include="Manufactory\Tables\OrderChestnyZnakDetailItem.sql" />
+    <Build Include="Products\Tables\TNVDFromChestnyZnak.sql" />
+    <Build Include="Security\WILDBERRIES_USR1CV8_new.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_GetForSignature.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnakDetail_GetByID.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_Del.sql" />
+    <Build Include="Synchro\Tables\OrderChestnyZnakSign.sql" />
+    <Build Include="dbo\Functions\uid2bin.sql" />
+    <Build Include="dbo\Functions\bin2uid.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_Sign.sql" />
+    <Build Include="Synchro\Stored Procedures\OrderChestnyZnakSign_Get.sql" />
+    <Build Include="Synchro\Stored Procedures\OrderChestnyZnakSign_ErrorSet.sql" />
+    <Build Include="Synchro\Stored Procedures\OrderChestnyZnakSign_Load.sql" />
+    <Build Include="Manufactory\Tables\OrderChestnyZnakBlock.sql" />
+    <Build Include="dbo\User Defined Types\UIDList.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnakDetail_GetForItem.sql" />
+    <Build Include="Synchro\Tables\OrderChestnyZnakCntLoadItem.sql" />
+    <Build Include="Synchro\Stored Procedures\OrderChestnyZnakDetail_ItemLoad.sql" />
+    <Build Include="Synchro\User Defined Types\OrderChestnyZnakItemTab.sql" />
+    <Build Include="Synchro\Stored Procedures\OrderChestnyZnakDetail_ItemSetError.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_GetLoaded.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnakDetailItem_GetByDetail.sql" />
+    <Build Include="Manufactory\Tables\ProductUnicCode_ChestnyZnakItem.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticleForLamoda_BySFP.sql" />
+    <Build Include="Reports\Stored Procedures\Stock_Get.sql" />
+    <Build Include="Reports\Stored Procedures\Cost_Get.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticleNomenclatureTS_GetByPanID.sql" />
+    <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_AddForBranding.sql" />
+    <Build Include="Logistics\Tables\ShipmentFinishedProductsPrePlanDetail.sql" />
+    <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsPrePlanDetail_Add.sql" />
+    <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsPrePlanDetail_GetBySFP.sql" />
+    <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsPrePlanDetail_GetNoClose.sql" />
+    <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsPrePlanDetail_StartJob.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakItem_Find.sql" />
+    <Build Include="Manufactory\Stored Procedures\ProductUnicCodeInfo_ByChestnyZnak.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

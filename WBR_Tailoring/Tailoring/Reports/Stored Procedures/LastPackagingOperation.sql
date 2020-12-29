@@ -20,10 +20,7 @@ AS
 				ON	puc2.pants_id = pants2.pants_id   
 			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants2.ts_id   
-			INNER JOIN	Manufactory.ProductOperations po
-				ON	po.product_unic_code = puc2.product_unic_code
 	WHERE	puc.product_unic_code = @product_unic_code
-			AND	po.operation_id = @packaging_operation
-			AND	po.dt >= @dt
+			AND	puc2.operation_id = @packaging_operation
 	GROUP BY
 		ts.ts_name

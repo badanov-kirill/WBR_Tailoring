@@ -1,0 +1,8 @@
+﻿CREATE TABLE [Products].[TechSize]
+(
+	ts_id SMALLINT IDENTITY(1,1) CONSTRAINT [PK_TechSize] PRIMARY KEY CLUSTERED NOT NULL,
+	ts_name VARCHAR(15) NOT NULL
+)
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_TechSize_ts_name] ON Products.TechSize(ts_name) INCLUDE(ts_id) ON [Indexes]

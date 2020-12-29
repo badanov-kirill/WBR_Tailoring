@@ -90,6 +90,7 @@ AS
 	      	                   WHEN @operation_id NOT IN (@to_packaging_operation, @reworking_operation, @cancellation_operation, @modification_operation, @special_equipment_operation, 
 	      	                                             @after_packing_of_se, @print_label_operation, @packaging_operation, @launch_of_operation, @repair_and_to_packaging_operation) THEN 
 	      	                        'Операция с кодом ' + CAST(@operation_id AS VARCHAR(10)) + ' не допускается в этой обработке'
+	      	                   WHEN @operation_id = @modification_operation THEN 'Операция "На стирку" запрещена'
 	      	                   ELSE NULL
 	      	              END,
 			@spcv_id = spcvt.spcv_id,
