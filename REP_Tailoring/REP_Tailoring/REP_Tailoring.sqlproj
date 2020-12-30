@@ -103,5 +103,6 @@
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_ArticleGet.sql" />
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_GetByID_v2.sql" />
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v2.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v3.sql" />
   </ItemGroup>
 </Project>
