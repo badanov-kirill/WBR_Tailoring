@@ -10,7 +10,11 @@ AS
 			mrd.nds,
 			mrd.retail_amount,
 			CAST(CASE WHEN mrd.sale_dt >= mr.period_dt AND mrd.sale_dt <= mr.period_to_dt THEN mrd.sale_dt ELSE mr.period_dt END AS DATETIME) 
-			sale_dt
+			sale_dt,
+			CAST(
+				DATEADD(DAY, 1, EOMONTH((CASE WHEN mrd.sale_dt >= mr.period_dt AND mrd.sale_dt <= mr.period_to_dt THEN mrd.sale_dt ELSE mr.period_dt END), -1)) 
+				AS DATETIME
+			) sale_period_dt
 	FROM	Sale.MonthReportDetail mrd   
 			INNER JOIN	Sale.MonthReport mr
 				ON	mr.realizationreport_id = mrd.realizationreport_id   

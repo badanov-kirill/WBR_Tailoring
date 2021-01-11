@@ -6,7 +6,7 @@ AS
 	
 	SELECT	mrd.rrd_id,
 			mrd.shk_id,
-			mrd.sale_dt,
+			CAST(mrd.sale_dt AS DATETIME) sale_dt,
 			sa.sa_name,
 			mrd.quantity,
 			mrd.nds,
@@ -21,6 +21,7 @@ AS
 		mrd.rrd_id
 	
 	SELECT	mrd.rrd_id,
+			DENSE_RANK() OVER(ORDER BY mrds.realizationreport_id ASC, DATEADD(DAY, 1, EOMONTH((CASE WHEN mrds.sale_dt >= mrs.period_dt AND mrds.sale_dt <= mrs.period_to_dt THEN mrds.sale_dt ELSE mrs.period_dt END), -1))  ASC) AS doc_index,
 			mrds.realizationreport_id,
 			CAST(
 				DATEADD(DAY, 1, EOMONTH((CASE WHEN mrds.sale_dt >= mrs.period_dt AND mrds.sale_dt <= mrs.period_to_dt THEN mrds.sale_dt ELSE mrs.period_dt END), -1)) 
