@@ -11,7 +11,7 @@ AS
 			mrd.quantity,
 			mrd.nds,
 			mrd.retail_amount
-	FROM	sale.MonthReportDetail mrd   
+	FROM	Sale.MonthReportDetail mrd   
 			INNER JOIN	Products.SupplierArticle sa
 				ON	sa.sa_id = mrd.sa_id
 	WHERE	mrd.doc_type_id = 2
@@ -29,15 +29,15 @@ AS
 			) sale_period_dt,
 			sa.sa_name,
 			mrds.retail_amount
-	FROM	sale.MonthReportDetail mrd   
+	FROM	Sale.MonthReportDetail mrd   
 			INNER JOIN	Products.SupplierArticle sa
 				ON	sa.sa_id = mrd.sa_id   
-			INNER JOIN	sale.MonthReportDetail mrds
+			INNER JOIN	Sale.MonthReportDetail mrds
 				ON	mrds.sale_dt = mrd.sale_dt
 				AND	mrds.shk_id = mrd.shk_id
 				AND	mrds.doc_type_id = 1
 				AND	mrds.quantity != 0   
-			INNER JOIN	sale.MonthReport mrs
+			INNER JOIN	Sale.MonthReport mrs
 				ON	mrs.realizationreport_id = mrds.realizationreport_id
 	WHERE	mrd.doc_type_id = 2
 			AND	mrd.quantity != 0

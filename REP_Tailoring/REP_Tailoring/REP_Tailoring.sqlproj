@@ -70,6 +70,7 @@
     <Folder Include="RefBook\Tables" />
     <Folder Include="Products\Tables" />
     <Folder Include="Storage\" />
+    <Folder Include="Warehouse\User Defined Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Security\ExecAll.sql" />
@@ -105,5 +106,7 @@
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v2.sql" />
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v3.sql" />
     <Build Include="Warehouse\Tables\wb_stock.sql" />
+    <Build Include="Warehouse\User Defined Types\wb_stock_type.sql" />
+    <Build Include="Warehouse\Stored Procedures\wb_stock_load.sql" />
   </ItemGroup>
 </Project>

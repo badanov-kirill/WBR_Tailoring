@@ -12,10 +12,10 @@ AS
 			mrd.quantity,
 			mrd.nds,
 			mrd.retail_amount
-	FROM	sale.MonthReportDetail mrd   
-			INNER JOIN	sale.MonthReport mr0
+	FROM	Sale.MonthReportDetail mrd   
+			INNER JOIN	Sale.MonthReport mr0
 				ON	mr0.realizationreport_id = mrd.realizationreport_id  
-			INNER JOIN	products.SupplierArticle sa
+			INNER JOIN	Products.SupplierArticle sa
 				ON	sa.sa_id = mrd.sa_id   
 			OUTER APPLY (
 			      	SELECT	TOP(1) mrds.realizationreport_id,
@@ -24,7 +24,7 @@ AS
 			      			     ELSE mrs.period_dt
 			      			END             sale_dt,
 			      			mrds.rrd_id     rrd_id
-			      	FROM	sale.MonthReportDetail mrds   
+			      	FROM	Sale.MonthReportDetail mrds   
 			      			INNER JOIN	Sale.MonthReport mrs
 			      				ON	mrs.realizationreport_id = mrds.realizationreport_id
 			      	WHERE	mrds.doc_type_id = 1
@@ -38,7 +38,7 @@ AS
 			 
 			OUTER APPLY (
 			      	SELECT	TOP(1) mrdr.rrd_id rrd_id
-			      	FROM	sale.MonthReportDetail mrdr
+			      	FROM	Sale.MonthReportDetail mrdr
 			      	WHERE	mrdr.doc_type_id = 2
 			      			AND	mrdr.quantity != 0
 			      			AND	mrdr.sale_dt = mrd.sale_dt
