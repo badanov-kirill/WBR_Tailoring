@@ -23,15 +23,15 @@ AS
 			LEFT JOIN Logistics.ShipmentFinishedProductsPrePlanDetail sfpppd ON sfpppd.sfpppd_id = v.sfpppd_id
 			LEFT JOIN Settings.EmployeeSetting es ON es.employee_id = sfpppd.employee_id	
 	
-	SELECT	@error_text = CASE 
-	      	                   WHEN sfpppd		
+	--SELECT	@error_text = CASE 
+	--      	                   WHEN sfpppd		
 	
-	FROM	Logistics.ShipmentFinishedProductsPrePlanDetail sfpppd
-	INNER JOIN Products.ProdArticleNomenclatureTechSize pants ON pants.pants_id = sfpppd.pants_id
-	INNER JOIN Products.ProdArticleNomenclature pan
-	          ON pan.pan_id = pants.pan_id
-	          INNER JOIN Products.ProdArticle pa ON pa.pa_id = pan.pa_id
-	WHERE sfpppd.employee_id = @employee_id AND sfpppd.start_job_dt IS NOT NULL AND sfpppd.finish_job_dt IS NULL AND sfpppd.problem_job_dt IS NOT NULL
+	--FROM	Logistics.ShipmentFinishedProductsPrePlanDetail sfpppd
+	--INNER JOIN Products.ProdArticleNomenclatureTechSize pants ON pants.pants_id = sfpppd.pants_id
+	--INNER JOIN Products.ProdArticleNomenclature pan
+	--          ON pan.pan_id = pants.pan_id
+	--          INNER JOIN Products.ProdArticle pa ON pa.pa_id = pan.pa_id
+	--WHERE sfpppd.employee_id = @employee_id AND sfpppd.start_job_dt IS NOT NULL AND sfpppd.finish_job_dt IS NULL AND sfpppd.problem_job_dt IS NOT NULL
 	
 			
 	BEGIN TRY

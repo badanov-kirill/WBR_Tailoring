@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [Warehouse].[wb_stock_load]
 	@period_dt DATE,
-	@detail Warehouse.wb_stock_type READONLY,
-	@first_packet BIT
+	@detail Warehouse.wb_stock_type READONLY
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
