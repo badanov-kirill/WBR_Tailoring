@@ -4,6 +4,7 @@
 	@comment VARCHAR(300) = NULL
 AS
 	SET NOCOUNT ON
+	SET XACT_ABORT ON
 	
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
@@ -79,7 +80,7 @@ AS
 			sp_id,
 			sketch_id
 		)
-	SELECT	spcv.sp_id,
+	SELECT DISTINCT spcv.sp_id,
 			sp.sketch_id
 	FROM	@spcv_tab dt   
 			INNER JOIN	Planing.SketchPlanColorVariant spcv   
@@ -88,6 +89,7 @@ AS
 				ON	spcv.spcv_id = dt.spcv_id   
 	
 	BEGIN TRY
+	BEGIN TRANSACTION
 		UPDATE	spcv
 		SET 	cvs_id = CASE 
 		    	              WHEN cvs_id IN (@cv_status_confectione_end, @cv_status_placing) THEN @cv_status_layout_close
@@ -220,7 +222,7 @@ AS
 				@dt
 		FROM	@output_stj os
 			
-		
+	COMMIT TRANSACTION	
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
