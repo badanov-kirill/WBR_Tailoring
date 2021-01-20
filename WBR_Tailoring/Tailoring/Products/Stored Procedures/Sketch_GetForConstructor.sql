@@ -114,7 +114,7 @@ AS
 			AND	(@brand_id IS NULL OR s.brand_id = @brand_id)
 			AND	(@subject_id IS NULL OR s.subject_id = @subject_id)
 			AND	(@art_name IS NULL OR an.art_name LIKE @art_name + '%')
-			AND	(@is_china_sample IS NULL OR (s.is_china_sample = @is_china_sample))
+			AND	(@is_china_sample IS NULL OR (ISNULL(s.is_china_sample, 0) = @is_china_sample))
 	ORDER BY
 		CASE 
 			     WHEN ISNULL(s.days_for_purchase, 0) != 0 THEN  CAST(DATEADD(DAY, -(s.days_for_purchase + 60 ), s.plan_site_dt) AS DATETIME)
