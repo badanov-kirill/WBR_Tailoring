@@ -82,6 +82,8 @@ CREATE SCHEMA [Logistics]
 
 
 
+
+
 GO
 CREATE SCHEMA [Reports]
     AUTHORIZATION [dbo];
@@ -125,4 +127,10 @@ CREATE SCHEMA [Wildberries]
 
 GO
 CREATE SCHEMA [Ozon]
+    AUTHORIZATION [dbo];
+
+
+    
+GO
+CREATE SCHEMA [WBApi]
     AUTHORIZATION [dbo];

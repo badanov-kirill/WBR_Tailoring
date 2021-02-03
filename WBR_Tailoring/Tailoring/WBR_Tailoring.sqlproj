@@ -8,7 +8,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{df36fc29-f604-4575-b83c-bfc77463a130}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql120DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql140DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -17,12 +17,13 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -133,6 +134,14 @@
     <Folder Include="Wildberries\Stored Procedures" />
     <Folder Include="Wildberries\User Defined Types" />
     <Folder Include="dbo\Functions" />
+    <Folder Include="WBApi" />
+    <Folder Include="WBApi\Tables" />
+    <Folder Include="WBApi\Stored Procedures" />
+    <Folder Include="WBApi\User Defined Types" />
+    <Folder Include="Ozon\" />
+    <Folder Include="Ozon\Tables\" />
+    <Folder Include="Ozon\Stored Procedures\" />
+    <Folder Include="Ozon\User Defined Types\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Storage\Indexes.sql" />
@@ -1521,6 +1530,14 @@
     <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsPrePlanDetail_StartJob.sql" />
     <Build Include="Manufactory\Stored Procedures\ChestnyZnakItem_Find.sql" />
     <Build Include="Manufactory\Stored Procedures\ProductUnicCodeInfo_ByChestnyZnak.sql" />
+    <Build Include="WBApi\Tables\Fields.sql" />
+    <Build Include="WBApi\Tables\FieldsDict.sql" />
+    <Build Include="WBApi\Tables\FieldsSI.sql" />
+    <Build Include="WBApi\Tables\SI.sql" />
+    <Build Include="WBApi\Tables\SubjectFields.sql" />
+    <Build Include="Ozon\Stored Procedures\Categoryes_Set.sql" />
+    <Build Include="Ozon\Tables\Categories.sql" />
+    <Build Include="Ozon\User Defined Types\CategoryesType.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

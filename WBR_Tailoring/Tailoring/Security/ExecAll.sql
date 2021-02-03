@@ -1,5 +1,7 @@
-CREATE ROLE [ExecAll]
+﻿CREATE ROLE [ExecAll]
     AUTHORIZATION [dbo];
+
+
 
 
 GO
@@ -7,4 +9,8 @@ GO
 ALTER ROLE [ExecAll] ADD MEMBER [WILDBERRIES\Tailoring];
 GO
 ALTER ROLE [ExecAll] ADD MEMBER [User1C];
+
+
+GO
+ALTER ROLE [ExecAll] ADD MEMBER [WILDBERRIES\USR1CV8];
 
