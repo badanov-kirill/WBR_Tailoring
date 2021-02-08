@@ -26,7 +26,8 @@ AS
 			oczdi.gtin01,
 			oczdi.serial21,
 			oczdi.intrnal91,
-			oczdi.intrnal92
+			oczdi.intrnal92,
+			oczdi.oczdi_id
 	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
 			INNER JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 				ON pucczi.oczdi_id = oczdi.oczdi_id   
