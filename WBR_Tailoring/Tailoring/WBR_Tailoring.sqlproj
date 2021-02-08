@@ -1538,6 +1538,8 @@
     <Build Include="Ozon\Stored Procedures\Categoryes_Set.sql" />
     <Build Include="Ozon\Tables\Categories.sql" />
     <Build Include="Ozon\User Defined Types\CategoryesType.sql" />
+    <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsChestnyZnak_Add.sql" />
+    <Build Include="Logistics\Tables\ShipmentFinishedProductsChestnyZnak.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
