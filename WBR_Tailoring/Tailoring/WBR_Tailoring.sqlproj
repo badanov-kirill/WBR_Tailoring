@@ -1541,6 +1541,7 @@
     <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsChestnyZnak_Add.sql" />
     <Build Include="Logistics\Tables\ShipmentFinishedProductsChestnyZnak.sql" />
     <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsChestnyZnak_Get.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticle_GetByWB.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
