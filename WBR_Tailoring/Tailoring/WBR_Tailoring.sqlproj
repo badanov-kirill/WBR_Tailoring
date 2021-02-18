@@ -1542,6 +1542,14 @@
     <Build Include="Logistics\Tables\ShipmentFinishedProductsChestnyZnak.sql" />
     <Build Include="Logistics\Stored Procedures\ShipmentFinishedProductsChestnyZnak_Get.sql" />
     <Build Include="Products\Stored Procedures\ProdArticle_GetByWB.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakInCirculation_Create.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakInCirculation_GetList.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakInCirculationDetail_Get.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakInCirculationDetail_GetFor.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakInCirculation.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationDetail.sql" />
+    <Build Include="Products\Tables\Sertificates.sql" />
+    <Build Include="Products\Tables\Sertificates_TNVD.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
