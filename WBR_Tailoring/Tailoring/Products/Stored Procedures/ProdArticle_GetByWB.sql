@@ -97,21 +97,22 @@ AS
 	SELECT	pan.pan_id,
 			pan.nm_id,
 			pan.sa,
-			STUFF(artcol.x, 1, 2, '') colors,
+			mc.color_name main_color,
+			STUFF(artcol.x, 1, 2, '') not_nain_colors,
 			pan.whprice,
 			pan.price_ru
-	FROM	Products.ProdArticleNomenclature pan   
+	FROM	Products.ProdArticleNomenclature pan 
+			LEFT JOIN Products.ProdArticleNomenclatureColor pancm
+			ON pancm.pan_id = pan.pan_id AND pancm.is_main = 1
+			LEFT JOIN Products.Color mc
+			ON mc.color_cod = pancm.color_cod			  
 			OUTER APPLY (
 			      	SELECT	'; ' + c.color_name
 			      	FROM	Products.ProdArticleNomenclatureColor panc   
 			      			INNER JOIN	products.Color c
 			      				ON	c.color_cod = panc.color_cod
 			      	WHERE	panc.pan_id = pan.pan_id
-			      	ORDER BY
-			      		CASE 
-			      		     WHEN panc.is_main = 1 THEN 0
-			      		     ELSE 1
-			      		END ASC
+			      	AND panc.is_main = 0
 			      	FOR XML	PATH('')
 			      ) artcol(x)
 	WHERE	pan.pa_id = @pa_id
@@ -140,9 +141,10 @@ AS
 		pac.percnt DESC 
 	
 	
-	SELECT	aop.ao_name ao_parrent_name,
+	SELECT  ao.ao_id_parent,
+			aop.ao_name ao_parrent_name,
 			ao.ao_name,
-			CAST(paao.ao_value * ISNULL(si.multiplier, 1) AS DECIMAL(19, 8)) val,
+			paao.ao_value val,
 			si.si_name
 	FROM	Products.ProdArticleAddedOption paao   
 			INNER JOIN	Products.AddedOption ao
@@ -154,14 +156,5 @@ AS
 	WHERE	paao.pa_id = @pa_id
 			AND	ao.content_id IS NOT NULL
 			AND	ao.isdeleted = 0
-		
-	SELECT	pan.pan_id,
-			panc.is_main,
-			c.color_name
-	FROM	Products.ProdArticleNomenclature pan   
-			INNER JOIN	Products.ProdArticleNomenclatureColor panc
-				ON	panc.pan_id = pan.pan_id   
-			INNER JOIN	products.Color c
-				ON	c.color_cod = panc.color_cod
-	WHERE	pan.pa_id = @pa_id
-			AND	pan.is_deleted = 0	  
+	ORDER BY aop.ao_name, aop.ao_id
+	
