@@ -35,7 +35,7 @@ AS
 	FROM	Logistics.PackingBoxDetail pbd   
 			INNER JOIN	Manufactory.ProductUnicCode puc
 				ON	puc.product_unic_code = pbd.product_unic_code   
-			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants   
+			LEFT JOIN	Products.ProdArticleNomenclatureTechSize pants   
 			INNER JOIN	Products.ProdArticleNomenclature pan
 				ON	pan.pan_id = pants.pan_id   
 			INNER JOIN	Products.ProdArticle pa

@@ -52,7 +52,7 @@ AS
 				ISNULL(sj.subject_name_sf, sj.subject_name) subject_name,
 				pa.sa + pan.sa sa,
 				ts.ts_name,
-				ISNULL(t.tnved_cod, '6106') tnved_cod,
+				ISNULL(t.tnved_cod, '6106000000') tnved_cod,
 				sj.subject_gs1_id, 
 				sj.block_gs1,
 				ISNULL(k.gs1_id, '1200000002') kind_gs1_id,
@@ -60,7 +60,12 @@ AS
 				STUFF(oac.x, 1, 2, '') + CASE 
 				                              WHEN oal.x IS NOT NULL THEN CHAR(10) + '  Подкладка: ' + STUFF(oal.x, 1, 2, '')
 				                              ELSE ''
-				                         END consists
+				                         END consists,
+				t2.tnved_cod tnved_cod2,
+				t3.tnved_cod tnved_cod3,
+				t4.tnved_cod tnved_cod4,
+				t5.tnved_cod tnved_cod5,
+				t6.tnved_cod tnved_cod6
 		FROM	@tab pfe   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = pfe.pants_id   
@@ -98,6 +103,16 @@ AS
 					ON	tnvds.subject_id = s.subject_id
 					AND	tnvds.ct_id = s.ct_id
 					AND	tnvds.consist_type_id = oa_ct.consist_type_id
+				LEFT JOIN Products.TNVED t2
+					ON t2.tnved_id = t.tnved_pid
+				LEFT JOIN Products.TNVED t3
+					ON t3.tnved_id = t2.tnved_pid
+				LEFT JOIN Products.TNVED t4
+					ON t4.tnved_id = t3.tnved_pid
+				LEFT JOIN Products.TNVED t5
+					ON t5.tnved_id = t4.tnved_pid
+				LEFT JOIN Products.TNVED t6
+					ON t6.tnved_id = t5.tnved_pid
 				OUTER APPLY (
 				      	SELECT	', ' + c.consist_name + ' ' + CASE 
 				      	      	                                   WHEN ISNULL(pac.percnt, 0) = 0 THEN ''

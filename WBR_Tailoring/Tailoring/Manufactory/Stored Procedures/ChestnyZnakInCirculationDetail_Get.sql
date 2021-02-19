@@ -11,7 +11,8 @@ AS
 			     WHEN oas.sertificate_type = 'D' THEN 'CONFORMITY_DECLARATION'
 			END         sertificate_type,
 			oas.sertificate_num,
-			oas.sertificate_dt
+			CAST(oas.sertificate_dt AS DATETIME) sertificate_dt,
+			CAST(puc.packing_dt AS DATETIME) packing_dt
 	FROM	Manufactory.ChestnyZnakInCirculationDetail czicd   
 			INNER JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
 				ON	oczdi.oczdi_id = czicd.oczdi_id   
@@ -53,4 +54,8 @@ AS
 			      	ORDER BY
 			      		sert.finish_dt DESC
 			      )     oas
+			LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				ON pucczi.oczdi_id = oczdi.oczdi_id
+			LEFT JOIN Manufactory.ProductUnicCode puc
+				ON puc.product_unic_code = pucczi.product_unic_code
 	WHERE	czicd.czic_id = @czic_id

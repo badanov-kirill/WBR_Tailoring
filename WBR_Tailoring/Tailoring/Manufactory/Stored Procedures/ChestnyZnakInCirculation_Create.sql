@@ -13,6 +13,10 @@ AS
 	   	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
 	   			LEFT JOIN	Manufactory.ChestnyZnakInCirculationDetail czicd
 	   				ON	czicd.oczdi_id = oczdi.oczdi_id
+	   			INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+					ON pucczi.oczdi_id = oczdi.oczdi_id
+				INNER JOIN Manufactory.ProductUnicCode puc
+					ON puc.product_unic_code = pucczi.product_unic_code
 	   	WHERE	czicd.oczdi_id IS NULL
 	   			AND	oczdi.oczd_id IS NOT NULL
 	   )
@@ -47,6 +51,8 @@ AS
 				oczdi.oczdi_id
 		FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
 				CROSS JOIN	@tab_out to1
+				INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+					ON pucczi.oczdi_id = oczdi.oczdi_id
 		WHERE	oczdi.oczd_id IS NOT NULL
 				AND	NOT EXISTS (
 				   		SELECT	1
