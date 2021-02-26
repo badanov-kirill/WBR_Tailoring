@@ -1550,6 +1550,8 @@
     <Build Include="Manufactory\Tables\ChestnyZnakInCirculationDetail.sql" />
     <Build Include="Products\Tables\Sertificates.sql" />
     <Build Include="Products\Tables\Sertificates_TNVD.sql" />
+    <Build Include="Manufactory\Tables\ContractorSewCount.sql" />
+    <Build Include="Manufactory\Stored Procedures\ContractorSewCount_SetJob.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

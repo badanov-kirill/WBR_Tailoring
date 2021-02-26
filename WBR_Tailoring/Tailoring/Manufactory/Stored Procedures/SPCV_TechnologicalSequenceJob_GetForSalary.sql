@@ -25,7 +25,7 @@ AS
 			ds.department_name,
 			os.office_name                employee_office_name,
 			CASE 
-			     WHEN sse.sketch_id IS NULL THEN ISNULL(ready.cnt_ready, 0)
+			     WHEN sse.sketch_id IS NULL THEN ISNULL(ready.cnt_ready, 0) + ISNULL(ready_contr.sew_count, 0)
 			     ELSE ISNULL(job_close.sum_close_cnt , 0)
 			END cnt_ready,
 			ISNULL(salary.cnt_salary, 0) cnt_salary,
@@ -83,7 +83,12 @@ AS
 			    	    	 WHERE	puc.operation_id IN (8, 4, 3, 1, 6)
 			    	    	 GROUP BY
 			    	    	 	c.spcvts_id)ready
-				ON	ready.spcvts_id = spcvt.spcvts_id   
+				ON	ready.spcvts_id = spcvt.spcvts_id
+			OUTER APPLY (
+			      	SELECT	SUM(csc.cnt) sew_count
+			      	FROM	Manufactory.ContractorSewCount csc
+			      	WHERE	csc.spcvts_id = spcvt.spcvts_id
+			      ) ready_contr
 			LEFT JOIN	(SELECT	stsjis.stsj_id,
 			    	    	 		SUM(stsjis.cnt) cnt_salary
 			    	    	 FROM	Manufactory.SPCV_TechnologicalSequenceJobInSalary stsjis

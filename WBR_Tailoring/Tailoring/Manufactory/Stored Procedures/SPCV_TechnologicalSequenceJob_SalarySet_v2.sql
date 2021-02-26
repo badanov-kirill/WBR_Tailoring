@@ -98,7 +98,7 @@ AS
 	SET @error_text = (
 	    	SELECT	sj.subject_name + ' ' + an.art_name + ' (' + pa.sa + pan.sa + ') /' + ts.ts_name + '| № ' + CAST(sts.operation_range AS VARCHAR(10)) + ' ' +
 	    	      	ta.ta_name 
-	    	      	+ ' / ' + e.element_name + ' | ' + eq.equipment_name + '. Сдано ' + CAST(ready.cnt_ready AS VARCHAR(10)) + ' меньше, чем перенесено в зп ' +
+	    	      	+ ' / ' + e.element_name + ' | ' + eq.equipment_name + '. Сдано ' + CAST(ISNULL(ready.cnt_ready, 0) + ISNULL(ready_contr.sew_count, 0) AS VARCHAR(10)) + ' меньше, чем перенесено в зп ' +
 	    	      	FORMAT(ISNULL(salary.cnt_salary, '0'), '0.00') 
 	    	      	+ ' и переносится ' + CAST(ISNULL(in_salary.cnt_in_salary, '0') AS VARCHAR(10)) + CHAR(10)
 	    	FROM	Planing.SketchPlanColorVariantTS spcvt   
@@ -124,7 +124,12 @@ AS
 	    			    	    	 WHERE	puc.operation_id IN (8, 4, 3, 1, 6)
 	    			    	    	 GROUP BY
 	    			    	    	 	c.spcvts_id)ready
-	    				ON	ready.spcvts_id = spcvt.spcvts_id   
+	    				ON	ready.spcvts_id = spcvt.spcvts_id
+	    			OUTER APPLY (
+			      					SELECT	SUM(csc.cnt) sew_count
+			      					FROM	Manufactory.ContractorSewCount csc
+			      					WHERE	csc.spcvts_id = spcvt.spcvts_id
+								  ) ready_contr   
 	    			LEFT JOIN	(SELECT		stsj2.sts_id,
 	    									stsj2.spcvts_id,
 	    			    	    	 		SUM(stsjis.cnt) cnt_salary
@@ -157,7 +162,7 @@ AS
 	    				ON	eq.equipment_id = sts.equipment_id
 	    			LEFT JOIN Manufactory.SketchSalaryExecution sse
 	    				ON sse.sketch_id = s.sketch_id
-	    	WHERE	ISNULL(salary.cnt_salary, 0) + ISNULL(in_salary.cnt_in_salary, 0) > ready.cnt_ready
+	    	WHERE	ISNULL(salary.cnt_salary, 0) + ISNULL(in_salary.cnt_in_salary, 0) > ISNULL(ready.cnt_ready, 0) + ISNULL(ready_contr.sew_count, 0)*1.001
 	    			AND sse.sketch_id IS NULL
 	    	FOR XML	PATH('')
 	    )

@@ -72,7 +72,8 @@ AS
 			c.cutting_id,
 			c.pants_id,
 			spcvt.spcvts_id,
-			ISNULL(spcvt.cut_cnt_for_job, 0) cut_cnt_for_job
+			ISNULL(spcvt.cut_cnt_for_job, 0) cut_cnt_for_job,
+			ISNULL(oa_contr.sew_count, 0) contract_sew_cnt
 	FROM	Manufactory.Cutting c   
 			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
 				ON	spcvt.spcvts_id = c.spcvts_id   
@@ -85,6 +86,11 @@ AS
 			      	FROM	Manufactory.CuttingActual ca
 			      	WHERE	ca.cutting_id = c.cutting_id
 			      ) oa_ac
+			OUTER APPLY (
+			      	SELECT	SUM(csc.cnt) sew_count
+			      	FROM	Manufactory.ContractorSewCount csc
+			      	WHERE	csc.spcvts_id = spcvt.spcvts_id
+			      ) oa_contr
 	WHERE	spcv.spcv_id = @spcv_id
 			AND	spcv.is_deleted = 0
 	
