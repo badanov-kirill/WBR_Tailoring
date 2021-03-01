@@ -51,8 +51,8 @@ AS
 				b.brand_name,
 				ISNULL(sj.subject_name_sf, sj.subject_name) subject_name,
 				pa.sa + pan.sa sa,
-				ts.ts_name,
-				ISNULL(t.tnved_cod, '6106000000') tnved_cod,
+				ts.ts_name,				
+				ISNULL(t.tnved_cod, '6106200000') tnved_cod,
 				sj.subject_gs1_id, 
 				sj.block_gs1,
 				ISNULL(k.gs1_id, '1200000002') kind_gs1_id,
@@ -61,9 +61,9 @@ AS
 				                              WHEN oal.x IS NOT NULL THEN CHAR(10) + '  Подкладка: ' + STUFF(oal.x, 1, 2, '')
 				                              ELSE ''
 				                         END consists,
-				t2.tnved_cod tnved_cod2,
-				t3.tnved_cod tnved_cod3,
-				t4.tnved_cod tnved_cod4,
+				CASE WHEN t.tnved_cod IS NULL THEN '6106' ELSE t2.tnved_cod END tnved_cod2,
+				CASE WHEN t.tnved_cod IS NULL THEN '61' ELSE t3.tnved_cod END tnved_cod3,
+				CASE WHEN t.tnved_cod IS NULL THEN '[60-70]' ELSE t4.tnved_cod END tnved_cod4,
 				t5.tnved_cod tnved_cod5,
 				t6.tnved_cod tnved_cod6
 		FROM	@tab pfe   
@@ -152,4 +152,5 @@ AS
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
 		WITH LOG;
-	END CATCH 
+	END CATCH
+GO

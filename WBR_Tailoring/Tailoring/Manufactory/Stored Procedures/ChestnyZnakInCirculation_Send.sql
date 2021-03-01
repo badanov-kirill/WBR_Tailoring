@@ -10,7 +10,7 @@ AS
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN czic.czic_id IS NULL THEN 'Документа с кодом ' + CAST(v.czic_id AS VARCHAR(10)) + ' не существует.'
-	      	                   WHEN czic.dt_send IS NOT NULL THEN 'Документ с кодом ' + CAST(v.czic_id AS VARCHAR(10)) + ' уже отправлен в ЧЗ.'
+	      	                   --WHEN czic.dt_send IS NOT NULL THEN 'Документ с кодом ' + CAST(v.czic_id AS VARCHAR(10)) + ' уже отправлен в ЧЗ.'
 	      	                   ELSE NULL
 	      	              END
 	FROM	(VALUES(@czic_id))v(czic_id)   

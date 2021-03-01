@@ -51,7 +51,7 @@ AS
 			      	ORDER BY
 			      		sert.finish_dt DESC
 			      )     oas
-			LEFT JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+			INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 				ON pucczi.oczdi_id = oczdi.oczdi_id
 			LEFT JOIN Manufactory.ProductUnicCode puc
 				ON puc.product_unic_code = pucczi.product_unic_code
