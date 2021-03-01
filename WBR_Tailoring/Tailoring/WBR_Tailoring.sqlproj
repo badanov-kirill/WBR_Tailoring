@@ -1552,6 +1552,9 @@
     <Build Include="Products\Tables\Sertificates_TNVD.sql" />
     <Build Include="Manufactory\Tables\ContractorSewCount.sql" />
     <Build Include="Manufactory\Stored Procedures\ContractorSewCount_SetJob.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakInCirculation_Send.sql" />
+    <Build Include="WBApi\Tables\SubjectNomenclatureFields.sql" />
+    <Build Include="WBApi\Tables\SubjectNomenclatureVariationFields.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

@@ -40,7 +40,9 @@ AS
 		UPDATE	stsj
 		SET 	close_cnt             = dt.close_cnt,
 				close_dt              = @dt,
-				close_employee_id     = @employee_id
+				close_employee_id     = @employee_id,
+				salary_close_dt		  = NULL,
+				salary_close_employee_id = NULL
 		FROM	Manufactory.SPCV_TechnologicalSequenceJob stsj
 				INNER JOIN	@data_tab dt
 					ON	dt.stsj_id = stsj.stsj_id
