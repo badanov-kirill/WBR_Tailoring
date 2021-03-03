@@ -39,7 +39,7 @@ AS
 			ISNULL(s.imt_name, sj.subject_name_sf) imt_name,
 			ISNULL(pa.sa, s.sa + CAST(pa.model_number AS VARCHAR(10)) + '/') sa_imt,
 			STUFF(con.x, 1, 2, '')        contents,
-			tsz.ts_name                   ao_ts_name,
+			tsz.rus_name                   ao_ts_name,
 			t.tnved_cod,
 			s.ct_id,
 			oa_ct.consist_type_id,
@@ -119,7 +119,7 @@ AS
 			AND	pan.is_deleted = 0	  
 	
 	SELECT	pan.pan_id,
-			ts.ts_name,
+			ts.rus_name ts_name,
 			e.ean
 	FROM	Products.ProdArticleNomenclature pan   
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants

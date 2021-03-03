@@ -1557,6 +1557,9 @@
     <Build Include="WBApi\Tables\SubjectNomenclatureVariationFields.sql" />
     <Build Include="RefBook\Tables\FiscalAccumulator.sql" />
     <Build Include="RefBook\Tables\CashReg.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOut.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOutDetail.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOutDetailFail.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
