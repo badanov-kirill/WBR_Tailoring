@@ -1557,9 +1557,14 @@
     <Build Include="WBApi\Tables\SubjectNomenclatureVariationFields.sql" />
     <Build Include="RefBook\Tables\FiscalAccumulator.sql" />
     <Build Include="RefBook\Tables\CashReg.sql" />
-    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOut.sql" />
-    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOutDetail.sql" />
-    <Build Include="Manufactory\Tables\ChestnyZnakInCirculationOutDetailFail.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakOutCirculation.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakOutCirculationDetail.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakOutCirculationDetailFail.sql" />
+    <Build Include="Manufactory\User Defined Types\ChestnyZnakCirculationTab.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakCirculationt_Set.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculation.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetail.sql" />
+    <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetailFail.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
