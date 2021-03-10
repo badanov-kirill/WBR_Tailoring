@@ -9,8 +9,9 @@ AS
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
 	
-	DECLARE @doc_out AS TABLE (czoc_id INT, dt_operation DATE)
-	DECLARE @doc_return AS TABLE (czrc_id INT, dt_operation DATE)
+	DECLARE @doc_out AS TABLE (czoc_id INT, fiscal_num INT, cr_id INT, fa_id INT, fiscal_dt DATE)	
+	
+	DECLARE @doc_return AS TABLE (czrc_id INT, fiscal_num INT, cr_id INT, fa_id INT, fiscal_dt DATE)
 	DECLARE @detail_tab AS TABLE (
 	        	operation_type CHAR(1),
 	        	oczdi_id INT,
@@ -100,7 +101,7 @@ AS
 			price_with_vat
 		)
 	SELECT	DISTINCT
-			d.operation_type,
+	      	d.operation_type,
 			oczdi.oczdi_id,
 			d.gtin01,
 			d.serial21,
@@ -117,34 +118,20 @@ AS
 				ON	cr.cr_reg_num = d.cr_name   
 			INNER JOIN	RefBook.FiscalAccumulator fa
 				ON	fa.fa_number = d.fa_name   
-			LEFT JOIN	Manufactory.ChestnyZnakOutCirculationDetail czocd
+			LEFT JOIN	Manufactory.ChestnyZnakOutCirculation czoc
 				ON	d.operation_type = 'O'
-				AND	czocd.fiscal_dt = d.fiscal_dt
-				AND	czocd.oczdi_id = oczdi.oczdi_id
-				AND czocd.fiscal_num = d.fiscal_num    
-			LEFT JOIN	Manufactory.ChestnyZnakOutCirculationDetailFail czocdf
-				ON	d.operation_type = 'O'
-				AND	czocdf.fiscal_dt = d.fiscal_dt
-				AND	czocdf.gtin01 = d.gtin01
-				AND	czocdf.serial21 = d.serial21
-				AND	oczdi.oczdi_id IS NULL 
-				AND czocdf.fiscal_num = d.fiscal_num  
-			LEFT JOIN	Manufactory.ChestnyZnakReturnCirculationDetail czrcd
+				AND	czoc.fiscal_dt = d.fiscal_dt
+				AND	czoc.fiscal_num = d.fiscal_num
+				AND czoc.fa_id   = fa.fa_id
+				AND czoc.cr_id   = cr.cr_id
+			LEFT JOIN	Manufactory.ChestnyZnakReturnCirculation czrc
 				ON	d.operation_type = 'R'
-				AND	czrcd.fiscal_dt = d.fiscal_dt
-				AND	czrcd.oczdi_id = oczdi.oczdi_id
-				AND czrcd.fiscal_num = d.fiscal_num   
-			LEFT JOIN	Manufactory.ChestnyZnakReturnCirculationDetailFail czrcdf
-				ON	d.operation_type = 'R'
-				AND	czrcdf.fiscal_dt = d.fiscal_dt
-				AND	czrcdf.gtin01 = d.gtin01
-				AND	czrcdf.serial21 = d.serial21
-				AND	oczdi.oczdi_id IS NULL
-				AND czrcdf.fiscal_num = d.fiscal_num
-	WHERE	czocd.oczdi_id IS NULL
-			AND	czocdf.gtin01 IS NULL
-			AND	czrcd.oczdi_id IS NULL
-			AND	czocdf.gtin01 IS NULL
+				AND	czrc.fiscal_dt = d.fiscal_dt
+				AND	czrc.fiscal_num = d.fiscal_num   
+				AND czrc.fa_id   = fa.fa_id
+				AND czrc.cr_id   = cr.cr_id
+	WHERE	czoc.czoc_id IS NULL
+			AND	czrc.czrc_id IS NULL
 	
 	IF NOT EXISTS (
 	   	SELECT	1
@@ -162,41 +149,59 @@ AS
 			(
 				employee_id,
 				dt_create,
-				dt_operation
-			)OUTPUT	INSERTED.czrc_id,
-			 		INSERTED.dt_operation
-			 INTO	@doc_return (
-			 		czrc_id,
-			 		dt_operation
-			 	)
-		SELECT	DISTINCT        @employee_id,
-				@dt,
-				dt.fiscal_dt
-		FROM	@detail_tab     dt
-		WHERE	dt.operation_type = 'R'
-		ORDER BY
-			dt.fiscal_dt ASC
-			
-		INSERT INTO Manufactory.ChestnyZnakReturnCirculationDetail
-			(
-				czrc_id,
-				oczdi_id,
 				fiscal_num,
 				cr_id,
 				fa_id,
 				fiscal_dt,
+				dt_send
+			)OUTPUT	INSERTED.czrc_id,
+			 		INSERTED.fiscal_num,
+			 		INSERTED.cr_id,
+			 		INSERTED.fa_id,
+			 		INSERTED.fiscal_dt
+			 INTO	@doc_return (
+			 		czrc_id,
+			 		fiscal_num,
+			 		cr_id,
+			 		fa_id,
+			 		fiscal_dt
+			 	)
+		SELECT	@employee_id,
+				@dt,
+				dt.fiscal_num,
+				dt.cr_id,
+				dt.fa_id,
+				dt.fiscal_dt,
+				CASE 
+				     WHEN MAX(dt.oczdi_id) IS NULL THEN @dt
+				     ELSE NULL
+				END
+		FROM	@detail_tab dt
+		WHERE	dt.operation_type = 'R'
+		GROUP BY
+			dt.fiscal_num,
+			dt.cr_id,
+			dt.fa_id,
+			dt.fiscal_dt
+		ORDER BY
+			dt.fiscal_dt ASC,
+			dt.fiscal_num
+		
+		INSERT INTO Manufactory.ChestnyZnakReturnCirculationDetail
+			(
+				czrc_id,
+				oczdi_id,
 				price_with_vat
 			)
 		SELECT	dot.czrc_id,
 				do.oczdi_id,
-				do.fiscal_num,
-				do.cr_id,
-				do.fa_id,
-				do.fiscal_dt,
 				do.price_with_vat
 		FROM	@detail_tab do   
 				INNER JOIN	@doc_return dot
-					ON	dot.dt_operation = do.fiscal_dt
+					ON	dot.fiscal_dt = do.fiscal_dt
+					AND	dot.fiscal_num = do.fiscal_num
+					AND	dot.cr_id = do.cr_id
+					AND	dot.fa_id = do.fa_id
 		WHERE	do.operation_type = 'R'
 				AND	do.oczdi_id IS NOT NULL
 		
@@ -206,65 +211,78 @@ AS
 				czrc_id,
 				gtin01,
 				serial21,
-				fiscal_num,
-				cr_id,
-				fa_id,
-				fiscal_dt,
 				price_with_vat
 			)
 		SELECT	dot.czrc_id,
 				do.gtin01,
 				do.serial21,
-				do.fiscal_num,
-				do.cr_id,
-				do.fa_id,
-				do.fiscal_dt,
 				do.price_with_vat
 		FROM	@detail_tab do   
 				INNER JOIN	@doc_return dot
-					ON	dot.dt_operation = do.fiscal_dt
+					ON	dot.fiscal_dt = do.fiscal_dt
+					AND	dot.fiscal_num = do.fiscal_num
+					AND	dot.cr_id = do.cr_id
+					AND	dot.fa_id = do.fa_id
 		WHERE	do.operation_type = 'R'
 				AND	do.oczdi_id IS NULL	
-			
+		
 		INSERT INTO Manufactory.ChestnyZnakOutCirculation
 			(
 				employee_id,
 				dt_create,
-				dt_operation
+				fiscal_num,
+				cr_id,
+				fa_id,
+				fiscal_dt,
+				dt_send
 			)OUTPUT	INSERTED.czoc_id,
-			 		INSERTED.dt_operation
+			 		INSERTED.fiscal_num,
+			 		INSERTED.cr_id,
+			 		INSERTED.fa_id,
+			 		INSERTED.fiscal_dt
 			 INTO	@doc_out (
 			 		czoc_id,
-			 		dt_operation
+			 		fiscal_num,
+			 		cr_id,
+			 		fa_id,
+			 		fiscal_dt
 			 	)
-		SELECT	DISTINCT        @employee_id,
+		SELECT	@employee_id,
 				@dt,
-				dt.fiscal_dt
-		FROM	@detail_tab     dt
+				dt.fiscal_num,
+				dt.cr_id,
+				dt.fa_id,
+				dt.fiscal_dt,
+				CASE 
+				     WHEN MAX(dt.oczdi_id) IS NULL THEN @dt
+				     ELSE NULL
+				END
+		FROM	@detail_tab dt
 		WHERE	dt.operation_type = 'O'
+		GROUP BY
+			dt.fiscal_num,
+			dt.cr_id,
+			dt.fa_id,
+			dt.fiscal_dt
 		ORDER BY
-			dt.fiscal_dt ASC
+			dt.fiscal_dt ASC,
+			dt.fiscal_num
 		
 		INSERT INTO Manufactory.ChestnyZnakOutCirculationDetail
 			(
 				czoc_id,
 				oczdi_id,
-				fiscal_num,
-				cr_id,
-				fa_id,
-				fiscal_dt,
 				price_with_vat
 			)
 		SELECT	dot.czoc_id,
 				do.oczdi_id,
-				do.fiscal_num,
-				do.cr_id,
-				do.fa_id,
-				do.fiscal_dt,
 				do.price_with_vat
 		FROM	@detail_tab do   
 				INNER JOIN	@doc_out dot
-					ON	dot.dt_operation = do.fiscal_dt
+					ON	dot.fiscal_dt = do.fiscal_dt
+					AND	dot.fiscal_num = do.fiscal_num
+					AND	dot.cr_id = do.cr_id
+					AND	dot.fa_id = do.fa_id
 		WHERE	do.operation_type = 'O'
 				AND	do.oczdi_id IS NOT NULL
 		
@@ -274,23 +292,18 @@ AS
 				czoc_id,
 				gtin01,
 				serial21,
-				fiscal_num,
-				cr_id,
-				fa_id,
-				fiscal_dt,
 				price_with_vat
 			)
 		SELECT	dot.czoc_id,
 				do.gtin01,
 				do.serial21,
-				do.fiscal_num,
-				do.cr_id,
-				do.fa_id,
-				do.fiscal_dt,
 				do.price_with_vat
 		FROM	@detail_tab do   
 				INNER JOIN	@doc_out dot
-					ON	dot.dt_operation = do.fiscal_dt
+					ON	dot.fiscal_dt = do.fiscal_dt
+					AND	dot.fiscal_num = do.fiscal_num
+					AND	dot.cr_id = do.cr_id
+					AND	dot.fa_id = do.fa_id
 		WHERE	do.operation_type = 'O'
 				AND	do.oczdi_id IS NULL
 		

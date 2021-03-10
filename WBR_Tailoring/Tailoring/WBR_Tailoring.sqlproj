@@ -10,8 +10,7 @@
     <ProjectGuid>{df36fc29-f604-4575-b83c-bfc77463a130}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql120DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>Tailoring</RootNamespace>
     <AssemblyName>Tailoring</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
@@ -50,7 +49,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -1565,6 +1563,9 @@
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculation.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetail.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetailFail.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakOutCirculation_GetList.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakOutCirculationDetail_Get.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakOutCirculation_Send.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
