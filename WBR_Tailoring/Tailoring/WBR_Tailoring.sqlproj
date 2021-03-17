@@ -1559,7 +1559,7 @@
     <Build Include="Manufactory\Tables\ChestnyZnakOutCirculationDetail.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakOutCirculationDetailFail.sql" />
     <Build Include="Manufactory\User Defined Types\ChestnyZnakCirculationTab.sql" />
-    <Build Include="Manufactory\Stored Procedures\ChestnyZnakCirculationt_Set.sql" />
+    <Build Include="Manufactory\Stored Procedures\ChestnyZnakCirculation_Set.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculation.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetail.sql" />
     <Build Include="Manufactory\Tables\ChestnyZnakReturnCirculationDetailFail.sql" />
@@ -1569,6 +1569,9 @@
     <Build Include="Manufactory\Stored Procedures\ChestnyZnakReturnCirculation_GetList.sql" />
     <Build Include="Manufactory\Stored Procedures\ChestnyZnakReturnCirculationDetail_Get.sql" />
     <Build Include="Manufactory\Stored Procedures\ChestnyZnakReturnCirculation_Send.sql" />
+    <Build Include="Ozon\Tables\Articles.sql" />
+    <Build Include="Ozon\User Defined Types\ArticlesType.sql" />
+    <Build Include="Ozon\Stored Procedures\Articles_Set.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

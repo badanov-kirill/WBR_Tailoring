@@ -19,7 +19,12 @@ AS
 			t.tnved_cod,
 			pa.sa                 sa_imt,
 			pan.sa                sa_nm,
-			b.brand_name
+			b.brand_name,
+			e.ean,
+			sj.subject_name subject_name,
+			a.art ozon_art,
+			a.ozon_fbo_id,
+			a.price_with_vat ozon_price_with_vat
 	FROM	Logistics.PlanShipmentFinishedProductsPackingBox psfppb   
 			INNER JOIN	Logistics.PackingBoxDetail pbd
 				ON	pbd.packing_box_id = psfppb.packing_box_id   
@@ -42,7 +47,11 @@ AS
 				ON	k.kind_id = s.kind_id   
 			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants.ts_id
-				ON	pants.pants_id = puc.pants_id  
+				ON	pants.pants_id = puc.pants_id 
+			LEFT JOIN Manufactory.EANCode e
+				ON e.pants_id = pants.pants_id 
+			LEFT JOIN Ozon.Articles a
+				ON a.pants_id = pants.pants_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -52,7 +61,7 @@ AS
 			      	ORDER BY
 			      		pac.percnt DESC
 			      ) oa_ct     
-	LEFT JOIN	Products.TNVED_Settigs tnvds   
+			LEFT JOIN	Products.TNVED_Settigs tnvds   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id
 				ON	tnvds.subject_id = s.subject_id
@@ -61,6 +70,7 @@ AS
 	WHERE	psfppb.sfp_id = @sfp_id
 	GROUP BY
 		ISNULL(s.imt_name, sj.subject_name_sf),
+		sj.subject_name,
 		pa.sa,
 		pan.sa,
 		ts.ts_name,
@@ -68,7 +78,11 @@ AS
 		pbd.barcode,
 		ts.ts_name,
 		t.tnved_cod,
-		b.brand_name
+		b.brand_name,
+		e.ean,
+		a.art,
+		a.ozon_fbo_id,
+		a.price_with_vat
 	ORDER BY
 		b.brand_name,
 		pa.sa,
@@ -118,3 +132,39 @@ AS
 		wtb.box_name,
 		psfppb.packing_box_id,
 		pbd.barcode
+		
+	SELECT	pa.sa + pan.sa     sa,
+			ISNULL(s.imt_name, sj.subject_name_sf) imt_name,
+			b.brand_name,
+			ts.ts_name,
+			e.ean,
+			oczdi.gtin01,
+			oczdi.serial21,
+			oczdi.intrnal91,
+			oczdi.intrnal92,
+			oczdi.oczdi_id
+	FROM	Logistics.ShipmentFinishedProductsChestnyZnak sfpcz   
+			INNER JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
+				ON	oczdi.oczdi_id = sfpcz.oczdi_id   
+			INNER JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
+				ON	pucczi.oczdi_id = oczdi.oczdi_id   
+			INNER JOIN	Manufactory.ProductUnicCode puc
+				ON	puc.product_unic_code = pucczi.product_unic_code   
+			LEFT JOIN	Manufactory.EANCode e
+				ON	e.pants_id = puc.pants_id   
+			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
+				ON	pants.pants_id = puc.pants_id   
+			INNER JOIN	Products.ProdArticleNomenclature pan
+				ON	pan.pan_id = pants.pan_id   
+			INNER JOIN	Products.ProdArticle pa
+				ON	pa.pa_id = pan.pa_id   
+			INNER JOIN	Products.Sketch s
+				ON	s.sketch_id = pa.sketch_id   
+			INNER JOIN	Products.[Subject] sj
+				ON	sj.subject_id = s.subject_id   
+			INNER JOIN	Products.Brand b
+				ON	b.brand_id = pa.brand_id   
+			INNER JOIN	Products.TechSize ts
+				ON	ts.ts_id = pants.ts_id
+	WHERE	sfpcz.sfp_id = @sfp_id
+	  
