@@ -35,7 +35,7 @@ AS
 			LEFT JOIN Manufactory.OrderChestnyZnakDetailItem oczdi
 			ON oczdi.oczdi_id = v.oczdi_id
 			LEFT JOIN Logistics.ShipmentFinishedProductsChestnyZnak sfpcz
-			ON v.oczdi_id = oczdi.oczdi_id
+			ON v.oczdi_id = sfpcz.oczdi_id
 	
 	IF @error_text IS NOT NULL
 	BEGIN
