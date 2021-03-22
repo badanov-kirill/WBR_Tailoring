@@ -26,7 +26,8 @@
 	@plan_site_dt DATE = NULL,
 	@is_china_sample BIT = 0,
 	@construction_sale BIT = 0,
-	@subject_id INT = NULL
+	@subject_id INT = NULL,
+	@key_word VARCHAR(400) = NULL
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -37,7 +38,8 @@ AS
 	DECLARE @with_log BIT = 1
 	DECLARE @state_create TINYINT = 1 --Создан
 	DECLARE @state_tech_design_approve TINYINT = 3 --Технический эскиз утвержден дизайнером	
-	DECLARE @brand_id INT 
+	DECLARE @brand_id INT
+	DECLARE @kw_id INT 
 	
 	DECLARE @sketch_output TABLE 
 	        (
@@ -261,6 +263,20 @@ AS
 		RETURN
 	END
 	
+	IF @key_word IS NOT NULL
+	BEGIN
+		INSERT INTO Products.KeyWords
+		(
+			key_word
+		)
+		SELECT @key_word
+		WHERE NOT EXISTS (SELECT 1 FROM Products.KeyWords kw WHERE kw.key_word = @key_word)
+		
+		SELECT @kw_id =kw.kw_id
+		FROM Products.KeyWords kw
+		WHERE kw.key_word = @key_word
+	END
+	
 	BEGIN TRY
 		BEGIN TRANSACTION
 		
@@ -294,7 +310,8 @@ AS
 				season_local_id = ISNULL(@season_local_id, season_local_id),
 				plan_site_dt = ISNULL(@plan_site_dt, plan_site_dt),
 				is_china_sample = @is_china_sample,
-				subject_id = ISNULL(@subject_id, subject_id)
+				subject_id = ISNULL(@subject_id, subject_id),
+				kw_id = @kw_id
 				OUTPUT	INSERTED.sketch_id,
 						INSERTED.is_deleted,
 						INSERTED.st_id,

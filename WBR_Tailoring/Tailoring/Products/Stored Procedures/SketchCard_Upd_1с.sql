@@ -23,7 +23,8 @@
 	@plan_site_dt DATE = NULL,
 	@is_china_sample BIT = 0,
 	@construction_sale BIT = 0,
-	@subject_id INT = NULL
+	@subject_id INT = NULL,
+	@key_word VARCHAR(400) = NULL
 AS
 	SET NOCOUNT ON
 	DECLARE @content_list Products.ContentList 
@@ -81,4 +82,5 @@ AS
 		 @plan_site_dt = @plan_site_dt,
 		 @is_china_sample = @is_china_sample,
 		 @construction_sale = @construction_sale,
-		 @subject_id = @subject_id
+		 @subject_id = @subject_id,
+		 @key_word = @key_word

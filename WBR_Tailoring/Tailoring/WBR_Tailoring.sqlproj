@@ -1572,6 +1572,7 @@
     <Build Include="Ozon\Tables\Articles.sql" />
     <Build Include="Ozon\User Defined Types\ArticlesType.sql" />
     <Build Include="Ozon\Stored Procedures\Articles_Set.sql" />
+    <Build Include="Products\Tables\KeyWords.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

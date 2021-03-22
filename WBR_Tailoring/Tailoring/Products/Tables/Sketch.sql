@@ -52,6 +52,7 @@
     [days_for_purchase]                   SMALLINT       NULL,
     [sls_id]                              TINYINT        NULL,
     [fist_package_dt]                     DATETIME2 (0)  NULL,
+    [kw_id]                               INT            NULL,
     CONSTRAINT [PK_Sketch] PRIMARY KEY CLUSTERED ([sketch_id] ASC),
     CONSTRAINT [FK_Sketch_art_name_id] FOREIGN KEY ([art_name_id]) REFERENCES [Products].[ArtName] ([art_name_id]),
     CONSTRAINT [FK_Sketch_base_sketch_id] FOREIGN KEY ([base_sketch_id]) REFERENCES [Products].[Sketch] ([sketch_id]),
@@ -68,7 +69,8 @@
     CONSTRAINT [FK_Sketch_st_id] FOREIGN KEY ([st_id]) REFERENCES [Products].[SketchType] ([st_id]),
     CONSTRAINT [FK_Sketch_style_id] FOREIGN KEY ([style_id]) REFERENCES [Products].[Style] ([style_id]),
     CONSTRAINT [FK_Sketch_subject_id] FOREIGN KEY ([subject_id]) REFERENCES [Products].[Subject] ([subject_id]),
-    CONSTRAINT [FK_Sketch_wb_size_group_id] FOREIGN KEY ([wb_size_group_id]) REFERENCES [Products].[WbSizeGroup] ([wb_size_group_id])
+    CONSTRAINT [FK_Sketch_wb_size_group_id] FOREIGN KEY ([wb_size_group_id]) REFERENCES [Products].[WbSizeGroup] ([wb_size_group_id]),
+    CONSTRAINT [FK_Sketch_kw_id] FOREIGN KEY (kw_id) REFERENCES [Products].[KeyWords] ([kw_id])
 );
 
 

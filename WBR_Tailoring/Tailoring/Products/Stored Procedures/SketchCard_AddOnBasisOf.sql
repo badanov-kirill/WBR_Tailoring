@@ -28,6 +28,7 @@ AS
 	DECLARE @status_id INT = 1
 	DECLARE @is_deleted BIT = 0
 	DECLARE @pa_id INT
+	DECLARE @kw_id INT
 	
 	DECLARE @art_name_output TABLE(art_name_id INT)
 	DECLARE @art_name_id INT
@@ -142,7 +143,8 @@ AS
 			@direction_id                = s.direction_id,
 			@imt_name                    = s.imt_name,
 			@season_art                  = LEFT(sn.season_name, 1),
-			@pa_id                       = oa_pa.pa_id
+			@pa_id                       = oa_pa.pa_id,
+			@kw_id						 = s.kw_id
 	FROM	(VALUES(@base_sketch_id))v(sketch_id)   
 			LEFT JOIN	Products.Sketch s   
 			INNER JOIN	Products.Season sn
@@ -222,7 +224,8 @@ AS
 		    ct_id,
 		    direction_id,
 		    imt_name,
-		    base_sketch_id
+		    base_sketch_id,
+		    kw_id
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -306,7 +309,8 @@ AS
 				@ct_id,
 				@direction_id,
 				@imt_name,
-				@base_sketch_id
+				@base_sketch_id,
+				@kw_id
 		FROM	(SELECT	ISNULL(MAX(s.model_number) + 1, 200) model_number
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id

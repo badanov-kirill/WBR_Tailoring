@@ -49,7 +49,8 @@ AS
 			CASE 
 			     WHEN scs.sketch_id IS NOT NULL THEN 1
 			     ELSE 0
-			END construction_sale
+			END construction_sale,
+			kw.key_word
 	FROM	Products.Sketch s   
 			INNER JOIN	Products.SketchStatus ss
 				ON	ss.ss_id = s.ss_id   
@@ -73,6 +74,8 @@ AS
 				ON	wsg.wb_size_group_id = s.wb_size_group_id
 			LEFT JOIN Products.SketchConstructionSale scs
 				ON scs.sketch_id = s.sketch_id
+			LEFT JOIN Products.KeyWords kw
+				ON kw.kw_id = s.kw_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) os.office_name
 			      	FROM	Planing.SketchPlan sp   
