@@ -1573,6 +1573,9 @@
     <Build Include="Ozon\User Defined Types\ArticlesType.sql" />
     <Build Include="Ozon\Stored Procedures\Articles_Set.sql" />
     <Build Include="Products\Tables\KeyWords.sql" />
+    <Build Include="Wildberries\Tables\ProdArticleForWB.sql" />
+    <Build Include="Wildberries\Tables\ProdArticleForWBError.sql" />
+    <Build Include="Wildberries\Tables\ProdArticleNomenclatureForWB.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
