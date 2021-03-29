@@ -108,6 +108,8 @@ GO
 CREATE SCHEMA [Synchro]
     AUTHORIZATION [dbo];
 
+
+
 GO
 CREATE SCHEMA [SyncFinance]
     AUTHORIZATION [dbo];
@@ -128,6 +130,8 @@ CREATE SCHEMA [Wildberries]
 GO
 CREATE SCHEMA [Ozon]
     AUTHORIZATION [dbo];
+
+
 
 
     

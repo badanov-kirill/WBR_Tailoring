@@ -43,8 +43,8 @@ AS
 	      	                        ' в строке номер ' + CAST(d.id AS VARCHAR(10))
 	      	                   WHEN ISNULL(d.ozon_fbo_id, 0) = 0 THEN 'Есть строка с не валидным ozon_fbo_id ' + CAST(d.ozon_fbo_id AS VARCHAR(10)) +
 	      	                        ' в строке номер ' + CAST(d.id AS VARCHAR(10))
-	      	                   WHEN ISNULL(d.ozon_fbs_id, 0) = 0 THEN 'Есть строка с не валидным ozon_fbs_id ' + CAST(d.ozon_fbs_id AS VARCHAR(10)) +
-	      	                        ' в строке номер ' + CAST(d.id AS VARCHAR(10))
+	      	                   --WHEN ISNULL(d.ozon_fbs_id, 0) = 0 THEN 'Есть строка с не валидным ozon_fbs_id ' + CAST(d.ozon_fbs_id AS VARCHAR(10)) +
+	      	                   --     ' в строке номер ' + CAST(d.id AS VARCHAR(10))
 	      	                   WHEN ISNULL(d.price_with_vat, 0) = 0 THEN 'Есть строка с не валидной цоной ' + CAST(d.price_with_vat AS VARCHAR(10)) +
 	      	                        ' в строке номер ' + CAST(d.id AS VARCHAR(10))
 	      	                   WHEN d.pants_id IS NULL AND d.ean IS NOT NULL THEN 'Есть строка с чужим ean ' + d.ean +

@@ -2,7 +2,8 @@
 	@pa_id INT
 AS
 	SET NOCOUNT ON
-	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
+	SET XACT_ABORT ON
 	
 	IF EXISTS (
 	   	SELECT	1
@@ -27,6 +28,37 @@ AS
 	    RETURN
 	END
 	
+	DECLARE @tab TABLE (pan_id INT)
+	DECLARE @dt DATETIME2(0) = GETDATE()
+
+	BEGIN TRY
+	
+;
+	MERGE Wildberries.ProdArticleForWBCnt t
+	USING (
+	      	SELECT	@pa_id pa_id
+	      ) s(pa_id)
+			ON s.pa_id = t.pa_id
+	WHEN MATCHED THEN 
+	     UPDATE	
+	     SET 	cnt_save     = cnt_save + 1,
+	     		dt_save      = @dt
+	WHEN NOT MATCHED THEN 
+	     INSERT
+	     	(
+	     		pa_id,
+	     		cnt_save,
+	     		dt,
+	     		dt_save
+	     	)
+	     VALUES
+	     	(
+	     		@pa_id,
+	     		1,
+	     		@dt,
+	     		@dt
+	     	);
+	
 	SELECT	pa.pa_id,
 			ISNULL(pa.descr, s.descr)     descr,
 			b.brand_name,
@@ -43,7 +75,8 @@ AS
 			t.tnved_cod,
 			s.ct_id,
 			oa_ct.consist_type_id,
-			'Россия' country_name
+			'Россия' country_name,
+			kw.key_word
 	FROM	Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id   
@@ -68,7 +101,9 @@ AS
 			LEFT JOIN	Products.[Subject] sj
 				ON	sj.subject_id = s.subject_id   
 			LEFT JOIN	Products.TechSize tsz
-				ON	tsz.ts_id = pa.ao_ts_id   
+				ON	tsz.ts_id = pa.ao_ts_id 
+			LEFT JOIN Products.KeyWords kw
+				ON kw.kw_id = s.kw_id  
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -116,7 +151,12 @@ AS
 			      	FOR XML	PATH('')
 			      ) artcol(x)
 	WHERE	pan.pa_id = @pa_id
-			AND	pan.is_deleted = 0	  
+			AND	pan.is_deleted = 0	
+			AND NOT EXISTS(
+			              	SELECT	1
+			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
+			              	WHERE	panfw.pan_id = pan.pan_id
+			              )  
 	
 	SELECT	pan.pan_id,
 			ts.rus_name ts_name,
@@ -158,3 +198,20 @@ AS
 			AND	ao.isdeleted = 0
 	ORDER BY aop.ao_name, aop.ao_id
 	
+	END TRY
+	BEGIN CATCH
+		IF @@TRANCOUNT > 0
+		    ROLLBACK TRANSACTION
+		
+		
+		DECLARE @ErrNum INT = ERROR_NUMBER();
+		DECLARE @estate INT = ERROR_STATE();
+		DECLARE @esev INT = ERROR_SEVERITY();
+		DECLARE @Line INT = ERROR_LINE();
+		DECLARE @Mess VARCHAR(MAX) = CHAR(10) + ISNULL('Процедура: ' + ERROR_PROCEDURE(), '') 
+		        + CHAR(10) + ERROR_MESSAGE();
+		
+		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
+		WITH LOG;
+	END CATCH
+GO
