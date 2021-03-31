@@ -1,15 +1,17 @@
-﻿CREATE PROCEDURE [Wildberries].[ProdArticleForWB_GetForSend]
+﻿CREATE PROCEDURE [Wildberries].[ProdArticleForWB_GetSave]
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	
-	SELECT	pafw.pa_id,
+	SELECT TOP(500)	pafw.pa_id,
 			CAST(pafw.dt AS DATETIME)     dt,
 			b.brand_name,
 			sj.subject_name,
 			an.art_name,
 			pa.sa,
-			oasa.x                        sa_nms
+			oasa.x                        sa_nms,
+			dbo.bin2uid(pafw.imt_uid)     imt_uid,
+			CAST(pafw.send_dt AS DATETIME) send_dt
 	FROM	Wildberries.ProdArticleForWB pafw   
 			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pafw.pa_id   
@@ -27,5 +29,7 @@ AS
 			      	WHERE	pan.pa_id = pa.pa_id
 			      	FOR XML	PATH('')
 			      ) oasa(x)
-	WHERE	pafw.send_dt IS NULL
-			AND	ISNULL(pafw.is_error, 0) = 0 
+	WHERE	pafw.send_dt IS NOT NULL
+			AND	pafw.imt_uid IS NOT       NULL
+	ORDER BY
+		pafw.send_dt DESC

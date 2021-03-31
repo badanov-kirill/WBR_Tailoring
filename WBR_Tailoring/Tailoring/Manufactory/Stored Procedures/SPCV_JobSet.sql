@@ -98,7 +98,7 @@ AS
 			      	FROM	@data_tab dt   
 			      			LEFT JOIN	Manufactory.SPCV_TechnologicalSequenceJob stsj
 			      				ON	stsj.sts_id = dt.sts_id
-			      				AND	stsj.employee_id = dt.employee_id
+			      				AND	stsj.job_employee_id = dt.employee_id
 			      				AND	stsj.spcvts_id = dt.spcvts_id
 			      	WHERE	dt.spcvts_id = spcvt.spcvts_id
 			      			AND	dt.sts_id = sts.sts_id

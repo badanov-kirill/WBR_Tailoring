@@ -14,6 +14,7 @@ AS
 	DECLARE @order_chestny_znak_out TABLE (ocz_id INT, order_num INT)
 	DECLARE @count_spcv_cz INT
 	DECLARE @season_local_id INT
+	DECLARE @pa_tab_for_wb TABLE(pa_id INT)
 	
 	DECLARE @sketch_tab TABLE (sketch_id INT, cutting_cnt SMALLINT, amount_rm DECIMAL(9, 2), amount_cutting     DECIMAL(9, 2))
 	DECLARE @proc_id INT	
@@ -345,6 +346,23 @@ AS
  			INNER JOIN	cte c
  				ON	sncz.spcvts_id = c.spcvts_id	
 	
+	
+	INSERT INTO @pa_tab_for_wb
+		(
+			pa_id
+		)
+	SELECT	pa.pa_id
+	FROM	Products.ProdArticle pa
+	WHERE	EXISTS (
+	     		SELECT	1
+	     		FROM	Products.ProdArticleNomenclature pan   
+	     				INNER JOIN	@spcv_tab st
+	     					ON	st.pan_id = pan.pan_id
+	     		WHERE	pan.pa_id = pa.pa_id
+	     				AND	pan.nm_id IS NULL
+	     	)
+
+	
 	BEGIN TRY
 		BEGIN TRANSACTION 
 		
@@ -527,6 +545,40 @@ AS
 		FROM	Products.ProdArticleNomenclature pan
 				INNER JOIN	@spcv_tab st
 					ON	st.pan_id = pan.pan_id 
+					
+;
+		WITH cte_target AS
+			(
+				SELECT	pafw.pa_id,
+						pafw.dt,
+						pafw.send_dt,
+						pafw.imt_uid,
+						pafw.is_error,
+						pafw.load_nm_dt
+				FROM	Wildberries.ProdArticleForWB pafw   
+						INNER JOIN	@pa_tab_for_wb ptfw
+							ON	ptfw.pa_id = pafw.pa_id
+			) 
+		MERGE cte_target t
+		USING @pa_tab_for_wb s
+				ON s.pa_id = t.pa_id
+		WHEN MATCHED AND (t.send_dt IS NOT NULL OR t.load_nm_dt IS NOT NULL) THEN 
+		     UPDATE	
+		     SET 	send_dt        = NULL,
+		     		load_nm_dt     = NULL,
+		     		dt             = @dt
+		WHEN NOT MATCHED THEN 
+		     INSERT
+		     	(
+		     		pa_id,
+		     		dt
+		     	)
+		     VALUES
+		     	(
+		     		s.pa_id,
+		     		@dt
+		     	);			
+		
 					
 		INSERT INTO Synchro.Upload_Covering_BuhVas
 		(

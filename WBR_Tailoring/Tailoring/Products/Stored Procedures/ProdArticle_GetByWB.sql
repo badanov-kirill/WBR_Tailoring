@@ -33,7 +33,7 @@ AS
 
 	BEGIN TRY
 	
-;
+	;
 	MERGE Wildberries.ProdArticleForWBCnt t
 	USING (
 	      	SELECT	@pa_id pa_id
@@ -49,13 +49,17 @@ AS
 	     		pa_id,
 	     		cnt_save,
 	     		dt,
-	     		dt_save
+	     		dt_save,
+	     		cnt_load, 
+	     		dt_load
 	     	)
 	     VALUES
 	     	(
 	     		@pa_id,
 	     		1,
 	     		@dt,
+	     		@dt,
+	     		0,
 	     		@dt
 	     	);
 	
@@ -151,7 +155,9 @@ AS
 			      	FOR XML	PATH('')
 			      ) artcol(x)
 	WHERE	pan.pa_id = @pa_id
-			AND	pan.is_deleted = 0	
+			AND	pan.is_deleted = 0
+			AND pan.nm_id IS NULL
+			AND ISNULL(pan.price_ru, 0) > 0 
 			AND NOT EXISTS(
 			              	SELECT	1
 			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw

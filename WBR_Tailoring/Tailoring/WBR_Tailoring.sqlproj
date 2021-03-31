@@ -1586,6 +1586,11 @@
     <Build Include="Synchro\Stored Procedures\ProductsForEAN_GetForCreate2.sql" />
     <Build Include="Synchro\Stored Procedures\ProductsForEAN_ErrorSet2.sql" />
     <Build Include="Synchro\Stored Procedures\ProductsForEAN_CreateLoad2.sql" />
+    <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_SetError.sql" />
+    <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_GetForLoadNM.sql" />
+    <Build Include="Wildberries\User Defined Types\LoadNomenclatureTab.sql" />
+    <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_LoadNM.sql" />
+    <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_GetSave.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
