@@ -11,5 +11,5 @@ ALTER ROLE [ViewDefinition] ADD MEMBER [WILDBERRIES\sqlreport];
 
 
 GO
-ALTER ROLE [ViewDefinition] ADD MEMBER [badanov];
+ALTER ROLE [ViewDefinition] ADD MEMBER [Badanov];
 

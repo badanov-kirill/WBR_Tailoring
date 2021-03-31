@@ -148,7 +148,7 @@ AS
 			OUTER APPLY (
 			      	SELECT	'; ' + c.color_name
 			      	FROM	Products.ProdArticleNomenclatureColor panc   
-			      			INNER JOIN	products.Color c
+			      			INNER JOIN	Products.Color c
 			      				ON	c.color_cod = panc.color_cod
 			      	WHERE	panc.pan_id = pan.pan_id
 			      	AND panc.is_main = 0

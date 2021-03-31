@@ -38,7 +38,7 @@ AS
 				ON	tnvds.subject_id = s.subject_id
 				AND	tnvds.ct_id = s.ct_id
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
-			LEFT JOIN	products.TNVED t
+			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id   
 			OUTER APPLY (
 			      	SELECT	TOP(1) sert.sertificate_type,

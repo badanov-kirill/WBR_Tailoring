@@ -17,7 +17,7 @@ AS
 				ON	pa.pa_id = pafw.pa_id   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id   
-			INNER JOIN	products.Brand b
+			INNER JOIN	Products.Brand b
 				ON	b.brand_id = pa.brand_id   
 			INNER JOIN	Products.ArtName an
 				ON	an.art_name_id = s.art_name_id   
