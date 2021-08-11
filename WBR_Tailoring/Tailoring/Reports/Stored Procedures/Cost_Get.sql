@@ -6,10 +6,8 @@ AS
 	SELECT	pa.sa + pan.sa         sa_name,
 			pan.price_ru           price,
 			pan.whprice,
-			pan.nm_id,
-			an.art_name,
-			b.brand_name,
-			sj.subject_name
+			an.art_name, 
+			CAST(pan.pics_dt AS DATETIME) pics_dt
 	FROM	Products.Sketch s   
 			INNER JOIN	Products.ArtName an
 				ON	an.art_name_id = s.art_name_id   

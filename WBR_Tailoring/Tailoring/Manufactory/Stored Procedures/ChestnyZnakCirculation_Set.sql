@@ -100,7 +100,7 @@ AS
 			fiscal_dt,
 			price_with_vat
 		)
-	SELECT	DISTINCT
+	SELECT	
 	      	d.operation_type,
 			oczdi.oczdi_id,
 			d.gtin01,
@@ -109,7 +109,7 @@ AS
 			cr.cr_id,
 			fa.fa_id,
 			d.fiscal_dt,
-			d.price_with_vat
+			SUM(d.price_with_vat) price_with_vat
 	FROM	@detail d   
 			LEFT JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
 				ON	oczdi.gtin01 = d.gtin01
@@ -131,7 +131,16 @@ AS
 				AND czrc.fa_id   = fa.fa_id
 				AND czrc.cr_id   = cr.cr_id
 	WHERE	czoc.czoc_id IS NULL
-			AND	czrc.czrc_id IS NULL
+			OR	czrc.czrc_id IS NULL
+	GROUP BY d.operation_type,
+			oczdi.oczdi_id,
+			d.gtin01,
+			d.serial21,
+			d.fiscal_num,
+			cr.cr_id,
+			fa.fa_id,
+			d.fiscal_dt
+	HAVING SUM(d.price_with_vat) > 0
 	
 	IF NOT EXISTS (
 	   	SELECT	1

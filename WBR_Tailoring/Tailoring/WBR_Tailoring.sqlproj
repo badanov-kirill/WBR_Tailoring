@@ -1591,6 +1591,21 @@
     <Build Include="Wildberries\User Defined Types\LoadNomenclatureTab.sql" />
     <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_LoadNM.sql" />
     <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_GetSave.sql" />
+    <Build Include="Planing\Stored Procedures\Covering_CostSetConractor.sql" />
+    <Build Include="Manufactory\Stored Procedures\ContractorSewCount_GetBySPCV.sql" />
+    <Build Include="Manufactory\Stored Procedures\CoveringInfoByProdUnicCode.sql" />
+    <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_Add.sql" />
+    <Build Include="dbo\User Defined Types\CounttList.sql" />
+    <Build Include="Ozon\Tables\Attributes.sql" />
+    <Build Include="Ozon\Tables\AttributesOptions.sql" />
+    <Build Include="Ozon\Tables\CategoriesAttributes.sql" />
+    <Build Include="Manufactory\Stored Procedures\ProductOperation_ReprintCZ.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticleNomenclature_GetNoPhoto.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticleNomenclature_SetPhoto.sql" />
+    <Build Include="Synchro\Tables\Upload_OzonShip_BuhVas.sql" />
+    <Build Include="Synchro\Stored Procedures\Upload_OzonShip_BuhVas_Get.sql" />
+    <Build Include="Synchro\Stored Procedures\Upload_OzonShip_BuhVas_Loaded.sql" />
+    <Build Include="Products\Tables\gs1_gcp.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

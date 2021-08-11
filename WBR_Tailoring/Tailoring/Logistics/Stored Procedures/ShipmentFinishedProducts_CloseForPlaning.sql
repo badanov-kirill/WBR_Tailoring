@@ -7,13 +7,16 @@ AS
 	DECLARE @error_text VARCHAR(MAX)
 	DECLARE @proc_id INT
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
+	DECLARE @supplier_id INT
+	DECLARE @ozon_supplier_id INT = -167
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN s.sfp_id IS NULL THEN 'Отгрузки с номером ' + CAST(v.sfp_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN s.complite_dt IS NOT NULL THEN 'Отгрузка № ' + CAST(s.sfp_id AS VARCHAR(10)) + ' уже отправлена'
 	      	                   WHEN s.close_planing_dt IS NOT NULL THEN 'Отгрузка № ' + CAST(s.sfp_id AS VARCHAR(10)) + ' уже закрыта для планирования'
 	      	                   ELSE NULL
-	      	              END
+	      	              END,
+	      	@supplier_id = s.supplier_id
 	FROM	(VALUES(@sfp_id))v(sfp_id)   
 			LEFT JOIN	Logistics.ShipmentFinishedProducts s
 				ON	s.sfp_id = v.sfp_id   
@@ -51,6 +54,28 @@ AS
 					ON	psfppb.packing_box_id = pbop.packing_box_id
 		WHERE	psfppb.sfp_id = @sfp_id
 		
+		IF @supplier_id = @ozon_supplier_id
+		BEGIN
+		    MERGE Synchro.Upload_OzonShip_BuhVas t
+		    USING (
+		          	SELECT	@sfp_id sfp_id
+		          ) s
+		    		ON t.sfp_id = s.sfp_id
+		    WHEN MATCHED THEN 
+		         UPDATE	
+		         SET 	dt = @dt
+		    WHEN NOT MATCHED THEN 
+		         INSERT
+		         	(
+		         		sfp_id,
+		         		dt
+		         	)
+		         VALUES
+		         	(
+		         		s.sfp_id,
+		         		@dt
+		         	);
+		END;
 		
 		COMMIT TRANSACTION
 	END TRY

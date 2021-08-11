@@ -3,7 +3,8 @@
 	@subject_name_sf VARCHAR(50) = NULL,
 	@data_xml XML,
 	@employee_id INT,
-	@subject_erp_id INT
+	@subject_erp_id INT,
+	@subject_gs1_id INT = NULL
 AS
 	SET NOCOUNT ON 
 	SET XACT_ABORT ON
@@ -105,7 +106,9 @@ AS
 		     		employee_id = @employee_id,
 		     		dt = @dt,
 		     		isdeleted = 0,
-		     		subject_name_sf = ISNULL(s.subject_name_sf, t.subject_name_sf)
+		     		subject_name_sf = ISNULL(s.subject_name_sf, t.subject_name_sf), subject_gs1_id = /*{ subject_gs1_id }*/,
+		     		block_gs1 = /*{ block_gs1 }*/
+		     	
 		WHEN NOT MATCHED THEN 
 		     INSERT
 		     	(

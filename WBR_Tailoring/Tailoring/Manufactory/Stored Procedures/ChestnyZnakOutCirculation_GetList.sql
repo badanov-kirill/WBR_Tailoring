@@ -16,6 +16,8 @@ AS
 				ON	cr.cr_id = czoc.cr_id   
 			INNER JOIN	RefBook.FiscalAccumulator fa
 				ON	fa.fa_id = czoc.fa_id
+	WHERE	czoc.dt_send IS NULL
+			OR	czoc.number_cz IS NOT       NULL
 	ORDER BY
-		czoc.czoc_id                        DESC
+		czoc.czoc_id DESC
 	

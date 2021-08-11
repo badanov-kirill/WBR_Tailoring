@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [Manufactory].[ChestnyZnakReturnCirculation_GetList]
 AS
-
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	
@@ -17,6 +16,8 @@ AS
 				ON	cr.cr_id = czrc.cr_id   
 			INNER JOIN	RefBook.FiscalAccumulator fa
 				ON	fa.fa_id = czrc.fa_id
+	WHERE	czrc.dt_send IS NULL
+			OR	czrc.number_cz IS NOT       NULL
 	ORDER BY
-		czrc.czrc_id                        DESC
+		czrc.czrc_id DESC
 	

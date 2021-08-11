@@ -187,11 +187,12 @@ AS
 		pac.percnt DESC 
 	
 	
-	SELECT  ao.ao_id_parent,
-			aop.ao_name ao_parrent_name,
+	SELECT	ao.ao_id_parent,
+			aop.ao_name       ao_parrent_name,
 			ao.ao_name,
-			paao.ao_value val,
-			si.si_name
+			paao.ao_value     val,
+			si.si_name,
+			ao.ao_id
 	FROM	Products.ProdArticleAddedOption paao   
 			INNER JOIN	Products.AddedOption ao
 				ON	ao.ao_id = paao.ao_id   
@@ -202,7 +203,27 @@ AS
 	WHERE	paao.pa_id = @pa_id
 			AND	ao.content_id IS NOT NULL
 			AND	ao.isdeleted = 0
-	ORDER BY aop.ao_name, aop.ao_id
+			AND	ao.ao_id_parent != 7
+	 UNION ALL
+	SELECT	TOP(3) ao.ao_id_parent,
+			aop.ao_name       ao_parrent_name,
+			ao.ao_name,
+			paao.ao_value     val,
+			si.si_name,
+			ao.ao_id
+	FROM	Products.ProdArticleAddedOption paao   
+			INNER JOIN	Products.AddedOption ao
+				ON	ao.ao_id = paao.ao_id   
+			LEFT JOIN	Products.AddedOption aop
+				ON	aop.ao_id = ao.ao_id_parent   
+			LEFT JOIN	Products.SI si
+				ON	si.si_id = paao.si_id
+	WHERE	paao.pa_id = @pa_id
+			AND	ao.content_id IS NOT NULL
+			AND	ao.isdeleted = 0
+			AND	ao.ao_id_parent = 7
+			AND	ao.ao_id IN (28, 29, 92, 132, 142, 144, 145, 146, 147, 24, 25, 150, 151, 152, 155, 39, 40, 43)
+	ORDER BY 2,	6
 	
 	END TRY
 	BEGIN CATCH

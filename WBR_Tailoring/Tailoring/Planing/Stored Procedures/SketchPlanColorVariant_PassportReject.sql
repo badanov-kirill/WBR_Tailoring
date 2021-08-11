@@ -24,7 +24,7 @@ AS
 	      	                   WHEN spcv.spcv_id IS NULL THEN 'Цветоварианта с кодом ' + CAST(v.spcv_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN spcv.cvs_id NOT IN (@cv_status_pasport_review, @cv_status_placing) THEN 'Статус цветоварианта ' + cvs.cvs_name +
 	      	                        ', возвращать к менеджеру по закупкам нельзя.'
-	      	                   WHEN oa_c.is_cutting IS NOT NULL THEN 'Внесены данные по крою, отклонять менеджеру нельзя'
+	      	                   WHEN ISNULL(oa_c.cut_cnt, 0) != 0  THEN 'Внесены данные по крою, отклонять менеджеру нельзя'
 	      	                   ELSE NULL
 	      	              END,
 			@sp_id = spcv.sp_id
@@ -34,7 +34,7 @@ AS
 				ON	cvs.cvs_id = spcv.cvs_id
 				ON	spcv.spcv_id = v.spcv_id   
 			OUTER APPLY (
-			      	SELECT	TOP(1) 1 is_cutting
+			      	SELECT	SUM(ca.actual_count) cut_cnt
 			      	FROM	Planing.SketchPlanColorVariantTS spcvt   
 			      			INNER JOIN	Manufactory.Cutting c
 			      				ON	c.spcvts_id = spcvt.spcvts_id   

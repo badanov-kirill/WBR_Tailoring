@@ -29,9 +29,9 @@ AS
 			SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN 1 ELSE 0 END) cnt_expired,
 			CASE 
 			     WHEN es.office_id = 523 THEN (SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN oat.operation_time ELSE 0 END) * 5.5
-			           + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 2.8)
+			           + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 5.5)
 			     ELSE (SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN oat.operation_time ELSE 0 END) * 5.0 
-			     + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 2.8)
+			     + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 5.0)
 			END                motivation
 	FROM	Manufactory.ProductUnicCode puc   
 			INNER JOIN	Manufactory.Cutting c

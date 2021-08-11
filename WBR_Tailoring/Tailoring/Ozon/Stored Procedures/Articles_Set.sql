@@ -23,7 +23,7 @@ AS
 			price_with_vat
 		)
 	SELECT	d.id,
-			e.pants_id,
+			ISNULL(e.pants_id, oa.pants_id) pants_id,
 			d.ean,
 			d.art,
 			d.ozon_id,
@@ -32,7 +32,14 @@ AS
 			d.price_with_vat
 	FROM	@detail d   
 			LEFT JOIN	Manufactory.EANCode e
-				ON	e.ean = d.ean
+				ON	e.ean = d.ean   
+			OUTER APPLY (
+			      	SELECT	TOP(1) puc.pants_id
+			      	FROM	Logistics.PackingBoxDetail pbd   
+			      			INNER JOIN	Manufactory.ProductUnicCode puc
+			      				ON	puc.product_unic_code = pbd.product_unic_code
+			      	WHERE	pbd.barcode = d.ean
+			      ) oa
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN ISNULL(d.ean, '') = '' OR LEN(d.ean) < 13 THEN 'Есть строка с не валидным ean ' + ISNULL(d.ean, 'null') +

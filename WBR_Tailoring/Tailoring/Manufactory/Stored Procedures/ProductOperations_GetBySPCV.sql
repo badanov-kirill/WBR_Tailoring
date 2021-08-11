@@ -10,7 +10,8 @@ AS
 			o.operation_name,
 			es.employee_name,
 			os.office_name,
-			ts.ts_name
+			ts.ts_name,
+			o2.operation_name last_operation_name
 	FROM	Planing.SketchPlanColorVariantTS spcvt
 			INNER JOIN Products.TechSize ts
 				ON ts.ts_id = spcvt.ts_id   
@@ -26,6 +27,8 @@ AS
 				ON	po.employee_id = es.employee_id   
 			INNER JOIN	Settings.OfficeSetting os
 				ON	po.office_id = os.office_id
+			INNER JOIN Manufactory.Operation o2
+				ON o2.operation_id = puc.operation_id
 	WHERE	spcvt.spcv_id = @spcv_id
 			AND	(@operation_id IS NULL OR po.operation_id = @operation_id)
 	ORDER BY po.po_id

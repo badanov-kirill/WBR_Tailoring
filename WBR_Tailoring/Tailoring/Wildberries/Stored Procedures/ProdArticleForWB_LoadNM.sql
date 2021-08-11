@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Wildberries].[ProdArticleForWB_LoadNM]
 	@pa_id INT,
+	@imt_id INT,
 	@nm_tab Wildberries.LoadNomenclatureTab READONLY
 AS
 	SET NOCOUNT ON
@@ -21,6 +22,18 @@ AS
 					ON	pan.sa = nt.sa_nm
 		WHERE	panfw.pa_id = @pa_id
 				AND	panfw.nm_id IS NULL
+		
+		UPDATE	pa
+		SET 	pa.imt_id = @imt_id
+		FROM	Products.ProdArticle pa
+		WHERE	pa.pa_id = @pa_id
+				AND	pa.is_deleted = 0
+				AND	pa.imt_id IS NULL
+				AND	NOT EXISTS(
+				   		SELECT	1
+				   		FROM	Products.ProdArticle pa2
+				   		WHERE	pa2.imt_id = @imt_id
+				   	)
 		
 		UPDATE	pan
 		SET 	nm_id = nt.nm_id

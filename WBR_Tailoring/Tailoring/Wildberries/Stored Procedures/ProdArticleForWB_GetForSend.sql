@@ -28,4 +28,4 @@ AS
 			      	FOR XML	PATH('')
 			      ) oasa(x)
 	WHERE	pafw.send_dt IS NULL
-			AND	ISNULL(pafw.is_error, 0) = 0 
+			--AND	ISNULL(pafw.is_error, 0) = 0 

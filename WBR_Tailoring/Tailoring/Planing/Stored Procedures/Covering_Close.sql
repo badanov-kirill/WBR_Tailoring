@@ -16,7 +16,7 @@ AS
 	SELECT	@error_text = CASE 
 	      	                   WHEN c.covering_id IS NULL THEN 'Выдачи с кодом ' + CAST(v.covering_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN c.close_dt IS NOT NULL THEN 'Выдачи с кодом ' + CAST(v.covering_id AS VARCHAR(10)) + ' уже закрыта.'
-	      	                   WHEN oa.shkrm_id IS NULL THEN 'По этой выдаче не выдан ни один материал. Отправлять на себистоимость нельзя'
+	      	                   --WHEN oa.shkrm_id IS NULL THEN 'По этой выдаче не выдан ни один материал. Отправлять на себистоимость нельзя'
 	      	                   WHEN oa.shkrm_id IS NOT NULL AND oa.return_dt IS NULL THEN 
 	      	                        'В выдаче есть шк, которые не вернули на склад. Отправлять на себестоимость нельзя'
 	      	                   WHEN oaac.actual_count = 0 THEN 'По этой выдаче не внесено количество кроя. Отправлять на себистоимость нельзя'

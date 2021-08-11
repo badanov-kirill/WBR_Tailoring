@@ -109,7 +109,8 @@ AS
 			         	 		stsj3.spcvts_id,
 			         	 		SUM(stsj3.close_cnt) sum_close_cnt
 			         	 FROM	Manufactory.SPCV_TechnologicalSequenceJob stsj3
-			         	 WHERE	stsj3.salary_close_dt IS NULL AND stsj3.close_cnt IS NOT NULL
+			         	 WHERE	stsj3.salary_close_dt IS NULL AND 
+			         	 stsj3.close_cnt IS NOT NULL
 			         	 GROUP BY
 			         	 	stsj3.sts_id,
 			         	 	stsj3.spcvts_id) job_close

@@ -10,8 +10,10 @@ AS
 			an.art_name,
 			pa.sa,
 			oasa.x                        sa_nms,
-			dbo.bin2uid(pafw.imt_uid)     imt_uid,
-			CAST(pafw.send_dt AS DATETIME) send_dt
+			CAST(pafw.send_dt AS DATETIME) send_dt,
+			pa.imt_id,
+			oaean.x eans,
+			pa.sketch_id
 	FROM	Wildberries.ProdArticleForWB pafw   
 			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pafw.pa_id   
@@ -29,7 +31,14 @@ AS
 			      	WHERE	pan.pa_id = pa.pa_id
 			      	FOR XML	PATH('')
 			      ) oasa(x)
+			OUTER APPLY (
+			      	SELECT e.ean + ';'
+			      	FROM	Products.ProdArticleNomenclature pan
+			      	INNER JOIN Products.ProdArticleNomenclatureTechSize pants ON pants.pan_id = pan.pan_id
+			      	INNER JOIN Manufactory.EANCode e ON e.pants_id = pants.pants_id
+			      	WHERE	pan.pa_id = pa.pa_id
+			      	FOR XML	PATH('')
+			      ) oaean(x)
 	WHERE	pafw.send_dt IS NOT NULL
-			AND	pafw.imt_uid IS NOT       NULL
 	ORDER BY
 		pafw.send_dt DESC

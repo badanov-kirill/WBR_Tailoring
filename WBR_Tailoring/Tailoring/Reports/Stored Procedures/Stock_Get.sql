@@ -3,7 +3,8 @@ AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	
-	SELECT	pants.pants_id,
+	SELECT	pbd.barcode,	
+			pants.pants_id,
 			pa.sa + pan.sa             sa_name,
 			ts.ts_name,
 			pan.whprice,
@@ -44,7 +45,9 @@ AS
 	WHERE	psfppb.packing_box_id IS NULL
 			AND	sfppb.packing_box_id IS NULL
 			AND	pb.close_dt IS NOT     NULL
+			AND puc.operation_id = 8
 	GROUP BY
+		pbd.barcode,
 		pants.pants_id,
 		pa.sa,
 		pan.sa,
