@@ -170,7 +170,7 @@ AS
 				@employee_id,
 				@dt,
 				@employee_id,
-				1
+				2
 		WHERE	NOT EXISTS (
 		     		SELECT	1
 		     		FROM	Products.SketchTechnologyJob stj

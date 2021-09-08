@@ -5,6 +5,7 @@
 	send_dt      DATETIME2(0) NULL,
 	imt_uid      BINARY(16) NULL,
 	is_error     BIT NULL,
-	load_nm_dt	 DATETIME2(0) NULL
+	load_nm_dt	 DATETIME2(0) NULL,
+	imt_id		 INT NULL,
 	CONSTRAINT [PK_ProdArticleForWB] PRIMARY KEY CLUSTERED(pa_id)
 )

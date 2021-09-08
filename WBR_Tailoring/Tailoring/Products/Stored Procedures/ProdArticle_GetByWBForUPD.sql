@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [Products].[ProdArticle_GetByWB]
+﻿CREATE PROCEDURE [Products].[ProdArticle_GetByWBForUPD]
 	@pa_id INT
 AS
 	SET NOCOUNT ON
@@ -16,6 +16,17 @@ AS
 	   )
 	BEGIN
 	    RAISERROR('Есть цвет без размеров', 16, 1)
+	    RETURN
+	END
+	
+	IF EXISTS (
+	   	SELECT	1
+	   	FROM	Products.ProdArticleNomenclature pan   
+	   	WHERE	pan.pa_id = @pa_id
+	   			AND	ISNULL(pan.price_ru, 0) = 0
+	   )
+	BEGIN
+	    RAISERROR('Есть цвет без цены', 16, 1)
 	    RETURN
 	END
 	
@@ -81,7 +92,9 @@ AS
 			s.ct_id,
 			oa_ct.consist_type_id,
 			'Россия' country_name,
-			kw.key_word
+			kw.key_word,
+			LOWER(dbo.bin2uid(pafw.imt_uid)) imt_uid, 
+			pafw.imt_id
 	FROM	Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id   
@@ -109,6 +122,8 @@ AS
 				ON	tsz.ts_id = pa.ao_ts_id 
 			LEFT JOIN Products.KeyWords kw
 				ON kw.kw_id = s.kw_id  
+			LEFT JOIN Wildberries.ProdArticleForWB pafw
+				ON pafw.pa_id = pa.pa_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -118,7 +133,7 @@ AS
 			      	ORDER BY
 			      		pac.percnt DESC
 			      ) oa_ct
-	LEFT JOIN	Products.TNVED_Settigs tnvds
+			LEFT JOIN	Products.TNVED_Settigs tnvds
 				ON	tnvds.subject_id = s.subject_id
 				AND	tnvds.ct_id = s.ct_id
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
@@ -140,12 +155,15 @@ AS
 			mc.color_name main_color,
 			STUFF(artcol.x, 1, 2, '') not_nain_colors,
 			pan.whprice,
-			pan.price_ru
+			pan.price_ru,
+			LOWER(dbo.bin2uid(panfw.wb_uid)) nm_uid
 	FROM	Products.ProdArticleNomenclature pan 
 			LEFT JOIN Products.ProdArticleNomenclatureColor pancm
-			ON pancm.pan_id = pan.pan_id AND pancm.is_main = 1
+				ON pancm.pan_id = pan.pan_id AND pancm.is_main = 1
 			LEFT JOIN Products.Color mc
-			ON mc.color_cod = pancm.color_cod			  
+				ON mc.color_cod = pancm.color_cod	
+			LEFT JOIN Wildberries.ProdArticleNomenclatureForWB panfw
+				ON panfw.pan_id = pan.pan_id		  
 			OUTER APPLY (
 			      	SELECT	'; ' + c.color_name
 			      	FROM	Products.ProdArticleNomenclatureColor panc   
@@ -157,17 +175,13 @@ AS
 			      ) artcol(x)
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0
-			AND pan.nm_id IS NULL 
-			AND ISNULL(pan.price_ru, 0) > 0 
-			AND NOT EXISTS(
-			              	SELECT	1
-			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
-			              	WHERE	panfw.pan_id = pan.pan_id
-			              )  
+			AND ISNULL(pan.price_ru, 0) > 0 	
 	
 	SELECT	pan.pan_id,
 			ts.rus_name ts_name,
-			e.ean
+			e.ean,
+			pantw.chrt_id, 
+			LOWER(dbo.bin2uid(pantw.wb_uid)) chrt_uid
 	FROM	Products.ProdArticleNomenclature pan   
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 				ON	pants.pan_id = pan.pan_id   
@@ -175,6 +189,8 @@ AS
 				ON	ts.ts_id = pants.ts_id   
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id
+			LEFT JOIN Wildberries.ProdArticleNomenclatureTSForWB pantw
+				ON pantw.pants_id = e.pants_id
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0	  
 	

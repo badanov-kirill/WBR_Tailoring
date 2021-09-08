@@ -90,7 +90,9 @@ AS
 	      	                   WHEN @operation_id NOT IN (@to_packaging_operation, @reworking_operation, @cancellation_operation, @modification_operation, @special_equipment_operation, 
 	      	                                             @after_packing_of_se, @print_label_operation, @packaging_operation, @launch_of_operation, @repair_and_to_packaging_operation) THEN 
 	      	                        'Операция с кодом ' + CAST(@operation_id AS VARCHAR(10)) + ' не допускается в этой обработке'
-	      	                   WHEN @operation_id = @modification_operation THEN 'Операция "На стирку" запрещена'
+	      	                   --WHEN @operation_id = @modification_operation THEN 'Операция "На стирку" запрещена'
+	      	                   WHEN @operation_id IN (@to_packaging_operation, @after_packing_of_se, @repair_and_to_packaging_operation, @packaging_operation) 
+	      	                        AND spcvc.create_dt IS NULL THEN 'На это товар не посчитана себестоимость.'
 	      	                   ELSE NULL
 	      	              END,
 			@spcv_id = spcvt.spcv_id,
@@ -115,6 +117,8 @@ AS
 				ON spcv.spcv_id = spcvt.spcv_id	
 				ON	spcvt.spcvts_id = c.spcvts_id
 				ON	c.cutting_id = puc.cutting_id
+			LEFT JOIN Planing.SketchPlanColorVariantCost spcvc
+				ON spcvc.spcv_id = spcv.spcv_id
 				
 	
 	
