@@ -1612,6 +1612,8 @@
     <Build Include="Wildberries\User Defined Types\LoadNomenclatureTSTab.sql" />
     <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_LoadNM_v2.sql" />
     <Build Include="Products\Stored Procedures\ProdArticle_GetByWBForUPD.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticleForOzon_BySFP.sql" />
+    <Build Include="Wildberries\Stored Procedures\FieldsByTemplate.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
