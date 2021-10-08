@@ -24,6 +24,7 @@ AS
 	   	FROM	Products.ProdArticleNomenclature pan   
 	   	WHERE	pan.pa_id = @pa_id
 	   			AND	ISNULL(pan.price_ru, 0) = 0
+	   			AND pan.is_deleted = 0
 	   )
 	BEGIN
 	    RAISERROR('Есть цвет без цены', 16, 1)
