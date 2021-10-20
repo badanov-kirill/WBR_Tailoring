@@ -79,7 +79,7 @@ AS
 	      	                        'Этот товар в статусе ' + o.operation_name + ' . Отправлять на спецоборудование нельзя'
 	      	                   --WHEN @operation_id = @to_packaging_operation AND puc.operation_id = @to_packaging_operation THEN 
 	      	                   --     'Этот товар уже отправили на упаковку'
-	      	                   WHEN @operation_id = @to_packaging_operation AND puc.operation_id NOT IN (@reworking_operation, @special_equipment_operation, @print_label_operation, @launch_of_operation, @to_packaging_operation, @packaging_operation) THEN 
+	      	                   WHEN @operation_id = @to_packaging_operation AND puc.operation_id NOT IN (@reworking_operation, @special_equipment_operation, @print_label_operation, @launch_of_operation, @to_packaging_operation, @packaging_operation, @modification_operation, @cancellation_operation) THEN 
 	      	                        'Этот товар в статусе ' + o.operation_name + ' . Отправлять на упаковку нельзя'
 	      	                   WHEN @operation_id = @packaging_operation AND puc.operation_id NOT IN (@to_packaging_operation, @after_packing_of_se, @packaging_operation, @repair_and_to_packaging_operation) THEN 
 	      	                        'Этот товар в статусе ' + o.operation_name + ' . Упаковывать можно только отправленный на упаковку товар'
@@ -251,7 +251,7 @@ AS
 				   		OR (
 				   		   	@operation_id = @to_packaging_operation
 				   		   	AND puc.operation_id NOT 
-				   		   	    IN (@reworking_operation, @special_equipment_operation, @print_label_operation, @launch_of_operation, @to_packaging_operation, @packaging_operation)
+				   		   	    IN (@reworking_operation, @special_equipment_operation, @print_label_operation, @launch_of_operation, @to_packaging_operation, @packaging_operation, @cancellation_operation, @modification_operation)
 				   		   )
 				   		OR (
 				   		   	@operation_id = @packaging_operation
