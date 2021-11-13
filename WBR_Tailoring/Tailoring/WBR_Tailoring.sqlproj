@@ -1606,6 +1606,8 @@
     <Build Include="Synchro\Stored Procedures\Upload_OzonShip_BuhVas_Get.sql" />
     <Build Include="Synchro\Stored Procedures\Upload_OzonShip_BuhVas_Loaded.sql" />
     <Build Include="Products\Tables\gs1_gcp.sql" />
+    <Build Include="dbo\Tables\DataTypes.sql" />
+    <Build Include="Ozon\Tables\AttributesGroups.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
