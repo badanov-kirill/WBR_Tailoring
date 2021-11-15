@@ -14,8 +14,8 @@
 
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[MaterialInProduction] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

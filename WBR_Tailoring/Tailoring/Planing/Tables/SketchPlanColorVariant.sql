@@ -32,6 +32,8 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_SketchPlanColorVariant_sp_id_spcv_name] ON Planing.SketchPlanColorVariant(sp_id, spcv_name) WHERE is_deleted = 0 ON 
 [Indexes]
@@ -48,7 +50,5 @@ GO
 CREATE NONCLUSTERED INDEX [IX_SketchPlanColorVariant_fist_package_dt] ON Planing.SketchPlanColorVariant(fist_package_dt) INCLUDE(spcv_id,pan_id) WHERE fist_package_dt IS NOT NULL ON 
 [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Planing].[SketchPlanColorVariant] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

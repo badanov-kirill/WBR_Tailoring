@@ -46,7 +46,5 @@ AS
 
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[SyncFinance].[MaterialStuffSupply_GetChanges] TO [WILDBERRIES\FinanceServices]
-    AS [dbo];
+
 GO

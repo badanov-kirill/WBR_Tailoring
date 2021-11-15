@@ -1384,8 +1384,6 @@
     <Build Include="History\Tables\PackingBoxOnPlace.sql" />
     <Build Include="Logistics\Tables\ShipmentFinishedProductsPackingBox.sql" />
     <Build Include="Logistics\Tables\PlanShipmentFinishedProductsPackingBox.sql" />
-    <Build Include="Security\wildberries_olap-orr.sql" />
-    <Build Include="Security\wildberries_olap-orr_1.sql" />
     <Build Include="Warehouse\Stored Procedures\PackingBoxOnPlace_Get.sql" />
     <Build Include="Logistics\Stored Procedures\PackingBoxDetail_Get.sql" />
     <Build Include="Logistics\Stored Procedures\ShipmentFinishedProducts_Add_v2.sql" />
@@ -1614,6 +1612,8 @@
     <Build Include="Products\Stored Procedures\ProdArticle_GetByWBForUPD.sql" />
     <Build Include="Products\Stored Procedures\ProdArticleForOzon_BySFP.sql" />
     <Build Include="Wildberries\Stored Procedures\FieldsByTemplate.sql" />
+    <Build Include="dbo\Tables\DataTypes.sql" />
+    <Build Include="Planing\Stored Procedures\Covering_OfficeSet_1.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

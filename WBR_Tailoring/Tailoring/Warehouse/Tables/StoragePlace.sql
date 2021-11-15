@@ -20,12 +20,12 @@
 
 
 
+
+
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_StoragePlace_office_id_place_name] ON Warehouse.StoragePlace(zor_id, place_name) WHERE (is_deleted = 0) ON [Indexes]
 
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[StoragePlace] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

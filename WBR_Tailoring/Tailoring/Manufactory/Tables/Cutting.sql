@@ -27,6 +27,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_Cutting_office_id_plan_year_plan_month_chrt_id] ON Manufactory.Cutting(office_id, plan_year, plan_month, pants_id) ON 
 [Indexes]
@@ -34,7 +36,5 @@ CREATE NONCLUSTERED INDEX [IX_Cutting_office_id_plan_year_plan_month_chrt_id] ON
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_Cutting_spcvts_id] ON Manufactory.Cutting(spcvts_id) WHERE spcvts_id IS NOT NULL ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Manufactory].[Cutting] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

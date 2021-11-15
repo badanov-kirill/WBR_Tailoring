@@ -6,12 +6,12 @@
 
 
 
+
+
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_Article_art_name] ON Material.Article(art_name) ON [Indexes] 
 
 GO
-GRANT SELECT
-    ON OBJECT::[Material].[Article] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

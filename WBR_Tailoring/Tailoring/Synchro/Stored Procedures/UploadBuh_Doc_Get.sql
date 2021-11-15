@@ -59,8 +59,6 @@ AS
 				AND	ubdd.upload_doc_type_id = dt.upload_doc_type_id
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[Synchro].[UploadBuh_Doc_Get] TO [WILDBERRIES\USR1CV8]
-    AS [dbo];
+
 GO
 

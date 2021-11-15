@@ -34,6 +34,8 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_ProdArticle_imt_id] ON Products.ProdArticle(imt_id) WHERE imt_id IS NOT NULL ON [Indexes]
 
@@ -43,7 +45,5 @@ CREATE UNIQUE NONCLUSTERED INDEX [UQ_ProdArticle_sa] ON Products.ProdArticle(sa)
 GO
 CREATE NONCLUSTERED INDEX [IX_ProdArticle_sketch_id_is_deleted] ON Products.ProdArticle(sketch_id,is_deleted) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Products].[ProdArticle] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

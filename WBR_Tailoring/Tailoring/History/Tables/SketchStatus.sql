@@ -10,8 +10,8 @@
 );
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[History].[SketchStatus] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

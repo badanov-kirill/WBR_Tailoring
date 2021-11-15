@@ -19,7 +19,5 @@ AS
 	FROM	SyncFinance.Fine f
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[SyncFinance].[Fine_GetChanges] TO [WILDBERRIES\FinanceServices]
-    AS [dbo];
+
 GO

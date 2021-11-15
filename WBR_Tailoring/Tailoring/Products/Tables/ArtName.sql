@@ -7,11 +7,11 @@
 );
 
 
+
+
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_ArtName_art_name] ON Products.ArtName(art_name) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Products].[ArtName] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

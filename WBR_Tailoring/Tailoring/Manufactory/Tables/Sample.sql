@@ -23,6 +23,8 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_Sample_sketch_id] ON Manufactory.[Sample] (sketch_id, is_deleted) ON [Indexes]
 
@@ -30,7 +32,5 @@ GO
 CREATE NONCLUSTERED INDEX [IX_Sample_task_sample_id_is_deleted] ON Manufactory.[Sample] (task_sample_id, is_deleted) ON [Indexes]
 
 GO
-GRANT SELECT
-    ON OBJECT::[Manufactory].[Sample] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

@@ -25,13 +25,13 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_CoveringIssueSHKRm_shkrm_id] ON Planing.CoveringIssueSHKRm(shkrm_id) WHERE return_dt IS NULL ON [Indexes]
 
 GO
 CREATE NONCLUSTERED INDEX [IX_CoveringIssueSHKRm_shkrm_id] ON Planing.CoveringIssueSHKRm(shkrm_id) INCLUDE(covering_id, stor_unit_residues_qty, return_stor_unit_residues_qty) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Planing].[CoveringIssueSHKRm] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

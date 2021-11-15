@@ -10,11 +10,11 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_CuttingActual_cutting_id] ON Manufactory.CuttingActual(cutting_id) INCLUDE(actual_count) ON [Indexes]
 
 GO
-GRANT SELECT
-    ON OBJECT::[Manufactory].[CuttingActual] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

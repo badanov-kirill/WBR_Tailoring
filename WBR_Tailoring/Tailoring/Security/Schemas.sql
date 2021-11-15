@@ -3,9 +3,13 @@
 
 
 
+
+
 GO
 CREATE SCHEMA [Material]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -24,6 +28,8 @@ CREATE SCHEMA [Suppliers]
 
 
 
+
+
 GO
 
 CREATE SCHEMA RefBook
@@ -33,6 +39,8 @@ GO
 
 CREATE SCHEMA [Warehouse]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -60,6 +68,12 @@ CREATE SCHEMA [Products]
 
 
 
+
+
+
+
+
+
 	
 GO
 CREATE SCHEMA [Budget]
@@ -69,6 +83,8 @@ CREATE SCHEMA [Budget]
 GO
 CREATE SCHEMA [Manufactory]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -98,6 +114,10 @@ CREATE SCHEMA [Planing]
 
 
 
+
+
+
+
 GO
 CREATE SCHEMA [Technology]
     AUTHORIZATION [dbo];
@@ -110,9 +130,13 @@ CREATE SCHEMA [Synchro]
 
 
 
+
+
 GO
 CREATE SCHEMA [SyncFinance]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -125,11 +149,21 @@ CREATE SCHEMA [Salary]
 
 GO
 CREATE SCHEMA [Wildberries]
-	AUTHORIZATION [dbo]
+    AUTHORIZATION [dbo];
+
+
+
+
 
 GO
 CREATE SCHEMA [Ozon]
     AUTHORIZATION [dbo];
+
+
+
+
+
+
 
 
 

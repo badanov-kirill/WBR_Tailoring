@@ -43,7 +43,5 @@ AS
 				ON	rmt.rmt_id = sd.rmt_id
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[SyncFinance].[ServiceIncome_GetChanges] TO [WILDBERRIES\FinanceServices]
-    AS [dbo];
+
 GO

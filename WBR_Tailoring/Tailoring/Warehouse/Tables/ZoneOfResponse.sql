@@ -7,8 +7,8 @@
 
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[ZoneOfResponse] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

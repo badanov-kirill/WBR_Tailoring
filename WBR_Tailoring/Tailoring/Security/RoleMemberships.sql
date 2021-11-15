@@ -1,7 +1,7 @@
 ﻿
 
 GO
-ALTER ROLE [db_datareader] ADD MEMBER [WILDBERRIES\sqlreport];
+
 
 
 
@@ -23,4 +23,8 @@ ALTER ROLE [db_datareader] ADD MEMBER [Badanov];
 
 GO
 ALTER ROLE [db_accessadmin] ADD MEMBER [Badanov];
+
+
+GO
+ALTER ROLE [db_backupoperator] ADD MEMBER [User1C];
 
