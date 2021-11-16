@@ -1,5 +1,0 @@
-﻿CREATE LOGIN [WILDBERRIES\badanov] FROM WINDOWS;
-GO
-
-
-

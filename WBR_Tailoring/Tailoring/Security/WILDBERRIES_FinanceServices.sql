@@ -1,5 +1,0 @@
-﻿CREATE LOGIN [WILDBERRIES\FinanceServices] FROM WINDOWS;
-GO
-
-
-GO

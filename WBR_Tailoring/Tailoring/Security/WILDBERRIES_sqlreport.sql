@@ -1,5 +1,0 @@
-﻿CREATE LOGIN [WILDBERRIES\sqlreport] FROM WINDOWS;
-GO
-
-
-GO

@@ -274,7 +274,6 @@
     <Build Include="Products\Stored Procedures\Constructor_Get.sql" />
     <Build Include="Products\Tables\SketchOld.sql" />
     <Build Include="Material\Tables\ClothType.sql" />
-    <Build Include="Security\WILDBERRIES_Tailoring.sql" />
     <Build Include="Security\ExecAll.sql" />
     <Build Include="Security\ViewDefinition.sql" />
     <Build Include="Products\Tables\SketchOldBranchOfficePattern.sql" />
@@ -424,7 +423,6 @@
     <Build Include="Logistics\Stored Procedures\Driver_Add.sql" />
     <Build Include="Logistics\Stored Procedures\Vehicle_Add.sql" />
     <Build Include="Logistics\Stored Procedures\Vehicle_Get.sql" />
-    <Build Include="Security\WILDBERRIES_sqlreport.sql" />
     <Build Include="Logistics\Stored Procedures\Driver_Get.sql" />
     <Build Include="Logistics\Stored Procedures\TTNDetail_Add.sql" />
     <Build Include="Logistics\Stored Procedures\TTN_GetForEmployee.sql" />
@@ -949,7 +947,6 @@
     <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_GetBySpID.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_ToCorrectionReserv_v2.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_ToPassportReview.sql" />
-    <Build Include="Security\WILDBERRIES_USR1CV8.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_PassportReject.sql" />
     <Build Include="Settings\Tables\MasterEmployee.sql" />
     <Build Include="Settings\Stored Procedures\MasterEmployee_Set.sql" />
@@ -979,7 +976,6 @@
     <Build Include="SyncFinance\Stored Procedures\Fine_Loaded.sql" />
     <Build Include="SyncFinance\Stored Procedures\Fine_GetChanges.sql" />
     <Build Include="Manufactory\Stored Procedures\Sample_GetById.sql" />
-    <Build Include="Security\WILDBERRIES_FinanceServices.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlanColorVariant_GetForConfectioner_v2.sql" />
     <Build Include="Manufactory\Stored Procedures\Product_CuttingWriteOff.sql" />
     <Build Include="Manufactory\Stored Procedures\Product_CuttingPreWriteOff_Get.sql" />
@@ -1443,7 +1439,6 @@
     <Build Include="dbo\Tables\Days.sql" />
     <Build Include="Security\Badanov.sql" />
     <Build Include="Security\User1C.sql" />
-    <Build Include="Security\WILDBERRIES_badanov.sql" />
     <Build Include="Reports\Stored Procedures\TimeTrackingOtherDay_StateUpd.sql" />
     <Build Include="Wildberries\User Defined Types\LocaleNameTab.sql" />
     <Build Include="Wildberries\User Defined Types\FieldsTab.sql" />
@@ -1493,7 +1488,6 @@
     <Build Include="Manufactory\Tables\OrderChestnyZnakDetail.sql" />
     <Build Include="Manufactory\Tables\OrderChestnyZnakDetailItem.sql" />
     <Build Include="Products\Tables\TNVDFromChestnyZnak.sql" />
-    <Build Include="Security\WILDBERRIES_USR1CV8_new.sql" />
     <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_GetForSignature.sql" />
     <Build Include="Manufactory\Stored Procedures\OrderChestnyZnakDetail_GetByID.sql" />
     <Build Include="Manufactory\Stored Procedures\OrderChestnyZnak_Del.sql" />
@@ -1614,6 +1608,9 @@
     <Build Include="Wildberries\Stored Procedures\FieldsByTemplate.sql" />
     <Build Include="dbo\Tables\DataTypes.sql" />
     <Build Include="Planing\Stored Procedures\Covering_OfficeSet_1.sql" />
+    <Build Include="Ozon\Tables\AttributesGroups.sql" />
+    <Build Include="Ozon\Stored Procedures\Atributes_Set.sql" />
+    <Build Include="Ozon\User Defined Types\AtributesType.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
