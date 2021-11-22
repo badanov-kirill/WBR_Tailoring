@@ -13,7 +13,7 @@ AS
 				ON t.category_id = s.category_id
 		WHEN MATCHED THEN 
 		     UPDATE	
-		     SET 	t.caregory_parrent_id = s.caregory_parrent_id,
+		     SET 	t.category_parrent_id = s.category_parrent_id,
 		     		t.category_name = s.category_name,
 		     		t.dt = @dt,
 		     		t.is_deleted = 0
@@ -21,7 +21,7 @@ AS
 		     INSERT
 		     	(
 		     		category_id,
-		     		caregory_parrent_id,
+		     		category_parrent_id,
 		     		category_name,
 		     		is_deleted,
 		     		dt
@@ -29,7 +29,7 @@ AS
 		     VALUES
 		     	(
 		     		s.category_id,
-		     		s.caregory_parrent_id,
+		     		s.category_parrent_id,
 		     		s.category_name,
 		     		0,
 		     		@dt

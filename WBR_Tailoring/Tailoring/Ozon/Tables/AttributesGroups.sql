@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [Ozon].[AttributesGroups]
 (
-	oag_id       INT IDENTITY(1, 1) CONSTRAINT [PK_AttributesGroups] PRIMARY KEY CLUSTERED NOT NULL,
+	oag_id       INT CONSTRAINT [PK_AttributesGroups] PRIMARY KEY CLUSTERED NOT NULL,
 	oag_name     VARCHAR(100) NOT NULL
 )
 

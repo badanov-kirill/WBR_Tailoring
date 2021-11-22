@@ -1611,6 +1611,10 @@
     <Build Include="Ozon\Tables\AttributesGroups.sql" />
     <Build Include="Ozon\Stored Procedures\Atributes_Set.sql" />
     <Build Include="Ozon\User Defined Types\AtributesType.sql" />
+    <Build Include="Ozon\User Defined Types\AtributeValuesType.sql" />
+    <Build Include="Ozon\Tables\CategoriesAttributeValues.sql" />
+    <Build Include="Ozon\Tables\AttributeValues.sql" />
+    <Build Include="Ozon\Stored Procedures\AttributeValues_Set.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

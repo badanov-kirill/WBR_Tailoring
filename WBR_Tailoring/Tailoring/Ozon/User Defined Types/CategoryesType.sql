@@ -1,7 +1,7 @@
 ﻿CREATE TYPE [Ozon].[CategoryesType] AS TABLE
 (
-	category_id             INT NOT NULL,
-	caregory_parrent_id     INT NULL,
+	category_id             BIGINT NOT NULL,
+	category_parrent_id     BIGINT NULL,
 	category_name           VARCHAR(100)
 )
 GO
