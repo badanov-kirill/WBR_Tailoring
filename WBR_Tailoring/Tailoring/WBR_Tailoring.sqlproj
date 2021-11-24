@@ -1619,6 +1619,9 @@
     <Build Include="Ozon\Stored Procedures\SubjectsCategories_Get.sql" />
     <Build Include="Ozon\User Defined Types\SubjectsCategoriesType.sql" />
     <Build Include="Ozon\Stored Procedures\SubjectsCategories_Set.sql" />
+    <Build Include="Ozon\Stored Procedures\Attributes_GetBySketch.sql" />
+    <Build Include="Ozon\Stored Procedures\Attributes_GetByCategory.sql" />
+    <Build Include="Products\Stored Procedures\AddedOption_GetBySubject.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
