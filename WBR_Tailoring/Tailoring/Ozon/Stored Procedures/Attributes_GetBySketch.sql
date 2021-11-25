@@ -29,13 +29,3 @@ AS
 				ON	dt.data_type_id = a.data_type_id
 	WHERE	ca.category_id = @category_id
 	
-	SELECT	ca.attribute_id,
-			av.av_id,
-			av.av_value
-	FROM	Ozon.CategoriesAttributes ca   
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON	cav.category_id = ca.category_id
-				AND	cav.attribute_id = ca.attribute_id   
-			INNER JOIN	Ozon.AttributeValues av
-				ON	av.av_id = cav.av_id
-	WHERE	ca.category_id = @category_id
