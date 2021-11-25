@@ -9,7 +9,8 @@ AS
 			sj.subject_name,
 			an.art_name,
 			pa.sa,
-			oasa.x                        sa_nms
+			oasa.x                        sa_nms,
+			pa.imt_id
 	FROM	Wildberries.ProdArticleForWB pafw   
 			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pafw.pa_id   

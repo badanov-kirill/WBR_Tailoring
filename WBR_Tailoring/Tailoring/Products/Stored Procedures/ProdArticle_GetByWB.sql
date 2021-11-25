@@ -12,6 +12,7 @@ AS
 	   				ON	pants.pan_id = pan.pan_id
 	   	WHERE	pan.pa_id = @pa_id
 	   			AND	pants.pan_id IS NULL
+	   			AND pants.is_deleted = 0
 	   )
 	BEGIN
 	    RAISERROR('Есть цвет без размеров', 16, 1)
@@ -156,7 +157,7 @@ AS
 			      ) artcol(x)
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0
-			AND pan.nm_id IS NULL
+			AND pan.nm_id IS NULL 
 			AND ISNULL(pan.price_ru, 0) > 0 
 			AND NOT EXISTS(
 			              	SELECT	1

@@ -3,3 +3,5 @@ GO
 
 CREATE USER [Badanov] FOR LOGIN [Badanov];
 
+
+

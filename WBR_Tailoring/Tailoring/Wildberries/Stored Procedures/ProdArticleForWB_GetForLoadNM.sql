@@ -17,7 +17,7 @@ AS
 				INNER JOIN	Wildberries.ProdArticleForWB pafw
 					ON	pafw.pa_id = p.pa_id
 		WHERE	p.cnt_load < 30
-				AND	DATEADD(hour, p.cnt_load * 12, p.dt_save) < @dt
+				--AND	DATEADD(hour, p.cnt_load * 12, p.dt_save) < @dt
 				AND	pafw.send_dt IS NOT NULL
 		
 		SELECT	pafw.pa_id,

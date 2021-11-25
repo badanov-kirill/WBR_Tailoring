@@ -173,7 +173,7 @@ AS
 		        @sketch_id,
 		        @dt,
 		        @employee_id,
-		        3
+		        2
 		      )
 		END
 		

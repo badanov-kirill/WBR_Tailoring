@@ -14,12 +14,12 @@
 
 
 
+
+
 GO
 CREATE NONCLUSTERED INDEX [IX_SHKRawMaterialAmount_amount_final_dt]
     ON Warehouse.SHKRawMaterialAmount(amount, final_dt)
     INCLUDE(shkrm_id, stor_unit_residues_qty) ON [Indexes];
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[SHKRawMaterialAmount] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

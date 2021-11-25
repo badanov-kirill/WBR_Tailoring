@@ -5,8 +5,10 @@
 
 
 
+
+
 GO
-ALTER ROLE [ViewDefinition] ADD MEMBER [WILDBERRIES\sqlreport];
+
 
 
 

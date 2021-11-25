@@ -54,8 +54,6 @@ AS
 	
 GO
 
-GRANT EXECUTE
-    ON OBJECT::[Synchro].[UploadBuh_Doc_Loaded] TO [WILDBERRIES\USR1CV8]
-    AS [dbo];
+
 GO
 

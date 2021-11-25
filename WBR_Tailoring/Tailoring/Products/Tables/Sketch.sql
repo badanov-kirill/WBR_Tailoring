@@ -60,6 +60,7 @@
     CONSTRAINT [FK_Sketch_ct_id] FOREIGN KEY ([ct_id]) REFERENCES [Material].[ClothType] ([ct_id]),
     CONSTRAINT [FK_Sketch_direction_id] FOREIGN KEY ([direction_id]) REFERENCES [Products].[Direction] ([direction_id]),
     CONSTRAINT [FK_Sketch_kind_id] FOREIGN KEY ([kind_id]) REFERENCES [Products].[Kind] ([kind_id]),
+    CONSTRAINT [FK_Sketch_kw_id] FOREIGN KEY ([kw_id]) REFERENCES [Products].[KeyWords] ([kw_id]),
     CONSTRAINT [FK_Sketch_pt_id] FOREIGN KEY ([pt_id]) REFERENCES [Products].[ProductType] ([pt_id]),
     CONSTRAINT [FK_Sketch_qp_id] FOREIGN KEY ([qp_id]) REFERENCES [Products].[QueuePriority] ([qp_id]),
     CONSTRAINT [FK_Sketch_season_id] FOREIGN KEY ([season_id]) REFERENCES [Products].[Season] ([season_id]),
@@ -69,9 +70,10 @@
     CONSTRAINT [FK_Sketch_st_id] FOREIGN KEY ([st_id]) REFERENCES [Products].[SketchType] ([st_id]),
     CONSTRAINT [FK_Sketch_style_id] FOREIGN KEY ([style_id]) REFERENCES [Products].[Style] ([style_id]),
     CONSTRAINT [FK_Sketch_subject_id] FOREIGN KEY ([subject_id]) REFERENCES [Products].[Subject] ([subject_id]),
-    CONSTRAINT [FK_Sketch_wb_size_group_id] FOREIGN KEY ([wb_size_group_id]) REFERENCES [Products].[WbSizeGroup] ([wb_size_group_id]),
-    CONSTRAINT [FK_Sketch_kw_id] FOREIGN KEY (kw_id) REFERENCES [Products].[KeyWords] ([kw_id])
+    CONSTRAINT [FK_Sketch_wb_size_group_id] FOREIGN KEY ([wb_size_group_id]) REFERENCES [Products].[WbSizeGroup] ([wb_size_group_id])
 );
+
+
 
 
 
@@ -86,7 +88,5 @@ CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_art_name_id] ON Products.Sketch(art_
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_sa] ON Products.Sketch(sa) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Products].[Sketch] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

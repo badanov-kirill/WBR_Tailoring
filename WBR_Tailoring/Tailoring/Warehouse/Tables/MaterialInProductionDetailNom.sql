@@ -12,11 +12,11 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_MaterialInProductionDetailNom_mip_id_pan_id] ON Warehouse.MaterialInProductionDetailNom(mip_id, pan_id) ON [Indexes]
 
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[MaterialInProductionDetailNom] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

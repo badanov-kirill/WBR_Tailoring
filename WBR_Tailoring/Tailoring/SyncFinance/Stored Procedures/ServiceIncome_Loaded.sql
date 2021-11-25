@@ -40,7 +40,5 @@ AS
 	END CATCH
 GO	
 
-GRANT EXECUTE
-    ON OBJECT::[SyncFinance].[ServiceIncome_Loaded] TO [WILDBERRIES\FinanceServices]
-    AS [dbo];
+
 GO

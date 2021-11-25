@@ -17,7 +17,7 @@ AS
 				ON	pan.pa_id = pa.pa_id   
 			INNER JOIN	Products.ArtName an
 				ON	an.art_name_id = s.art_name_id   
-			INNER JOIN	products.Brand b
+			INNER JOIN	Products.Brand b
 				ON	b.brand_id = s.brand_id   
 			INNER JOIN	Products.[Subject] sj
 				ON	sj.subject_id = s.subject_id

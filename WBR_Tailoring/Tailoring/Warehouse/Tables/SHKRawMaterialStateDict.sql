@@ -9,12 +9,12 @@
 
 
 
+
+
 GO 
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_SHKRawMaterialStateDict_state_name] ON Warehouse.SHKRawMaterialStateDict(state_name) ON [Indexes]
 
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[SHKRawMaterialStateDict] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

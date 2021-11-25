@@ -19,7 +19,7 @@ AS
 			eq.equipment_name     equipment,
 			sts.discharge_id,
 			stsjc.cost_per_hour,
-			ISNULL(stsj.close_cnt, stsj.plan_cnt) * ROUND(stsjc.cost_per_hour * sts.operation_time / 3600, 2) cost_job,
+			ISNULL(stsj.close_cnt, stsj.plan_cnt) * ROUND(stsjc.cost_per_hour * sts.operation_time / 3600, 2) - v.amount cost_job,
 			os.office_name
 	FROM	Manufactory.SPCV_TechnologicalSequenceJob stsj   
 			INNER JOIN	Manufactory.SPCV_TechnologicalSequence sts
@@ -53,6 +53,13 @@ AS
 				AND	spcv.sew_office_id = stsjc.office_id   
 			INNER JOIN	Settings.OfficeSetting os
 				ON	os.office_id = spcv.sew_office_id
+			LEFT JOIN (
+			          	SELECT	stsjis.stsj_id,
+			          			SUM(stsjis.amount) amount
+			          	FROM	Manufactory.SPCV_TechnologicalSequenceJobInSalary stsjis
+			          	GROUP BY
+			          		stsjis.stsj_id
+			          )v ON v.stsj_id = stsj.stsj_id
 	WHERE	stsj.close_dt >= @start_dt
 			AND	stsj.close_dt < @finish_dt
 			AND	(@employee_id IS NULL OR stsj.job_employee_id = @employee_id)

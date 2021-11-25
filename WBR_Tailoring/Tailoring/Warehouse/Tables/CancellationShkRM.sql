@@ -34,13 +34,13 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_CancellationShkRM_cancellation_id_shkrm_id] ON [Warehouse].[CancellationShkRM](cancellation_id, shkrm_id) ON [Indexes]
 
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_CancellationShkRM_shkrm_id] ON [Warehouse].[CancellationShkRM](shkrm_id) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[CancellationShkRM] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

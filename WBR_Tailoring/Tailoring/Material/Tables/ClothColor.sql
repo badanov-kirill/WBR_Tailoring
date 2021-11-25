@@ -7,8 +7,8 @@
 
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Material].[ClothColor] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

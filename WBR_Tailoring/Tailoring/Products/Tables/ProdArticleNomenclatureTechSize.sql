@@ -12,10 +12,10 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_ProdArticleNomenclatureTechSize_pan_id_ts_id] ON Products.ProdArticleNomenclatureTechSize(pan_id, ts_id) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Products].[ProdArticleNomenclatureTechSize] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

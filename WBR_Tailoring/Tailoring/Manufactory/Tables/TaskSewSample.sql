@@ -18,6 +18,8 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_TaskSewSample_ts_id_sample_id] ON Manufactory.TaskSewSample(ts_id,sample_id) ON [Indexes]
 
@@ -26,7 +28,5 @@ CREATE NONCLUSTERED INDEX [IX__TaskSewSample_]
 ON [Manufactory].[TaskSewSample] (sample_id)
 INCLUDE (ts_id,has_problem_dt,close_problem_dt,close_dt) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Manufactory].[TaskSewSample] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

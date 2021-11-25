@@ -22,6 +22,8 @@
 );
 
 
+
+
 GO
 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_SHKRawMaterialInfo_doc_id_doc_type_id]
@@ -32,7 +34,5 @@ CREATE NONCLUSTERED INDEX [IX_SHKRawMaterialInfo_rmt_id]
     ON Warehouse.SHKRawMaterialInfo(rmt_id)
     INCLUDE(shkrm_id) ON [Indexes];
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[SHKRawMaterialInfo] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

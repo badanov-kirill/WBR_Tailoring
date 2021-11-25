@@ -391,6 +391,25 @@ AS
 		FROM	@spcv_output_tab sot
 		
 		;
+		DELETE	spcvcc
+		FROM	Planing.SketchPlanColorVariantCompletingComment spcvcc   
+				INNER JOIN	Planing.SketchPlanColorVariantCompleting spcvc
+					ON	spcvc.spcvc_id = spcvcc.spcvc_id   
+				INNER JOIN	Planing.SketchPlanColorVariant spcv
+					ON	spcv.spcv_id = spcvc.spcv_id
+		WHERE	spcv.sp_id = @sp_id
+				AND	NOT EXISTS (
+				   		SELECT	1
+				   		FROM	@spcv_output_tab ot   
+				   				INNER JOIN	@var_compl_tab vct
+				   					ON	vct.rn = ot.rn
+				   		WHERE	ot.spcv_id = spcvc.spcv_id
+				   				AND	vct.completing_id = spcvc.completing_id
+				   				AND	vct.completing_number = spcvc.completing_number
+				   	) 
+				
+		
+		;
 		WITH cte_Target AS (
 			SELECT	spcvc.spcvc_id,
 					spcvc.spcv_id,

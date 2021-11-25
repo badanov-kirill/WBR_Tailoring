@@ -27,13 +27,13 @@
 
 
 
+
+
 GO 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_MaterialInSketch_task_sample_id_shkrm_id] ON Warehouse.MaterialInSketch(shkrm_id, task_sample_id) INCLUDE(misd_id) ON [Indexes]
 
 GO 
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_MaterialInSketch_task_shkrm_id_return_dt] ON Warehouse.MaterialInSketch(shkrm_id) WHERE return_dt IS NULL ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[MaterialInSketch] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

@@ -10,8 +10,8 @@
 
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Manufactory].[Operation] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

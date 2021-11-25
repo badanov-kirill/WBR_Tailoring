@@ -38,8 +38,8 @@
 
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Warehouse].[SHKRawMaterialActualInfo] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

@@ -36,11 +36,11 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_RawMaterialIncomeDetail_doc_id_doc_type_id_shkrm_id] ON Material.RawMaterialIncomeDetail(doc_id, doc_type_id, shkrm_id) ON 
 [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Material].[RawMaterialIncomeDetail] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

@@ -24,8 +24,8 @@
 );
 
 
+
+
 GO
-GRANT SELECT
-    ON OBJECT::[Material].[RawMaterialIncome] TO [wildberries\olap-orr]
-    AS [dbo];
+
 

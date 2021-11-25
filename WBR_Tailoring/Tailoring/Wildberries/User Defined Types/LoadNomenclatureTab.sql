@@ -2,6 +2,7 @@
 (
 	sa_nm VARCHAR(36),
 	nm_id INT,
+	nm_uid VARCHAR(36),
 	PRIMARY KEY CLUSTERED(sa_nm)
 );
 GO

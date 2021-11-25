@@ -13,10 +13,10 @@
 
 
 
+
+
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_SketchPlanColorVariantTS] ON Planing.SketchPlanColorVariantTS(spcv_id, ts_id) ON [Indexes]
 GO
-GRANT SELECT
-    ON OBJECT::[Planing].[SketchPlanColorVariantTS] TO [wildberries\olap-orr]
-    AS [dbo];
+
 
