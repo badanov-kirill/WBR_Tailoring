@@ -1,7 +1,8 @@
 ﻿CREATE TYPE [Ozon].[AttributeValuesType] AS TABLE
 (
 	av_id BIGINT,
-	av_value VARCHAR(50)
+	av_value VARCHAR(50),
+	is_used BIT
 )
 GO
 

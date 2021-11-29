@@ -12,10 +12,12 @@ AS
 		INSERT INTO Ozon.AttributeValues
 			(
 				av_id,
-				av_value
+				av_value,
+				is_used
 			)
 		SELECT	dt.av_id,
-				ISNULL(dt.av_value, '')     av_value
+				ISNULL(dt.av_value, '')     av_value,
+				1
 		FROM	@data                       dt
 		WHERE	NOT EXISTS (
 		     		SELECT	1

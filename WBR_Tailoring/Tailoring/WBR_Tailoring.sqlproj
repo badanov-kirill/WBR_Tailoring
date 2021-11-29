@@ -1622,6 +1622,8 @@
     <Build Include="Ozon\Stored Procedures\Attributes_GetBySketch.sql" />
     <Build Include="Ozon\Stored Procedures\Attributes_GetByCategory.sql" />
     <Build Include="Products\Stored Procedures\AddedOption_GetBySubject.sql" />
+    <Build Include="Ozon\Stored Procedures\AttributeValues_Get.sql" />
+    <Build Include="Ozon\Stored Procedures\AttributeValuesUsed_Set.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
