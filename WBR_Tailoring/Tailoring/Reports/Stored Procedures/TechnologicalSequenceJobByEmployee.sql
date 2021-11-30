@@ -19,8 +19,14 @@ AS
 			eq.equipment_name     equipment,
 			sts.discharge_id,
 			stsjc.cost_per_hour,
-			ISNULL(stsj.close_cnt, stsj.plan_cnt) * ROUND(stsjc.cost_per_hour * sts.operation_time / 3600, 2) - v.amount cost_job,
-			os.office_name
+			CASE 
+			     WHEN stsj.salary_close_dt IS NULL 
+			     THEN ISNULL(stsj.close_cnt, stsj.plan_cnt) * ROUND(stsjc.cost_per_hour * sts.operation_time / 3600, 2) - ISNULL(v.amount, 0)
+			     ELSE 0
+			END cost_job,
+			os.office_name,
+			ISNULL(v2.amount, 0) salary_in_job_this_perod,
+			ISNULL(v.amount, 0) - ISNULL(v2.amount, 0) salary_in_job_alter_perod
 	FROM	Manufactory.SPCV_TechnologicalSequenceJob stsj   
 			INNER JOIN	Manufactory.SPCV_TechnologicalSequence sts
 				ON	sts.sts_id = stsj.sts_id   
@@ -60,8 +66,21 @@ AS
 			          	GROUP BY
 			          		stsjis.stsj_id
 			          )v ON v.stsj_id = stsj.stsj_id
+			LEFT JOIN (
+			          	SELECT	stsjis.stsj_id,
+			          			sp.salary_year,
+			          			sp.salary_month,
+			          			SUM(stsjis.amount) amount
+			          	FROM	Manufactory.SPCV_TechnologicalSequenceJobInSalary stsjis   
+			          			INNER JOIN	Salary.SalaryPeriod sp
+			          				ON	sp.salary_period_id = stsjis.salary_period_id
+			          	GROUP BY
+			          		stsjis.stsj_id,
+			          		sp.salary_year,
+			          		sp.salary_month
+			          )v2 ON v2.stsj_id = stsj.stsj_id AND v2.salary_year = YEAR(stsj.close_dt) AND v2.salary_month = MONTH(stsj.close_dt)        
 	WHERE	stsj.close_dt >= @start_dt
 			AND	stsj.close_dt < @finish_dt
 			AND	(@employee_id IS NULL OR stsj.job_employee_id = @employee_id)
-			AND stsj.salary_close_dt IS NULL
+			--AND stsj.salary_close_dt IS NULL
 			   	

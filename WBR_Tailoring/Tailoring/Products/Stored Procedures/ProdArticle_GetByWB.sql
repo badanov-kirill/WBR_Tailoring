@@ -188,6 +188,44 @@ AS
 		pac.percnt DESC 
 	
 	
+	--SELECT	ao.ao_id_parent,
+	--		aop.ao_name       ao_parrent_name,
+	--		ao.ao_name,
+	--		paao.ao_value     val,
+	--		si.si_name,
+	--		ao.ao_id
+	--FROM	Products.ProdArticleAddedOption paao   
+	--		INNER JOIN	Products.AddedOption ao
+	--			ON	ao.ao_id = paao.ao_id   
+	--		LEFT JOIN	Products.AddedOption aop
+	--			ON	aop.ao_id = ao.ao_id_parent   
+	--		LEFT JOIN	Products.SI si
+	--			ON	si.si_id = paao.si_id
+	--WHERE	paao.pa_id = @pa_id
+	--		AND	ao.content_id IS NOT NULL
+	--		AND	ao.isdeleted = 0
+	--		AND	ao.ao_id_parent != 7
+	-- UNION ALL
+	--SELECT	TOP(3) ao.ao_id_parent,
+	--		aop.ao_name       ao_parrent_name,
+	--		ao.ao_name,
+	--		paao.ao_value     val,
+	--		si.si_name,
+	--		ao.ao_id
+	--FROM	Products.ProdArticleAddedOption paao   
+	--		INNER JOIN	Products.AddedOption ao
+	--			ON	ao.ao_id = paao.ao_id   
+	--		LEFT JOIN	Products.AddedOption aop
+	--			ON	aop.ao_id = ao.ao_id_parent   
+	--		LEFT JOIN	Products.SI si
+	--			ON	si.si_id = paao.si_id
+	--WHERE	paao.pa_id = @pa_id
+	--		AND	ao.content_id IS NOT NULL
+	--		AND	ao.isdeleted = 0
+	--		AND	ao.ao_id_parent = 7
+	--		AND	ao.ao_id IN (28, 29, 92, 132, 142, 144, 145, 146, 147, 24, 25, 150, 151, 152, 155, 39, 40, 43)
+	--ORDER BY 2,	6
+	
 	SELECT	ao.ao_id_parent,
 			aop.ao_name       ao_parrent_name,
 			ao.ao_name,
@@ -201,30 +239,22 @@ AS
 				ON	aop.ao_id = ao.ao_id_parent   
 			LEFT JOIN	Products.SI si
 				ON	si.si_id = paao.si_id
+			INNER JOIN (
+							SELECT ao2.ao_id_parent, MIN(ao2.ao_id) ao_id
+							FROM Products.ProdArticleAddedOption paao2   
+									INNER JOIN	Products.AddedOption ao2
+										ON	ao2.ao_id = paao2.ao_id 
+							WHERE	paao2.pa_id = @pa_id
+									AND	ao2.content_id IS NOT NULL
+									AND	ao2.isdeleted = 0
+									AND	ao2.ao_id_parent != 7  
+							GROUP BY ao2.ao_id_parent
+						) v ON v.ao_id = ao.ao_id
 	WHERE	paao.pa_id = @pa_id
 			AND	ao.content_id IS NOT NULL
 			AND	ao.isdeleted = 0
 			AND	ao.ao_id_parent != 7
-	 UNION ALL
-	SELECT	TOP(3) ao.ao_id_parent,
-			aop.ao_name       ao_parrent_name,
-			ao.ao_name,
-			paao.ao_value     val,
-			si.si_name,
-			ao.ao_id
-	FROM	Products.ProdArticleAddedOption paao   
-			INNER JOIN	Products.AddedOption ao
-				ON	ao.ao_id = paao.ao_id   
-			LEFT JOIN	Products.AddedOption aop
-				ON	aop.ao_id = ao.ao_id_parent   
-			LEFT JOIN	Products.SI si
-				ON	si.si_id = paao.si_id
-	WHERE	paao.pa_id = @pa_id
-			AND	ao.content_id IS NOT NULL
-			AND	ao.isdeleted = 0
-			AND	ao.ao_id_parent = 7
-			AND	ao.ao_id IN (28, 29, 92, 132, 142, 144, 145, 146, 147, 24, 25, 150, 151, 152, 155, 39, 40, 43)
-	ORDER BY 2,	6
+	ORDER BY aop.ao_name, ao.ao_id
 	
 	END TRY
 	BEGIN CATCH
