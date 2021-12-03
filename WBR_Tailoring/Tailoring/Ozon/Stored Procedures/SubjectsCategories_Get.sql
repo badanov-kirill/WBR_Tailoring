@@ -12,3 +12,4 @@ AS
 				ON	sc.subject_id = s.subject_id   
 			LEFT JOIN	Ozon.Categories c
 				ON	c.category_id = sc.category_id
+	ORDER BY c.category_name

@@ -13,3 +13,4 @@ AS
 				ON	cav.av_id = av.av_id
 	WHERE	cav.category_id = @category_id
 			AND	cav.attribute_id = @attribute_id
+	ORDER BY av.is_used DESC, av.av_value

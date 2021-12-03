@@ -180,11 +180,26 @@ AS
 		USING (
 		      	SELECT	dt.stsj_id,
 		      			@salary_period_id salary_period_id,
-		      			dt.cnt,
-		      			dt.amount,
+		      			CASE WHEN dt.cnt + ISNULL(v.cnt, 0) + 0.6 > ISNULL(stsj.close_cnt, stsj.plan_cnt) 
+		      				THEN  ISNULL(stsj.close_cnt, stsj.plan_cnt) - ISNULL(v.cnt, 0)
+		      				ELSE dt.cnt
+		      			END cnt,
+		      			CASE WHEN dt.cnt + ISNULL(v.cnt, 0) + 0.6 > ISNULL(stsj.close_cnt, stsj.plan_cnt) 
+		      				THEN (dt.amount/dt.cnt)*(ISNULL(stsj.close_cnt, stsj.plan_cnt) - ISNULL(v.cnt, 0))
+		      				ELSE dt.amount
+		      			END amount,
 		      			@dt              dt,
 		      			@employee_id     employee_id
 		      	FROM	@data_tab        dt
+		      	INNER JOIN Manufactory.SPCV_TechnologicalSequenceJob stsj 
+		      		ON stsj.stsj_id = dt.stsj_id
+		      	LEFT JOIN (
+		      	           	SELECT	stsjis.stsj_id,
+		      	           			SUM(stsjis.cnt) cnt
+		      	           	FROM	Manufactory.SPCV_TechnologicalSequenceJobInSalary stsjis
+		      	           	GROUP BY
+		      	           		stsjis.stsj_id
+		      	           )v ON v.stsj_id = stsj.stsj_id
 		      ) s
 				ON t.stsj_id = s.stsj_id
 				AND t.salary_period_id = s.salary_period_id

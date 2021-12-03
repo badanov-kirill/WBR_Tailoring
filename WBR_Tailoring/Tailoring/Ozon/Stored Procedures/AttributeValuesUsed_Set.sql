@@ -11,7 +11,7 @@ AS
 		SET 	is_used = d.is_used
 		FROM	Ozon.AttributeValues av
 				INNER JOIN	@data d
-					ON	av.av_id = av.av_id
+					ON	av.av_id = d.av_id
 		
 		COMMIT TRANSACTION
 	END TRY
