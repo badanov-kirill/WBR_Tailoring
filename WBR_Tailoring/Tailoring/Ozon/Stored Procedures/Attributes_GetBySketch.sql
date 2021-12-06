@@ -29,11 +29,14 @@ AS
 			INNER JOIN	dbo.DataTypes dt
 				ON	dt.data_type_id = a.data_type_id
 	WHERE	ca.category_id = @category_id
+			AND	a.is_used = 1
 	
 	SELECT	ca.attribute_id,
 			av.av_id,
 			av.av_value
 	FROM	Ozon.CategoriesAttributes ca   
+			INNER JOIN	Ozon.Attributes a
+				ON	a.attribute_id = ca.attribute_id   
 			INNER JOIN	Ozon.CategoriesAttributeValues cav
 				ON	cav.category_id = ca.category_id
 				AND	cav.attribute_id = ca.attribute_id   
@@ -41,3 +44,4 @@ AS
 				ON	av.av_id = cav.av_id
 	WHERE	ca.category_id = @category_id
 			AND	av.is_used = 1
+			AND	a.is_used = 1

@@ -1626,6 +1626,7 @@
     <Build Include="Ozon\Stored Procedures\AttributeValuesUsed_Set.sql" />
     <Build Include="Ozon\Tables\ProdArticleAttributeValues.sql" />
     <Build Include="Ozon\Tables\ProdArticleAttribute.sql" />
+    <Build Include="Ozon\Stored Procedures\GetArticleForOzon.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

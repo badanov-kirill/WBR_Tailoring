@@ -76,7 +76,8 @@ AS
 		     		data_type_id,
 		     		oag_id,
 		     		is_collection,
-		     		dictionary_id
+		     		dictionary_id,
+		     		is_used
 		     	)
 		     VALUES
 		     	(
@@ -86,7 +87,8 @@ AS
 		     		s.data_type_id,
 		     		s.oag_id,
 		     		s.is_collection,
-		     		s.dictionary_id
+		     		s.dictionary_id,
+		     		1
 		     	);
 		
 		WITH cte_Target AS (

@@ -123,7 +123,8 @@ AS
 			pa.sa,
 			oa_ts.x [TechSizeArticle],
 			pa.cut_comment, 
-			pa.sew_comment
+			pa.sew_comment,
+			oa_ozon.x ao_ozon
 	FROM	Products.ProdArticle pa   
 			OUTER APPLY (
 			      	SELECT	pan.sa'@sanm',
@@ -144,39 +145,54 @@ AS
 			      		pan.sa ASC,
 			      		panc.is_main DESC
 			      	FOR XML	PATH('art'), ROOT('arts')
-			      ) oa_color(x)OUTER APPLY (
-			                         	SELECT	paco.consist_id '@id',
-			                         			con.consist_name '@name',
-			                         			paco.percnt '@per'
-			                         	FROM	Products.ProdArticleConsist paco   
-			                         			INNER JOIN	Products.Consist con
-			                         				ON	con.consist_id = paco.consist_id
-			                         	WHERE	paco.pa_id = pa.pa_id
-			                         	FOR XML	PATH('con'), ROOT('cons')
-			                         ) oa_consist(x)OUTER APPLY (
-			                                              	SELECT	paao.ao_id '@id',
-			                                              			paao.ao_value '@val',
-			                                              			paao.si_id '@si'
-			                                              	FROM	Products.ProdArticleAddedOption paao
-			                                              	INNER JOIN Products.AddedOption ao ON ao.ao_id = paao.ao_id
-			                                              	WHERE	paao.pa_id = pa.pa_id
-			                                              	AND ao.isdeleted = 0
-			                                              	FOR XML	PATH('ao'), ROOT('aos')
-			                                              ) oa(x)OUTER APPLY (
-			                                                           	SELECT	pan.sa'@sanm',
-			                                                           			ts.ts_name '@name',
-			                                                           			ts.ts_id '@id'
-			                                                           	FROM	Products.ProdArticleNomenclature pan   
-			                                                           			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
-			                                                           				ON	pants.pan_id = pan.pan_id   
-			                                                           			INNER JOIN	Products.TechSize ts
-			                                                           				ON	ts.ts_id = pants.ts_id
-			                                                           	WHERE	pan.pa_id = pa.pa_id
-			                                                           			AND	pants.is_deleted = 0
-			                                                           	ORDER BY
-			                                                           		pan.sa ASC
-			                                                           	FOR XML	PATH('tart'), ROOT('tarts')
-			                                                           ) oa_ts(x)
+			      ) oa_color(x)
+			OUTER APPLY (
+			       SELECT	paco.consist_id '@id',
+			       		con.consist_name '@name',
+			       		paco.percnt '@per'
+			       FROM	Products.ProdArticleConsist paco   
+			       		INNER JOIN	Products.Consist con
+			       			ON	con.consist_id = paco.consist_id
+			       WHERE	paco.pa_id = pa.pa_id
+			       FOR XML	PATH('con'), ROOT('cons')
+			       ) oa_consist(x)
+			OUTER APPLY (
+			          	SELECT	paao.ao_id '@id',
+			          			paao.ao_value '@val',
+			          			paao.si_id '@si'
+			          	FROM	Products.ProdArticleAddedOption paao
+			          	INNER JOIN Products.AddedOption ao ON ao.ao_id = paao.ao_id
+			          	WHERE	paao.pa_id = pa.pa_id
+			          	AND ao.isdeleted = 0
+			          	FOR XML	PATH('ao'), ROOT('aos')
+			          ) oa(x)
+			OUTER APPLY (
+             	SELECT	pan.sa'@sanm',
+             			ts.ts_name '@name',
+             			ts.ts_id '@id'
+             	FROM	Products.ProdArticleNomenclature pan   
+             			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
+             				ON	pants.pan_id = pan.pan_id   
+             			INNER JOIN	Products.TechSize ts
+             				ON	ts.ts_id = pants.ts_id
+             	WHERE	pan.pa_id = pa.pa_id
+             			AND	pants.is_deleted = 0
+             	ORDER BY
+             		pan.sa ASC
+             	FOR XML	PATH('tart'), ROOT('tarts')
+             ) oa_ts(x)
+             OUTER APPLY (
+			          	SELECT v.attribute_id '@id', v.av_id '@av_id', v.attribute_value '@val'
+			          	FROM ( 
+			          	SELECT paav.attribute_id, paav.av_id, NULL attribute_value
+			          	FROM Ozon.ProdArticleAttributeValues paav
+			          	WHERE paav.pa_id = pa.pa_id
+			          	UNION ALL
+			          	SELECT paa.attribute_id, NULL, paa.attribute_value
+			          	FROM Ozon.ProdArticleAttribute paa
+			          	WHERE paa.pa_id = pa.pa_id ) v
+			          	FOR XML	PATH('attr'), ROOT('aos_ozon')
+			          ) oa_ozon(x)
 	WHERE	pa.sketch_id = @sketch_id
 			AND	pa.is_deleted = 0
 	ORDER BY

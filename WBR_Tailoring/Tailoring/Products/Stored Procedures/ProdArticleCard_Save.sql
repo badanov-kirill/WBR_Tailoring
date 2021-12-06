@@ -14,6 +14,7 @@ AS
 	DECLARE @model_art_ts TABLE(rn INT, sa_nm VARCHAR(36), ts_id INT, PRIMARY KEY CLUSTERED(rn, sa_nm, ts_id))
 	DECLARE @consist_tab TABLE(rn INT, consist_id INT, percnt TINYINT, PRIMARY KEY CLUSTERED(rn, consist_id))
 	DECLARE @ao_model TABLE (rn INT, ao_id INT, val DECIMAL(9, 2), si_id INT, PRIMARY KEY CLUSTERED(rn, ao_id))
+	DECLARE @ao_ozon TABLE (rn INT, attribute_id BIGINT, av_id BIGINT, val VARCHAR(50), PRIMARY KEY(rn, attribute_id, av_id))
 	DECLARE @ct_id INT 
 	DECLARE @subject_id INT
 	DECLARE @consist_type_id INT 
@@ -67,6 +68,7 @@ AS
 	        	art_color_xml XML,
 	        	consist_xml XML,
 	        	ao_xml XML,
+	        	ao_ozon_xml XML,
 	        	rn INT,
 	        	ao_ts_id INT,
 	        	is_not_new BIT,
@@ -108,6 +110,7 @@ AS
 	    art_color_xml,
 	    consist_xml,
 	    ao_xml,
+	    ao_ozon_xml,
 	    rn,
 	    ao_ts_id,
 	    is_not_new,
@@ -126,6 +129,7 @@ AS
 			ml.query('arts')               art_color_xml,
 			ml.query('cons')               consist_xml,
 			ml.query('aos')                ao_xml,
+			ml.query('aos_ozon')           ao_ozon_xml,
 			ROW_NUMBER() OVER(ORDER BY ml.value('@id', 'int')) rn,
 			ml.value('@aots', 'int')       ao_ts_id,
 			ISNULL(ml.value('@nonew', 'bit'), 0) is_not_new,
@@ -237,6 +241,23 @@ AS
 			ml.value('@si', 'int')
 	FROM	@model_tab mt   
 			CROSS APPLY mt.ao_xml.nodes('aos/ao')x(ml)	
+		
+	INSERT INTO @ao_ozon
+		(
+			rn,
+			attribute_id,
+			av_id,
+			val
+		)
+	SELECT	mt.rn,
+			ml.value('@id', 'bigint'),
+			ISNULL(ml.value('@av_id', 'bigint'), 0),
+			CASE 
+			     WHEN ml.value('@val', 'varchar(50)') = '' THEN NULL
+			     ELSE ml.value('@val', 'varchar(50)')
+			END
+	FROM	@model_tab mt   
+			CROSS APPLY mt.ao_ozon_xml.nodes('aos_ozon/attr')x(ml)
 			
 	SET @consist_type_id = (
 	    	SELECT	TOP(1) c.consist_type_id
@@ -488,6 +509,112 @@ AS
 		     		s.dt,
 		     		s.ao_value,
 		     		s.si_id
+		     	)
+		WHEN NOT MATCHED BY SOURCE THEN 
+		     DELETE	;
+		
+		WITH cte_Target AS
+		(
+			SELECT	paav.pa_id,
+					paav.attribute_id,
+					paav.av_id,
+					paav.employee_id,
+					paav.dt
+			FROM	Ozon.ProdArticleAttributeValues paav
+			WHERE	EXISTS (
+			     		SELECT	1
+			     		FROM	@prod_aricle_output pao
+			     		WHERE	pao.pa_id = paav.pa_id
+			     	)
+		)
+		MERGE cte_Target t
+		USING (
+		      	SELECT	pao.pa_id,
+		      			aom.attribute_id,
+		      			aom.av_id,
+		      			@employee_id     employee_id,
+		      			@dt              dt
+		      	FROM	@prod_aricle_output pao   
+		      			INNER JOIN	@ao_ozon aom
+		      				ON	pao.rn = aom.rn
+		      	WHERE aom.av_id != 0
+		      ) s
+				ON t.av_id = s.av_id
+				AND t.attribute_id = s.attribute_id
+				AND t.pa_id = s.pa_id
+		WHEN MATCHED THEN 
+		     UPDATE	
+		     SET 	employee_id     = s.employee_id,
+		     		dt              = s.dt
+		WHEN NOT MATCHED BY TARGET THEN 
+		     INSERT
+		     	(
+		     		pa_id,
+					attribute_id,
+					av_id,
+					employee_id,
+					dt
+		     	)
+		     VALUES
+		     	(
+		     		s.pa_id,
+					s.attribute_id,
+					s.av_id,
+					s.employee_id,
+					s.dt
+		     	)
+		WHEN NOT MATCHED BY SOURCE THEN 
+		     DELETE	;
+		     
+		WITH cte_Target AS
+		(
+			SELECT	paa.pa_id,
+					paa.attribute_id,
+					paa.attribute_value,
+					paa.employee_id,
+					paa.dt
+			FROM	Ozon.ProdArticleAttribute paa
+			WHERE	EXISTS (
+			     		SELECT	1
+			     		FROM	@prod_aricle_output pao
+			     		WHERE	pao.pa_id = paa.pa_id
+			     	)
+		)
+		MERGE cte_Target t
+		USING (
+		      	SELECT	pao.pa_id,
+		      			aom.attribute_id,
+		      			aom.val,
+		      			@employee_id     employee_id,
+		      			@dt              dt
+		      	FROM	@prod_aricle_output pao   
+		      			INNER JOIN	@ao_ozon aom
+		      				ON	pao.rn = aom.rn
+		      	WHERE aom.av_id = 0 AND aom.val != ''
+		      ) s
+				ON t.attribute_id = s.attribute_id
+				AND t.pa_id = s.pa_id
+		WHEN MATCHED THEN 
+		     UPDATE	
+		     SET 	attribute_value = s.val,
+					employee_id     = s.employee_id,
+		     		dt              = s.dt
+		WHEN NOT MATCHED BY TARGET THEN 
+		     INSERT
+		     	(
+		     		pa_id,
+					attribute_id,
+					attribute_value,
+					employee_id,
+					dt
+		     	)
+		     VALUES
+		     	(
+		     		s.pa_id,
+					s.attribute_id,
+					s.val,
+					s.employee_id,
+					s.dt
 		     	)
 		WHEN NOT MATCHED BY SOURCE THEN 
 		     DELETE	;
