@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Ozon].[GetArticleForOzon]
-	@pa_id INT
+	@pa_id INT,
+	@pan_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -10,14 +11,17 @@ AS
 	DECLARE @kind_name VARCHAR(50)
 	DECLARE @tnved_cod VARCHAR(15)
 	DECLARE @sa VARCHAR(100)
-	
+	DECLARE @descr VARCHAR(1000)
+	DECLARE @consist VARCHAR(1000)
 	
 	SELECT	@category_id = sc.category_id,
 			@brand_name      = b.brand_name,
 			@season_name     = sn.season_name,
 			@kind_name       = k.kind_name,
 			@tnved_cod       = t.tnved_cod,
-			@sa				 = ISNULL(pa.sa, s.sa + CAST(pa.model_number AS VARCHAR(10)) + '/')
+			@sa				 = ISNULL(pa.sa, s.sa + CAST(pa.model_number AS VARCHAR(10)) + '/'),
+			@descr			 = ISNULL(pa.descr, s.descr),
+			@consist		 = STUFF(oa_cons.x , 1, 2, '')
 	FROM	Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id   
@@ -38,12 +42,20 @@ AS
 			      	ORDER BY
 			      		pac.percnt DESC
 			      ) oa_ct
-	LEFT JOIN	Products.TNVED_Settigs tnvds
+			LEFT JOIN	Products.TNVED_Settigs tnvds
 				ON	tnvds.subject_id = s.subject_id
 				AND	tnvds.ct_id = s.ct_id
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id
+			OUTER APPLY (SELECT	' ,' + CAST(pac.percnt AS VARCHAR(10)) + '% ' + c.consist_name
+    			 FROM	Products.ProdArticleConsist pac   
+    	 				INNER JOIN	Products.Consist c
+    	 					ON	c.consist_id = pac.consist_id
+    			 WHERE	pac.pa_id = pa.pa_id
+    			 ORDER BY
+    	 			pac.percnt DESC
+    			 FOR XML	PATH(''))oa_cons(x)
 	WHERE	pa.pa_id = @pa_id
 
 	SELECT	pa.pa_id,
@@ -66,10 +78,13 @@ AS
 	SELECT	pan.pan_id,
 			pan.sa,
 			pan.whprice,
-			pan.price_ru
+			pan.price_ru,
+			pan.nm_id,
+			pan.pics_dt
 	FROM	Products.ProdArticleNomenclature pan 
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0 
+			AND (@pan_id IS NULL OR pan.pan_id = @pan_id)
 			--AND ISNULL(pan.price_ru, 0) > 0 
 
 	SELECT	pan.pan_id,
@@ -103,6 +118,7 @@ AS
 				  ) oa_ozon_color2
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0
+			AND (@pan_id IS NULL OR pan.pan_id = @pan_id)
 	GROUP BY
 		pan.pan_id,
 		ISNULL(oa_ozon_color.av_id, oa_ozon_color2.av_id)		
@@ -128,17 +144,27 @@ AS
 			      			AND av.av_value = ts.rus_name
 			) oa_ozon_ts
 	WHERE	pan.pa_id = @pa_id
-			AND	pan.is_deleted = 0	 
+			AND	pan.is_deleted = 0
+			AND (@pan_id IS NULL OR pan.pan_id = @pan_id)	 
 			
 	SELECT	paav.attribute_id,
 			paav.av_id,
 			NULL attribute_value
-	FROM	Ozon.ProdArticleAttributeValues paav
+	FROM	Ozon.ProdArticleAttributeValues paav   
+			INNER JOIN	Ozon.Attributes a
+				ON	a.attribute_id = paav.attribute_id   
+			INNER JOIN	Ozon.CategoriesAttributes ca
+				ON	ca.attribute_id = paav.attribute_id
+				AND	ca.category_id = @category_id
+	WHERE	paav.pa_id = @pa_id
+			AND	a.is_used = 1
+			AND	a.attribute_id NOT IN (31, 4495, 9163, 12121, 4389, 4604, 9390, 4300, 4296)
 	UNION ALL 
 	SELECT	paa.attribute_id,
 			NULL                          av_id,
 			paa.attribute_value
 	FROM	Ozon.ProdArticleAttribute     paa
+	WHERE paa.pa_id = @pa_id
 	UNION ALL 
 	SELECT	TOP(1) v.attribute_id,	--Бренд
 			av.av_id,
@@ -188,5 +214,47 @@ AS
 			v.av_id, --Россия
 			v.val
 	FROM	(VALUES(4389, 90295, 'Россия')) v(attribute_id, av_id, val)
-	
-			
+	UNION ALL
+	SELECT 	v.attribute_id, --Аннотация
+			v.av_id,
+			v.val
+	FROM	(VALUES(4191, NULL, @descr)) v(attribute_id, av_id, val)
+	UNION ALL
+	SELECT 	v.attribute_id, --Состав
+			v.av_id,
+			v.val
+	FROM	(VALUES(4604, NULL, @consist)) v(attribute_id, av_id, val)
+	UNION ALL		
+	SELECT 	TOP(1) v.attribute_id, --Целевая аудитория
+			ISNULL(paav.av_id,v.av_id) av_id,
+			v.val
+	FROM	(VALUES(9390, 43241, NULL)) v(attribute_id, av_id, val)
+			INNER JOIN	Ozon.CategoriesAttributeValues cav
+				ON cav.attribute_id = v.attribute_id
+				AND	cav.category_id = @category_id
+			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+				ON paav.pa_id = @pa_id	
+				AND paav.attribute_id = v.attribute_id
+	UNION ALL		
+	SELECT 	TOP(1) v.attribute_id, --Тип упаковки одежды
+			ISNULL(paav.av_id,v.av_id) av_id,
+			v.val
+	FROM	(VALUES(4300, 44412, NULL)) v(attribute_id, av_id, val)
+			INNER JOIN	Ozon.CategoriesAttributeValues cav
+				ON cav.attribute_id = v.attribute_id
+				AND	cav.category_id = @category_id
+			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+				ON paav.pa_id = @pa_id	
+				AND paav.attribute_id = v.attribute_id
+	UNION ALL		
+	SELECT 	TOP(1) v.attribute_id, --Рост
+			ISNULL(paav.av_id,v.av_id) av_id, --165-170
+			v.val
+	FROM	(VALUES(4296, 83862, NULL)) v(attribute_id, av_id, val)
+			INNER JOIN	Ozon.CategoriesAttributeValues cav
+				ON cav.attribute_id = v.attribute_id
+				AND	cav.category_id = @category_id
+			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+				ON paav.pa_id = @pa_id	
+				AND paav.attribute_id = v.attribute_id			
+				
