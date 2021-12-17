@@ -48,7 +48,7 @@ AS
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id
-			OUTER APPLY (SELECT	' ,' + CAST(pac.percnt AS VARCHAR(10)) + '% ' + c.consist_name
+			OUTER APPLY (SELECT	', ' + CAST(pac.percnt AS VARCHAR(10)) + '% ' + c.consist_name
     			 FROM	Products.ProdArticleConsist pac   
     	 				INNER JOIN	Products.Consist c
     	 					ON	c.consist_id = pac.consist_id
@@ -158,7 +158,7 @@ AS
 				AND	ca.category_id = @category_id
 	WHERE	paav.pa_id = @pa_id
 			AND	a.is_used = 1
-			AND	a.attribute_id NOT IN (31, 4495, 9163, 12121, 4389, 4604, 9390, 4300, 4296)
+			AND	a.attribute_id NOT IN (31, 12121, 4389)
 	UNION ALL 
 	SELECT	paa.attribute_id,
 			NULL                          av_id,
@@ -177,28 +177,28 @@ AS
 				ON	av.av_value = @brand_name
 				AND	cav.attribute_id = v.attribute_id
 	UNION ALL
-	SELECT TOP(1)	v.attribute_id, --Сезон
-			ISNULL(av.av_id, 30937), --Если неопределено то "На любой сезон"
-			NULL
-	FROM	(VALUES(4495)) v(attribute_id)
-			LEFT JOIN	Ozon.AttributeValues av   
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON	cav.av_id = av.av_id
-				AND	cav.category_id = @category_id
-				ON	av.av_value = @season_name
-				AND	cav.attribute_id = v.attribute_id
-	UNION ALL
-	SELECT TOP(1)	v.attribute_id, --Пол
-			ISNULL(av.av_id, 22881), --Если неопределено то "Женский"
-			NULL
-	FROM	(VALUES(9163)) v(attribute_id)
-			LEFT JOIN	Ozon.AttributeValues av   
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON	cav.av_id = av.av_id
-				AND	cav.category_id = @category_id
-				ON	av.av_value = @kind_name
-				AND	cav.attribute_id = v.attribute_id
-	UNION ALL
+	--SELECT TOP(1)	v.attribute_id, --Сезон
+	--		ISNULL(av.av_id, 30937), --Если неопределено то "На любой сезон"
+	--		NULL
+	--FROM	(VALUES(4495)) v(attribute_id)
+	--		LEFT JOIN	Ozon.AttributeValues av   
+	--		INNER JOIN	Ozon.CategoriesAttributeValues cav
+	--			ON	cav.av_id = av.av_id
+	--			AND	cav.category_id = @category_id
+	--			ON	av.av_value = @season_name
+	--			AND	cav.attribute_id = v.attribute_id
+	--UNION ALL
+	--SELECT TOP(1)	v.attribute_id, --Пол
+	--		ISNULL(av.av_id, 22881), --Если неопределено то "Женский"
+	--		NULL
+	--FROM	(VALUES(9163)) v(attribute_id)
+	--		LEFT JOIN	Ozon.AttributeValues av   
+	--		INNER JOIN	Ozon.CategoriesAttributeValues cav
+	--			ON	cav.av_id = av.av_id
+	--			AND	cav.category_id = @category_id
+	--			ON	av.av_value = @kind_name
+	--			AND	cav.attribute_id = v.attribute_id
+	--UNION ALL
 	SELECT TOP(1)	v.attribute_id, --ТНВД
 			av.av_id,
 			CASE WHEN av.av_id IS NULL THEN @tnved_cod ELSE av.av_value END
@@ -214,47 +214,47 @@ AS
 			v.av_id, --Россия
 			v.val
 	FROM	(VALUES(4389, 90295, 'Россия')) v(attribute_id, av_id, val)
-	UNION ALL
-	SELECT 	v.attribute_id, --Аннотация
-			v.av_id,
-			v.val
-	FROM	(VALUES(4191, NULL, @descr)) v(attribute_id, av_id, val)
-	UNION ALL
-	SELECT 	v.attribute_id, --Состав
-			v.av_id,
-			v.val
-	FROM	(VALUES(4604, NULL, @consist)) v(attribute_id, av_id, val)
-	UNION ALL		
-	SELECT 	TOP(1) v.attribute_id, --Целевая аудитория
-			ISNULL(paav.av_id,v.av_id) av_id,
-			v.val
-	FROM	(VALUES(9390, 43241, NULL)) v(attribute_id, av_id, val)
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON cav.attribute_id = v.attribute_id
-				AND	cav.category_id = @category_id
-			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
-				ON paav.pa_id = @pa_id	
-				AND paav.attribute_id = v.attribute_id
-	UNION ALL		
-	SELECT 	TOP(1) v.attribute_id, --Тип упаковки одежды
-			ISNULL(paav.av_id,v.av_id) av_id,
-			v.val
-	FROM	(VALUES(4300, 44412, NULL)) v(attribute_id, av_id, val)
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON cav.attribute_id = v.attribute_id
-				AND	cav.category_id = @category_id
-			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
-				ON paav.pa_id = @pa_id	
-				AND paav.attribute_id = v.attribute_id
-	UNION ALL		
-	SELECT 	TOP(1) v.attribute_id, --Рост
-			ISNULL(paav.av_id,v.av_id) av_id, --165-170
-			v.val
-	FROM	(VALUES(4296, 83862, NULL)) v(attribute_id, av_id, val)
-			INNER JOIN	Ozon.CategoriesAttributeValues cav
-				ON cav.attribute_id = v.attribute_id
-				AND	cav.category_id = @category_id
-			LEFT JOIN Ozon.ProdArticleAttributeValues paav 
-				ON paav.pa_id = @pa_id	
-				AND paav.attribute_id = v.attribute_id			
+	--UNION ALL
+	--SELECT 	v.attribute_id, --Аннотация
+	--		v.av_id,
+	--		v.val
+	--FROM	(VALUES(4191, NULL, @descr)) v(attribute_id, av_id, val)
+	--UNION ALL
+	--SELECT 	v.attribute_id, --Состав
+	--		v.av_id,
+	--		v.val
+	--FROM	(VALUES(4604, NULL, @consist)) v(attribute_id, av_id, val)
+	--UNION ALL		
+	--SELECT 	TOP(1) v.attribute_id, --Целевая аудитория
+	--		ISNULL(paav.av_id,v.av_id) av_id,
+	--		v.val
+	--FROM	(VALUES(9390, 43241, NULL)) v(attribute_id, av_id, val)
+	--		INNER JOIN	Ozon.CategoriesAttributeValues cav
+	--			ON cav.attribute_id = v.attribute_id
+	--			AND	cav.category_id = @category_id
+	--		LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+	--			ON paav.pa_id = @pa_id	
+	--			AND paav.attribute_id = v.attribute_id
+	--UNION ALL		
+	--SELECT 	TOP(1) v.attribute_id, --Тип упаковки одежды
+	--		ISNULL(paav.av_id,v.av_id) av_id,
+	--		v.val
+	--FROM	(VALUES(4300, 44412, NULL)) v(attribute_id, av_id, val)
+	--		INNER JOIN	Ozon.CategoriesAttributeValues cav
+	--			ON cav.attribute_id = v.attribute_id
+	--			AND	cav.category_id = @category_id
+	--		LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+	--			ON paav.pa_id = @pa_id	
+	--			AND paav.attribute_id = v.attribute_id
+	--UNION ALL		
+	--SELECT 	TOP(1) v.attribute_id, --Рост
+	--		ISNULL(paav.av_id,v.av_id) av_id, --165-170
+	--		v.val
+	--FROM	(VALUES(4296, 83862, NULL)) v(attribute_id, av_id, val)
+	--		INNER JOIN	Ozon.CategoriesAttributeValues cav
+	--			ON cav.attribute_id = v.attribute_id
+	--			AND	cav.category_id = @category_id
+	--		LEFT JOIN Ozon.ProdArticleAttributeValues paav 
+	--			ON paav.pa_id = @pa_id	
+	--			AND paav.attribute_id = v.attribute_id			
 				
