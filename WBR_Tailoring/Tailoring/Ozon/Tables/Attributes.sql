@@ -7,5 +7,6 @@
 	oag_id              INT CONSTRAINT [FK_OzonAttributes_oag_id] FOREIGN KEY REFERENCES Ozon.AttributesGroups(oag_id) NULL,
 	is_collection       BIT NOT NULL,
 	dictionary_id       INT NULL,
-	is_used             BIT NOT NULL
+	is_used             BIT NOT NULL,
+	is_required_us		BIT NOT NULL
 )

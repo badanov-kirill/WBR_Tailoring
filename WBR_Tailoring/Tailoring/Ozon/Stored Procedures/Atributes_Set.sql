@@ -77,7 +77,8 @@ AS
 		     		oag_id,
 		     		is_collection,
 		     		dictionary_id,
-		     		is_used
+		     		is_used,
+		     		is_required_us
 		     	)
 		     VALUES
 		     	(
@@ -88,7 +89,8 @@ AS
 		     		s.oag_id,
 		     		s.is_collection,
 		     		s.dictionary_id,
-		     		1
+		     		1,
+		     		0
 		     	);
 		
 		WITH cte_Target AS (

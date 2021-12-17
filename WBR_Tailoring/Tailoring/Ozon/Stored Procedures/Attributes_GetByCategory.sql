@@ -10,7 +10,8 @@ AS
 			ca.is_required,
 			dt.data_type_name,
 			a.is_collection,
-			a.is_used
+			a.is_used,
+			a.is_required_us
 	FROM	Ozon.CategoriesAttributes ca   
 			INNER JOIN	Ozon.Attributes a
 				ON	a.attribute_id = ca.attribute_id   

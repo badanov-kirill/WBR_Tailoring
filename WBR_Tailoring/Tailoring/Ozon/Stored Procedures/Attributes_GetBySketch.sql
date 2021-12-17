@@ -20,7 +20,10 @@ AS
 	SELECT	a.attribute_id,
 			a.attribute_name,
 			a.attribute_descr,
-			ca.is_required,
+			CASE 
+			     WHEN ca.is_required = 1 OR a.is_required_us = 1 THEN 1
+			     ELSE 0
+			END is_required,
 			dt.data_type_name,
 			a.is_collection
 	FROM	Ozon.CategoriesAttributes ca   
