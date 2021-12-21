@@ -1631,6 +1631,7 @@
     <Build Include="Ozon\Stored Procedures\ProdArticleForOzon_GetForSend.sql" />
     <Build Include="Ozon\Stored Procedures\AtributesRequiredUs_Set.sql" />
     <Build Include="Ozon\User Defined Types\AttributesRequiredType.sql" />
+    <Build Include="Reports\Stored Procedures\ChestnyZnakUsed.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

@@ -406,8 +406,23 @@ AS
 				   		WHERE	ot.spcv_id = spcvc.spcv_id
 				   				AND	vct.completing_id = spcvc.completing_id
 				   				AND	vct.completing_number = spcvc.completing_number
-				   	) 
+				   	) ;
 				
+		DELETE	pcr
+		FROM	Planing.PreCostReserv pcr   
+				INNER JOIN	Planing.SketchPlanColorVariantCompleting spcvc
+					ON	spcvc.spcvc_id = pcr.spcvc_id   
+				INNER JOIN	Planing.SketchPlanColorVariant spcv
+					ON	spcv.spcv_id = spcvc.spcv_id   
+				INNER JOIN	@spcv_output_tab sot
+					ON	sot.spcv_id = spcvc.spcv_id   
+				LEFT JOIN	@var_compl_tab vct
+					ON	vct.rn = sot.rn
+					AND	vct.completing_id = spcvc.completing_id
+					AND	vct.completing_number = spcvc.completing_number
+		WHERE	sot.rn IS NOT NULL
+				AND	vct.rn IS NULL
+				AND	spcv.sp_id = @sp_id
 		
 		;
 		WITH cte_Target AS (
