@@ -11,11 +11,13 @@ AS
 			sj.subject_name,
 			oczdi.gtin01,
 			oczdi.serial21,
+			oczdi.intrnal91, 
+			oczdi.intrnal92,
 			pbd.packing_box_id,
 			sfp.sfp_id,
 			sup.supplier_name,
-			czic.dt_send       in_circulation_dt,
-			czoc.dt_create     out_circulation_dt
+			oa_czic.dt_send       in_circulation_dt,
+			oa_czoc.dt_create     out_circulation_dt
 	FROM	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi   
 			INNER JOIN	Manufactory.OrderChestnyZnakDetailItem oczdi
 				ON	oczdi.oczdi_id = pucczi.oczdi_id   
@@ -45,13 +47,20 @@ AS
 				ON	sfp.sfp_id = psfppb.sfp_id   
 			LEFT JOIN	Suppliers.Supplier sup
 				ON	sup.supplier_id = sfp.supplier_id   
-			LEFT JOIN	Manufactory.ChestnyZnakInCirculationDetail czicd
-				ON	czicd.oczdi_id = oczdi.oczdi_id   
-			LEFT JOIN	Manufactory.ChestnyZnakInCirculation czic
-				ON	czic.czic_id = czicd.czic_id   
-			LEFT JOIN	Manufactory.ChestnyZnakOutCirculationDetail czocd
-				ON	czocd.oczdi_id = oczdi.oczdi_id   
-			LEFT JOIN	Manufactory.ChestnyZnakOutCirculation czoc
-				ON	czoc.czoc_id = czocd.czoc_id
+			OUTER APPLY (SELECT TOP(1) czic.dt_send
+			             FROM Manufactory.ChestnyZnakInCirculationDetail czicd
+							LEFT JOIN	Manufactory.ChestnyZnakInCirculation czic
+							ON	czic.czic_id = czicd.czic_id   
+			             WHERE	czicd.oczdi_id = oczdi.oczdi_id
+			             ORDER BY czic.dt_send ASC
+			) oa_czic
+			OUTER APPLY (
+			      	SELECT	TOP(1) czoc.dt_create
+			      	FROM	Manufactory.ChestnyZnakOutCirculationDetail czocd   
+			      			LEFT JOIN	Manufactory.ChestnyZnakOutCirculation czoc
+			      				ON	czoc.czoc_id = czocd.czoc_id
+			      	WHERE	czocd.oczdi_id = oczdi.oczdi_id
+			      	ORDER BY czoc.dt_create DESC
+			      ) oa_czoc
 	ORDER BY
 		puc.packing_dt
