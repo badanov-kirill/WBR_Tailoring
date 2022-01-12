@@ -60,7 +60,7 @@ AS
 
 	SELECT	pa.pa_id,
 			@category_id category_id,
-			sj.subject_name [name],
+			sj.subject_name_sf [name],
 			ISNULL(pa.sa, s.sa + CAST(pa.model_number AS VARCHAR(10)) + '/') sa_imt,
 			15       height,
 			300      depth,
@@ -158,7 +158,7 @@ AS
 				AND	ca.category_id = @category_id
 	WHERE	paav.pa_id = @pa_id
 			AND	a.is_used = 1
-			AND	a.attribute_id NOT IN (31, 12121, 4389)
+			AND	a.attribute_id NOT IN (31, 12121, 4389, 4191)
 	UNION ALL 
 	SELECT	paa.attribute_id,
 			NULL                          av_id,
@@ -214,11 +214,11 @@ AS
 			v.av_id, --Россия
 			v.val
 	FROM	(VALUES(4389, 90295, 'Россия')) v(attribute_id, av_id, val)
-	--UNION ALL
-	--SELECT 	v.attribute_id, --Аннотация
-	--		v.av_id,
-	--		v.val
-	--FROM	(VALUES(4191, NULL, @descr)) v(attribute_id, av_id, val)
+	UNION ALL
+	SELECT 	v.attribute_id, --Аннотация
+			v.av_id,
+			v.val
+	FROM	(VALUES(4191, NULL, @descr)) v(attribute_id, av_id, val)
 	--UNION ALL
 	--SELECT 	v.attribute_id, --Состав
 	--		v.av_id,

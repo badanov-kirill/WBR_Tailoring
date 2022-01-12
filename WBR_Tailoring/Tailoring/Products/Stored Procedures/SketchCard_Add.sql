@@ -36,6 +36,7 @@ AS
 	DECLARE @error_text VARCHAR(MAX)
 	DECLARE @season_art CHAR(1)
 	DECLARE @with_log BIT = 1
+	DECLARE @now_year SMALLINT = YEAR(GETDATE()) 
 	
 	DECLARE @sketch_output TABLE 
 	        (
@@ -421,8 +422,8 @@ AS
 				@art_name_id,
 				@constructor_employee_id,
 				@pattern_name,
-				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @model_year, @season_art),
-				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @model_year, @season_art, @direction_id),
+				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @now_year, @season_art),
+				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @now_year, @season_art, @direction_id),
 				@ct_id,
 				@direction_id,
 				@imt_name,
@@ -434,7 +435,7 @@ AS
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id
 		    	 		AND	s.st_id = @st_id
-		    	 		AND	s.model_year = @model_year
+		    	 		AND	s.model_year = @now_year
 		    	 		AND	s.season_id = @season_id
 						AND s.model_number >= 200)vt		
 		
