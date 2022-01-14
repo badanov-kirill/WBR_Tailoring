@@ -225,7 +225,8 @@ AS
 		    direction_id,
 		    imt_name,
 		    base_sketch_id,
-		    kw_id
+		    kw_id,
+		    art_year
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -310,12 +311,13 @@ AS
 				@direction_id,
 				@imt_name,
 				@base_sketch_id,
-				@kw_id
+				@kw_id,
+				@model_year
 		FROM	(SELECT	ISNULL(MAX(s.model_number) + 1, 200) model_number
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id
 		    	 		AND	s.st_id = @st_id
-		    	 		AND	s.model_year = @model_year
+		    	 		AND	s.art_year = @model_year
 		    	 		AND	s.season_id = @season_id
 		    	 		AND	s.model_number >= 200)vt		
 		

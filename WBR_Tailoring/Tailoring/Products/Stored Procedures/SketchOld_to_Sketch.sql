@@ -144,7 +144,7 @@ AS
 	      	                   WHEN s.model_year = @model_year AND s.model_number = @model_number AND s.brand_id = @brand_id AND s.st_id = @st_id AND s.season_id 
 	      	                        = @season_id AND s.is_deleted = 0 THEN 'Артикул с такими параметрами уже существует, его худ.название ' + an.art_name +
 	      	                        ' номер эскиза ' + CAST(s.sketch_id AS VARCHAR(10))
-	      	                   WHEN s.model_year = @model_year AND s.model_number = @model_number AND s.brand_id = @brand_id AND s.st_id = @st_id AND s.season_id 
+	      	                   WHEN s.art_year = @model_year AND s.model_number = @model_number AND s.brand_id = @brand_id AND s.st_id = @st_id AND s.season_id 
 	      	                        = @season_id AND s.is_deleted = 1 AND @art_name_id != s.art_name_id THEN 
 	      	                        'Артикул с такими параметрами и другим худ.названием уже существует, его худ.название ' + an.art_name +
 	      	                        ' номер эскиза ' + CAST(s.sketch_id AS VARCHAR(10))
@@ -200,7 +200,8 @@ AS
 		    sa_local,
 		    sa,
 		    ct_id,
-		    direction_id
+		    direction_id,
+		    art_year
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -251,7 +252,7 @@ AS
 		   		sa_local,
 		   		sa,
 		   		ct_id,
-		   		direction_id
+		   		direction_id		   		
 		   	)
 		VALUES
 		  (
@@ -279,7 +280,8 @@ AS
 		    @sa_local,
 		    @sa,
 		    @ct_id,
-		    NULL
+		    NULL,
+		    @model_year
 		  ) 
 		
 		INSERT INTO History.Sketch

@@ -36,7 +36,7 @@ AS
 	DECLARE @error_text VARCHAR(MAX)
 	DECLARE @season_art CHAR(1)
 	DECLARE @with_log BIT = 1
-	DECLARE @now_year SMALLINT = YEAR(GETDATE()) 
+	DECLARE @now_year SMALLINT = YEAR(@dt)
 	
 	DECLARE @sketch_output TABLE 
 	        (
@@ -342,7 +342,8 @@ AS
 		    season_model_year, 
 		    season_local_id,
 		    plan_site_dt,
-		    is_china_sample	    
+		    is_china_sample,
+		    art_year   
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -430,12 +431,13 @@ AS
 				@model_year,
 				@season_local_id,
 				@plan_site_dt,
-				@is_china_sample
+				@is_china_sample,
+				@now_year
 		FROM	(SELECT	ISNULL(MAX(s.model_number) + 1, 200) model_number
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id
 		    	 		AND	s.st_id = @st_id
-		    	 		AND	s.model_year = @now_year
+		    	 		AND	s.art_year = @now_year
 		    	 		AND	s.season_id = @season_id
 						AND s.model_number >= 200)vt		
 		

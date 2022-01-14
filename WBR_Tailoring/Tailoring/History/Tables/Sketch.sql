@@ -25,6 +25,7 @@
 	ct_id                       INT NULL,
 	direction_id                INT NULL,
 	imt_name                    VARCHAR(100) NULL,
-	base_sketch_id              INT
+	base_sketch_id              INT,
+	article_year                SMALLINT NULL,
 )
 GO

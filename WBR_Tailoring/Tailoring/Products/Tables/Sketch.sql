@@ -53,6 +53,7 @@
     [sls_id]                              TINYINT        NULL,
     [fist_package_dt]                     DATETIME2 (0)  NULL,
     [kw_id]                               INT            NULL,
+    [art_year]		                      SMALLINT       NULL,
     CONSTRAINT [PK_Sketch] PRIMARY KEY CLUSTERED ([sketch_id] ASC),
     CONSTRAINT [FK_Sketch_art_name_id] FOREIGN KEY ([art_name_id]) REFERENCES [Products].[ArtName] ([art_name_id]),
     CONSTRAINT [FK_Sketch_base_sketch_id] FOREIGN KEY ([base_sketch_id]) REFERENCES [Products].[Sketch] ([sketch_id]),
@@ -74,14 +75,6 @@
 );
 
 
-
-
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_brand_id_st_id_model_year_season_id_model_number] ON Products.Sketch(brand_id, st_id, model_year, season_id, model_number) 
-WHERE is_deleted = 0
-ON [Indexes];
-
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_art_name_id] ON Products.Sketch(art_name_id) WHERE is_deleted = 0 ON [Indexes]
 
@@ -89,4 +82,6 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_sa] ON Products.Sketch(sa) ON [Indexes]
 GO
 
-
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Sketch_brand_id_st_id_art_year_season_id_model_number] ON Products.Sketch(brand_id, st_id, art_year, season_id, model_number) 
+WHERE is_deleted = 0
+ON [Indexes];
