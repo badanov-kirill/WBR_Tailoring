@@ -66,7 +66,7 @@ AS
 	
 	SELECT	pa.pa_id,
 			ISNULL(pa.descr, s.descr)     descr,
-			b.brand_name,
+			CASE WHEN LEFT(b.brand_name, 1) = '&' THEN REPLACE(b.brand_name, '&' , 'And') ELSE  b.brand_name END brand_name,
 			ISNULL(sn.season_name, sn2.season_name) season_name,
 			cl.collection_name,
 			ISNULL(st.style_name, st2.style_name) style_name,
@@ -177,6 +177,7 @@ AS
 				ON	e.pants_id = pants.pants_id
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0	  
+			AND pants.is_deleted = 0
 	
 	SELECT	c.consist_name,
 			pac.percnt

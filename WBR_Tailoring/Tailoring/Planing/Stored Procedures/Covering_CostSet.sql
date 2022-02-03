@@ -546,7 +546,7 @@ AS
 				INNER JOIN	@spcv_tab st
 					ON	st.pan_id = pan.pan_id 
 					
-;
+		;
 		WITH cte_target AS
 			(
 				SELECT	pafw.pa_id,
@@ -579,6 +579,39 @@ AS
 		     		@dt
 		     	);			
 		
+		;
+		WITH cte_target AS
+			(
+				SELECT	panfo.pan_id,
+						panfo.dt,
+						panfo.send_dt,
+						panfo.is_error,
+						panfo.load_ozon_id_dt,
+						panfo.is_deleted
+				FROM	Ozon.ProdArticleNomenclatureForOZON panfo   
+						INNER JOIN	@spcv_tab ptfw
+							ON	ptfw.pan_id = panfo.pan_id
+			) 
+		MERGE cte_target t
+		USING @spcv_tab s
+				ON s.pan_id = t.pan_id
+		WHEN MATCHED AND (t.send_dt IS NOT NULL OR t.load_ozon_id_dt IS NOT NULL OR t.is_deleted = 1) THEN 
+		     UPDATE	
+		     SET 	send_dt             = NULL,
+		     		load_ozon_id_dt     = NULL,
+		     		is_deleted          = 0,
+		     		dt                  = @dt
+		WHEN NOT MATCHED THEN 
+		     INSERT
+		     	(
+		     		pan_id,
+		     		dt
+		     	)
+		     VALUES
+		     	(
+		     		s.pan_id,
+		     		@dt
+		     	);
 					
 		INSERT INTO Synchro.Upload_Covering_BuhVas
 		(

@@ -126,7 +126,8 @@ AS
 	SELECT	pan.pan_id,
 			ts.rus_name ts_name,
 			e.ean,
-			oa_ozon_ts.av_id ozon_ts_id
+			oa_ozon_ts.av_id ozon_ts_id,
+			pants.pants_id
 	FROM	Products.ProdArticleNomenclature pan   
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 				ON	pants.pan_id = pan.pan_id   

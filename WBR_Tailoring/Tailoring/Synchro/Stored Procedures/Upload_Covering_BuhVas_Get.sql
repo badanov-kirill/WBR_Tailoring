@@ -31,7 +31,7 @@ AS
 			pa.sketch_id,
 			pa.sa + pan.sa     sa,			
 			oa_ac.actual_count - ISNULL(oa_cwo.cut_write_off, 0) actual_count,
-			pan.price_ru
+			COALESCE(pan.price_ru, oa_price.price_ru, 0) price_ru
 	FROM	@t t   
 			INNER JOIN	Planing.CoveringDetail cd
 				ON	cd.covering_id = t.covering_id   
@@ -53,17 +53,23 @@ AS
 			      				ON	ca.cutting_id = cut.cutting_id
 			      	WHERE	spcvt.spcv_id = spcv.spcv_id
 			      ) oa_ac 
-	
-	OUTER APPLY (
-	      	SELECT	COUNT(1) cut_write_off
-	      	FROM	Planing.SketchPlanColorVariantTS spcvt   
-	      			INNER JOIN	Manufactory.Cutting cut
-	      				ON	cut.spcvts_id = spcvt.spcvts_id   
-	      			INNER JOIN	Manufactory.ProductUnicCode puc
-	      				ON	puc.cutting_id = cut.cutting_id
-	      	WHERE	spcvt.spcv_id = spcv.spcv_id
-	      			AND	puc.operation_id = 12
-	      )                    oa_cwo
+			OUTER APPLY (
+					SELECT TOP(1) pan2.price_ru
+					FROM Products.ProdArticleNomenclature pan2
+					INNER JOIN Products.ProdArticle pa2 ON pa2.pa_id = pan2.pa_id
+					WHERE pa2.sketch_id = pa.sketch_id AND ISNULL(pan2.price_ru, 0) > 0
+					ORDER BY pan2.pan_id DESC
+			) oa_price
+			OUTER APPLY (
+	      			SELECT	COUNT(1) cut_write_off
+	      			FROM	Planing.SketchPlanColorVariantTS spcvt   
+	      					INNER JOIN	Manufactory.Cutting cut
+	      						ON	cut.spcvts_id = spcvt.spcvts_id   
+	      					INNER JOIN	Manufactory.ProductUnicCode puc
+	      						ON	puc.cutting_id = cut.cutting_id
+	      			WHERE	spcvt.spcv_id = spcv.spcv_id
+	      					AND	puc.operation_id = 12
+				  )                    oa_cwo
 	WHERE	s.is_deleted = 0
 	
 	SELECT	t.covering_id,
