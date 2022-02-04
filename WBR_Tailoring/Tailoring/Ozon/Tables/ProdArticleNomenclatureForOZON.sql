@@ -6,6 +6,7 @@
 	is_error            BIT NULL,
 	load_ozon_id_dt     DATETIME2(0) NULL,
 	is_deleted          BIT NOT NULL,
+	employee_id			INT NULL,
 	CONSTRAINT [PK_ProdArticleNomenclatureForOzon] PRIMARY KEY CLUSTERED(pan_id)
 )
 

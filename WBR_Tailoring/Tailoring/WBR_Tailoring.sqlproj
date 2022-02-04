@@ -1636,6 +1636,7 @@
     <Build Include="Ozon\Tables\ArticleSaveTaskError.sql" />
     <Build Include="Ozon\Stored Procedures\ArticleSaveTask_Add.sql" />
     <Build Include="Ozon\Tables\ProdArticleNomenclatureForOZON.sql" />
+    <Build Include="Ozon\Stored Procedures\ProdArticleNomenclatureForOZON_Del.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
