@@ -1637,6 +1637,9 @@
     <Build Include="Ozon\Stored Procedures\ArticleSaveTask_Add.sql" />
     <Build Include="Ozon\Tables\ProdArticleNomenclatureForOZON.sql" />
     <Build Include="Ozon\Stored Procedures\ProdArticleNomenclatureForOZON_Del.sql" />
+    <Build Include="Reports\Stored Procedures\MaterialsInWork.sql" />
+    <Build Include="Reports\Stored Procedures\BarcodeCosts.sql" />
+    <Build Include="Reports\Stored Procedures\ContractorSew.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

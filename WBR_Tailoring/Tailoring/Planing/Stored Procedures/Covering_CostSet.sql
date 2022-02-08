@@ -605,12 +605,15 @@ AS
 		     INSERT
 		     	(
 		     		pan_id,
-		     		dt
+		     		dt,
+		     		is_deleted
+		     		
 		     	)
 		     VALUES
 		     	(
 		     		s.pan_id,
-		     		@dt
+		     		@dt,
+		     		0
 		     	);
 					
 		INSERT INTO Synchro.Upload_Covering_BuhVas
