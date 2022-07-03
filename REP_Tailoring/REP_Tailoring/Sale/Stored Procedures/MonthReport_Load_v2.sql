@@ -1,15 +1,12 @@
-﻿CREATE PROCEDURE [Sale].[MonthReport_Load]
-	@period_dt DATE,
-	@period_to_dt DATE,
+﻿CREATE PROCEDURE [Sale].[MonthReport_Load_v2]
 	@detail Sale.MonthReportDetailType READONLY,
+	@report_id_tab Sale.MonthReportIDTabType READONLY,
 	@first_packet BIT
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
 	
-	
 	DECLARE @dt DATETIME2(0) = GETDATE()
-	DECLARE @report_id_tab TABLE (realizationreport_id INT PRIMARY KEY CLUSTERED NOT NULL)
 	DECLARE @data_tab TABLE (
 				rrd_id BIGINT NOT NULL,
 	        	realizationreport_id INT NOT NULL,
@@ -56,7 +53,16 @@ AS
 	        	doc_type_id SMALLINT NULL,
 	        	office_id SMALLINT NULL,
 	        	supplier_oper_id SMALLINT NULL,
-	        	gi_box_type_id SMALLINT NULL
+	        	gi_box_type_id SMALLINT NULL,
+	        	ppvz_spp_prc DECIMAL(9, 5) NULL,
+                ppvz_kvw_prc_base DECIMAL(9, 5) NULL,
+                ppvz_kvw_prc DECIMAL(9, 5) NULL,
+                ppvz_sales_commission DECIMAL(9, 5) NULL,
+                ppvz_for_pay DECIMAL(9, 5) NULL,
+                ppvz_reward DECIMAL(9, 5) NULL,
+                ppvz_vw DECIMAL(9, 5) NULL,
+                ppvz_vw_nds DECIMAL(9, 5) NULL,
+                site_country VARCHAR(5) NULL
 	        )
 	
 	INSERT INTO @data_tab
@@ -96,7 +102,16 @@ AS
 			gi_box_type_name,
 			product_discount_for_report,
 			supplier_promo,
-			supplier_spp
+			supplier_spp,
+			ppvz_spp_prc ,
+            ppvz_kvw_prc_base ,
+            ppvz_kvw_prc ,
+            ppvz_sales_commission ,
+            ppvz_for_pay ,
+            ppvz_reward ,
+            ppvz_vw ,
+            ppvz_vw_nds ,
+            site_country 
 		)
 	SELECT	d.rrd_id,
 			d.realizationreport_id,
@@ -133,7 +148,16 @@ AS
 			ISNULL(d.gi_box_type_name, '') gi_box_type_name,
 			d.product_discount_for_report,
 			d.supplier_promo,
-			d.supplier_spp
+			d.supplier_spp,
+			d.ppvz_spp_prc ,
+            d.ppvz_kvw_prc_base ,
+            d.ppvz_kvw_prc ,
+            d.ppvz_sales_commission ,
+            d.ppvz_for_pay ,
+            d.ppvz_reward ,
+            d.ppvz_vw ,
+            d.ppvz_vw_nds ,
+            d.site_country 
 	FROM	@detail                         d
 	
 	BEGIN TRY
@@ -290,31 +314,12 @@ AS
 				INNER JOIN	RefBook.SupplierOper so
 					ON	so.supplier_oper_name = dt.supplier_oper_name
 		
-		INSERT INTO @report_id_tab
-			(
-				realizationreport_id
-			)
-		SELECT	DISTINCT dt.realizationreport_id
-		FROM	@data_tab dt
 		
-		IF @first_packet = 0
-		   AND EXISTS(
-		       	SELECT	1
-		       	FROM	@report_id_tab rt   
-		       			LEFT JOIN	Sale.MonthReport mr
-		       				ON	mr.realizationreport_id = rt.realizationreport_id
-		       	WHERE	mr.realizationreport_id IS NULL
-		       )
-		BEGIN
-		    RAISERROR('Ошибочные данные, в одном периоде несколько номеров отчетов', 16, 1)
-		    RETURN
-		END 
-		
-			MERGE Sale.MonthReport t
+		  MERGE Sale.MonthReport t
 		   USING (
 		         	SELECT	rt.realizationreport_id realizationreport_id,
-		         			@period_dt period_dt,
-		         			@period_to_dt period_to_dt
+		         			rt.period_dt period_dt,
+		         			rt.period_to_dt period_to_dt
 		         	FROM	@report_id_tab rt
 		         ) s
 		   		ON t.realizationreport_id = s.realizationreport_id
@@ -407,10 +412,19 @@ AS
 				gi_box_type_id,
 				product_discount_for_report,
 				supplier_promo,
-				supplier_spp
+				supplier_spp,
+				ppvz_spp_prc ,
+				ppvz_kvw_prc_base ,
+				ppvz_kvw_prc ,
+				ppvz_sales_commission ,
+				ppvz_for_pay ,
+				ppvz_reward ,
+				ppvz_vw ,
+				ppvz_vw_nds ,
+				site_country 
 			)
 		SELECT	dt.realizationreport_id,
-				@period_dt,
+				rt.period_dt period_dt,
 				dt.suppliercontract_code_id,
 				dt.gi_id,
 				dt.subject_id,
@@ -444,8 +458,18 @@ AS
 				dt.gi_box_type_id,
 				dt.product_discount_for_report,
 				dt.supplier_promo,
-				dt.supplier_spp
+				dt.supplier_spp,
+				dt.ppvz_spp_prc ,
+				dt.ppvz_kvw_prc_base ,
+				dt.ppvz_kvw_prc ,
+				dt.ppvz_sales_commission ,
+				dt.ppvz_for_pay ,
+				dt.ppvz_reward ,
+				dt.ppvz_vw ,
+				dt.ppvz_vw_nds ,
+				dt.site_country 
 		FROM	@data_tab dt
+		INNER JOIN @report_id_tab rt ON dt.realizationreport_id = rt.realizationreport_id
 		ORDER BY dt.rrd_id
 	END TRY
 	BEGIN CATCH
@@ -461,4 +485,4 @@ AS
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
 		WITH LOG;
-	END CATCH 
+	END CATCH

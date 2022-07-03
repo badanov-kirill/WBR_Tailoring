@@ -28,8 +28,8 @@ AS
 			SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN 1 ELSE 0 END) cnt_on_time,
 			SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN 1 ELSE 0 END) cnt_expired,
 			CASE 
-			     WHEN es.office_id = 523 THEN (SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN oat.operation_time ELSE 0 END) * 5.5
-			           + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 5.5)
+			     WHEN es.office_id = 523 THEN (SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN oat.operation_time ELSE 0 END) * 6
+			           + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 6)
 			     ELSE (SUM(CASE WHEN CAST(puc.packing_dt AS DATE) <= spcv.deadline_package_dt OR spcv.deadline_package_dt IS NULL THEN oat.operation_time ELSE 0 END) * 5.0 
 			     + SUM(CASE WHEN CAST(puc.packing_dt AS DATE) > spcv.deadline_package_dt THEN oat.operation_time ELSE 0 END) * 5.0)
 			END                motivation

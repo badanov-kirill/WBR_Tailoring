@@ -108,5 +108,12 @@
     <Build Include="Warehouse\Tables\wb_stock.sql" />
     <Build Include="Warehouse\User Defined Types\wb_stock_type.sql" />
     <Build Include="Warehouse\Stored Procedures\wb_stock_load.sql" />
+    <Build Include="Security\User1C.sql" />
+    <Build Include="Security\RoleMemberships.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReportDetailForUPD_GetByID.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReport_Load_v2.sql" />
+    <Build Include="Sale\Stored Procedures\MonthReport_GetList.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v4.sql" />
+    <Build Include="Sale\User Defined Types\MonthReportIDTabType.sql" />
   </ItemGroup>
 </Project>

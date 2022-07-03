@@ -19,9 +19,9 @@ AS
 				ON	pants.pants_id = e.pants_id   
 			INNER JOIN	Products.ProdArticleNomenclature pan
 				ON	pan.pan_id = pants.pan_id   
-			INNER JOIN	products.ProdArticle pa
+			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pan.pa_id   
-			INNER JOIN	products.TechSize ts
+			INNER JOIN	Products.TechSize ts
 				ON	ts.ts_id = pants.ts_id   
 			CROSS APPLY (
 			      	SELECT	TOP(1) spcvc.cost_rm,
