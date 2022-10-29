@@ -48,13 +48,13 @@ AS
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN smai.shkrm_id IS NULL THEN 'Нет описания ШК. Обратитесь к разработчику'
-	      	                   WHEN mipds.rmt_id != smai.rmt_id OR mipds.art_id != smai.art_id OR mipds.qty != smai.qty OR mipds.okei_id 
-	      	                        != smai.okei_id THEN 'По этому ШК ' + CAST(mipds.shkrm_id AS VARCHAR(10)) +
-	      	                        ' не совтадают данные выдачи и текущие данные по шк. Обратитесь к разработчику' + CHAR(10) +
-	      	                        'Кол-во ' + CAST(smai.qty AS VARCHAR(10)) + ' и ' + CAST(mipds.qty AS VARCHAR(10)) + CHAR(10) +
-	      	                        'ОКЕИ ' + CAST(smai.okei_id AS VARCHAR(10)) + ' и ' + CAST(mipds.okei_id AS VARCHAR(10)) + CHAR(10) +
-	      	                        'Код типа ' + CAST(smai.rmt_id AS VARCHAR(10)) + ' и ' + CAST(mipds.art_id AS VARCHAR(10)) + CHAR(10) +
-	      	                        'Код артикула' + + CAST(smai.art_id AS VARCHAR(10)) + ' и ' + CAST(mipds.art_id AS VARCHAR(10))
+	      	                   --WHEN mipds.rmt_id != smai.rmt_id OR mipds.art_id != smai.art_id OR mipds.qty != smai.qty OR mipds.okei_id 
+	      	                   --     != smai.okei_id THEN 'По этому ШК ' + CAST(mipds.shkrm_id AS VARCHAR(10)) +
+	      	                   --     ' не совтадают данные выдачи и текущие данные по шк. Обратитесь к разработчику' + CHAR(10) +
+	      	                   --     'Кол-во ' + CAST(smai.qty AS VARCHAR(10)) + ' и ' + CAST(mipds.qty AS VARCHAR(10)) + CHAR(10) +
+	      	                   --     'ОКЕИ ' + CAST(smai.okei_id AS VARCHAR(10)) + ' и ' + CAST(mipds.okei_id AS VARCHAR(10)) + CHAR(10) +
+	      	                   --     'Код типа ' + CAST(smai.rmt_id AS VARCHAR(10)) + ' и ' + CAST(mipds.art_id AS VARCHAR(10)) + CHAR(10) +
+	      	                   --     'Код артикула' + + CAST(smai.art_id AS VARCHAR(10)) + ' и ' + CAST(mipds.art_id AS VARCHAR(10))
 	      	                   WHEN sms.shkrm_id IS NULL THEN 'У штрихкода ' + CAST(mipds.shkrm_id AS VARCHAR(10)) +
 	      	                        ' нет статуса, операции со штрихкодом запрещены. Обратитесь к руководителю'
 	      	                   WHEN smsg.state_src_id IS NULL THEN 'Штрихкод ' + CAST(mipds.shkrm_id AS VARCHAR(10)) + ' в статусе ' + smsd.state_name +

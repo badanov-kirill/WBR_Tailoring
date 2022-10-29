@@ -242,7 +242,9 @@ AS
     		 WHERE	pa.pa_id = @pa_id
     	 			AND	ao.content_id IS NOT NULL
     	 			AND	ao.isdeleted = 0
-    	 			AND	(ao.ao_id_parent != 7 OR ao.ao_id_parent IS NULL))v
+    	 			AND	(ao.ao_id_parent != 7 OR ao.ao_id_parent IS NULL)
+					AND EXISTS (SELECT NULL FROM Products.SubjectAddedOption sao WHERE sao.subject_id = s.subject_id AND sao.ao_id = paao.ao_id)
+	)v
 	WHERE	v.rn <= 3
 	GROUP BY
 		ISNULL(v.ao_parrent_name, v.ao_name)
