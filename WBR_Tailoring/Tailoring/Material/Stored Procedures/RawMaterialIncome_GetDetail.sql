@@ -62,7 +62,8 @@ AS
 			stopt.type_of_payment_name ots_type_of_payment_name,
 			ots.comment ots_comment,
 			c_ots.currency_name_shot ots_currency_name_shot,
-			ots.amount
+			ots.amount,
+			rmi.company_id
 	FROM	Documents.DocumentID di   
 			INNER JOIN	Material.RawMaterialIncome rmi
 				ON	di.doc_id = rmi.doc_id

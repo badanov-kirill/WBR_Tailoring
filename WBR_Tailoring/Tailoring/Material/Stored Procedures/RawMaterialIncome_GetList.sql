@@ -31,7 +31,8 @@ AS
 			oa_i.invoice_sum,
 			STUFF(oa_inv.x, 1, 3, '')     invoices,
 			c.currency_name_shot,
-			rmi.ots_id
+			rmi.ots_id,
+			cmp.company_name
 	FROM	Documents.DocumentID di   
 			INNER JOIN	Material.RawMaterialIncome rmi
 				ON	di.doc_id = rmi.doc_id
@@ -43,6 +44,7 @@ AS
 			INNER JOIN	Suppliers.SupplierContract sc
 				ON	sc.suppliercontract_id = rmi.suppliercontract_id 
 			LEFT JOIN RefBook.Currency c ON c.currency_id = sc.currency_id  
+			LEFT JOIN RefBook.Company cmp ON rmi.company_id = cmp.company_id
 			OUTER APPLY (
 			      	SELECT	SUM(rmid.amount_with_nds) invoice_sum
 			      	FROM	Material.RawMaterialInvoice rmi2   

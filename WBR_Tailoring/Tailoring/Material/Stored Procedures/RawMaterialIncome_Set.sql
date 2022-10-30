@@ -7,7 +7,8 @@
 	@payment_comment VARCHAR(200) = NULL,
 	@plan_sum DECIMAL(18, 2) = NULL,
 	@employee_id INT,
-	@rv_bigint BIGINT
+	@rv_bigint BIGINT,
+	@company_id INT = NULL	
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -131,7 +132,8 @@ AS
 		      			@plan_sum            plan_sum,
 		      			@supply_dt           supply_dt,
 		      			@goods_dt            goods_dt,
-		      			@comment             comment
+		      			@comment             comment,
+		      			@company_id			 company_id
 		      ) s
 				ON t.doc_id = s.doc_id
 				AND t.doc_type_id = s.doc_type_id
@@ -145,7 +147,8 @@ AS
 		     		t.plan_sum = s.plan_sum,
 		     		t.supply_dt = s.supply_dt,
 		     		t.goods_dt = s.goods_dt,
-		     		t.comment = s.comment
+		     		t.comment = s.comment,
+		     		t.company_id = s.company_id
 		WHEN NOT MATCHED  THEN 
 		     INSERT
 		     	(
@@ -161,7 +164,8 @@ AS
 		     		is_deleted,
 		     		goods_dt,
 		     		comment,
-		     		suppliercontract_id
+		     		suppliercontract_id,
+		     		company_id
 		     	)
 		     VALUES
 		     	(
@@ -177,7 +181,8 @@ AS
 		     		0,
 		     		s.goods_dt,
 		     		s.comment,
-		     		s.suppliercontract_id
+		     		s.suppliercontract_id,
+		     		s.company_id
 		     	)
 		     OUTPUT	INSERTED.doc_id,
 		     		INSERTED.doc_type_id,

@@ -1644,6 +1644,8 @@
     <Build Include="Synchro\Tables\Upload_DetMirShip_BuhVas.sql" />
     <Build Include="Synchro\Stored Procedures\Upload_DetMirShip_BuhVas_Get.sql" />
     <Build Include="Synchro\Stored Procedures\Upload_DetMirShip_BuhVas_Loaded.sql" />
+    <Build Include="RefBook\Tables\Company.sql" />
+    <Build Include="RefBook\Stored Procedures\Company_Get.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
