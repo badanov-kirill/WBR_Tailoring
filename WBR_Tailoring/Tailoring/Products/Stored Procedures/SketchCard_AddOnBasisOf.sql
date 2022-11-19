@@ -227,7 +227,8 @@ AS
 		    imt_name,
 		    base_sketch_id,
 		    kw_id,
-		    art_year
+		    art_year,
+			artpostfix
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -284,8 +285,7 @@ AS
 		   		rv_bigint,
 		   		direction_id,
 		   		imt_name,
-		   		base_sketch_id,
-				artpostfix
+		   		base_sketch_id
 		   	)
 		SELECT	@is_deleted,
 				@st_id,
