@@ -19,7 +19,8 @@ AS
 			     ELSE NULL
 			END                   pre_price,
 			spcv.spcv_id,
-			oa_sketch_cost_job.cost_job
+			oa_sketch_cost_job.cost_job,
+			oa_spent.spent_amount
 	FROM	Planing.SketchPlanColorVariant spcv   
 			JOIN	Settings.OfficeSetting os
 				ON	os.office_id = spcv.sew_office_id   
@@ -52,6 +53,16 @@ AS
 	      			WHERE	sts.sketch_id = s.sketch_id
 	      					AND	s.technology_dt IS NOT NULL
 				  )                       oa_sketch_cost_job
+			OUTER APPLY (
+			      	SELECT	SUM(sma.amount * (cis.stor_unit_residues_qty - ISNULL(cis.return_stor_unit_residues_qty, 0)) / sma.stor_unit_residues_qty) 
+			      	      	spent_amount
+			      	FROM	Planing.CoveringDetail cd   
+			      			INNER JOIN	Planing.CoveringIssueSHKRm cis
+			      				ON	cis.covering_id = cd.covering_id   
+			      			INNER JOIN	Warehouse.SHKRawMaterialAmount sma
+			      				ON	sma.shkrm_id = cis.shkrm_id
+			      	WHERE	cd.spcv_id = spcv.spcv_id
+			      ) oa_spent 
 	WHERE	EXISTS (
 	     		SELECT	TOP(1) 1
 	     		FROM	Manufactory.ContractorSewCount csc   

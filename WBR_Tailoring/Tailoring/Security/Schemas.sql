@@ -44,6 +44,8 @@ CREATE SCHEMA [Warehouse]
 
 
 
+
+
 GO
 
 CREATE SCHEMA Settings
@@ -56,6 +58,8 @@ CREATE SCHEMA Documents
 GO
 CREATE SCHEMA [Products]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -150,6 +154,8 @@ CREATE SCHEMA [Salary]
 GO
 CREATE SCHEMA [Wildberries]
     AUTHORIZATION [dbo];
+
+
 
 
 

@@ -9,6 +9,7 @@ AS
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
 	DECLARE @supplier_id INT
 	DECLARE @ozon_supplier_id INT = -167
+	DECLARE @detmir_supplier_id INT = -280
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN s.sfp_id IS NULL THEN 'Отгрузки с номером ' + CAST(v.sfp_id AS VARCHAR(10)) + ' не существует.'
@@ -57,6 +58,29 @@ AS
 		IF @supplier_id = @ozon_supplier_id
 		BEGIN
 		    MERGE Synchro.Upload_OzonShip_BuhVas t
+		    USING (
+		          	SELECT	@sfp_id sfp_id
+		          ) s
+		    		ON t.sfp_id = s.sfp_id
+		    WHEN MATCHED THEN 
+		         UPDATE	
+		         SET 	dt = @dt
+		    WHEN NOT MATCHED THEN 
+		         INSERT
+		         	(
+		         		sfp_id,
+		         		dt
+		         	)
+		         VALUES
+		         	(
+		         		s.sfp_id,
+		         		@dt
+		         	);
+		END;
+		
+		IF @supplier_id = @detmir_supplier_id
+		BEGIN
+		    MERGE Synchro.Upload_DetMirShip_BuhVas t
 		    USING (
 		          	SELECT	@sfp_id sfp_id
 		          ) s
