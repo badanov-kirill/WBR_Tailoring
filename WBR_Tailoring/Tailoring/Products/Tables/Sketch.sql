@@ -54,6 +54,7 @@
     [fist_package_dt]                     DATETIME2 (0)  NULL,
     [kw_id]                               INT            NULL,
     [art_year]		                      SMALLINT       NULL,
+    artpostfix                            varchar(1) constraint [DF_Sketch_artpostfix] default(''),
     CONSTRAINT [PK_Sketch] PRIMARY KEY CLUSTERED ([sketch_id] ASC),
     CONSTRAINT [FK_Sketch_art_name_id] FOREIGN KEY ([art_name_id]) REFERENCES [Products].[ArtName] ([art_name_id]),
     CONSTRAINT [FK_Sketch_base_sketch_id] FOREIGN KEY ([base_sketch_id]) REFERENCES [Products].[Sketch] ([sketch_id]),

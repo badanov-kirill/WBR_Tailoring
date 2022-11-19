@@ -29,6 +29,7 @@ AS
 	DECLARE @is_deleted BIT = 0
 	DECLARE @pa_id INT
 	DECLARE @kw_id INT
+	declare @artpostfix varchar(1) = 'н'
 	
 	DECLARE @art_name_output TABLE(art_name_id INT)
 	DECLARE @art_name_id INT
@@ -283,7 +284,8 @@ AS
 		   		rv_bigint,
 		   		direction_id,
 		   		imt_name,
-		   		base_sketch_id
+		   		base_sketch_id,
+				artpostfix
 		   	)
 		SELECT	@is_deleted,
 				@st_id,
@@ -305,14 +307,15 @@ AS
 				@season_id,
 				@art_name_id,
 				@constructor_employee_id,
-				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @model_year, @season_art),
-				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @model_year, @season_art, @direction_id),
+				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @model_year, @season_art, @artpostfix),
+				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @model_year, @season_art, @direction_id, @artpostfix),
 				@ct_id,
 				@direction_id,
 				@imt_name,
 				@base_sketch_id,
 				@kw_id,
-				@model_year
+				@model_year,
+				@artpostfix
 		FROM	(SELECT	ISNULL(MAX(s.model_number) + 1, 200) model_number
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id

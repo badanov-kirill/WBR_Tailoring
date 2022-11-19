@@ -5,7 +5,8 @@
 	@model_number     INT,
 	@model_year       SMALLINT,
 	@season           CHAR(1),
-	@direction_id     INT
+	@direction_id     INT,
+	@artpostfix	      varchar(1) = ''
 )
 RETURNS VARCHAR(20)
 AS
@@ -28,5 +29,5 @@ BEGIN
 	     WHEN @st_id > 0 AND @st_id < 10 THEN '0'
 	     ELSE ''
 	END 
-	+ CAST(@st_id AS VARCHAR(9)) + CAST(@model_number AS VARCHAR(9)) + SUBSTRING(CAST(@model_year AS VARCHAR(4)), 3, 2) + @season
+	+ CAST(@st_id AS VARCHAR(9)) + CAST(@model_number AS VARCHAR(9)) + SUBSTRING(CAST(@model_year AS VARCHAR(4)), 3, 2) + @season + @artpostfix
 END

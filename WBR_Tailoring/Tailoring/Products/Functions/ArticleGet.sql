@@ -4,7 +4,8 @@
 	@st_id            INT,
 	@model_number     INT,
 	@model_year       SMALLINT,
-	@season           CHAR(1)
+	@season           CHAR(1),
+	@artpostfix		  varchar(1) = ''
 )
 RETURNS VARCHAR(20)
 AS
@@ -20,5 +21,5 @@ BEGIN
 	     WHEN @brand_id = 7 THEN 'Dr'
 	     WHEN @brand_id = 8 THEN 'KB'
 	     ELSE ''
-	END + CAST(@st_id AS VARCHAR(9)) + '-' + CAST(@model_number AS VARCHAR(9)) + '-' + SUBSTRING(CAST(@model_year AS VARCHAR(4)), 3, 2) + @season
+	END + CAST(@st_id AS VARCHAR(9)) + '-' + CAST(@model_number AS VARCHAR(9)) + '-' + SUBSTRING(CAST(@model_year AS VARCHAR(4)), 3, 2) + @season + @artpostfix
 END
