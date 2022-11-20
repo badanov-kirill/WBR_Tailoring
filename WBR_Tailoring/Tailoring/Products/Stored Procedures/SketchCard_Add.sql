@@ -37,6 +37,7 @@ AS
 	DECLARE @season_art CHAR(1)
 	DECLARE @with_log BIT = 1
 	DECLARE @now_year SMALLINT = YEAR(@dt)
+	declare @artpostfix varchar(1) = 'н'
 	
 	DECLARE @sketch_output TABLE 
 	        (
@@ -343,7 +344,8 @@ AS
 		    season_local_id,
 		    plan_site_dt,
 		    is_china_sample,
-		    art_year   
+		    art_year,
+			artpostfix
 		  )OUTPUT	INSERTED.sketch_id,
 		   		INSERTED.is_deleted,
 		   		INSERTED.st_id,
@@ -423,8 +425,8 @@ AS
 				@art_name_id,
 				@constructor_employee_id,
 				@pattern_name,
-				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @now_year, @season_art),
-				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @now_year, @season_art, @direction_id),
+				Products.ArticleGet(@brand_id, @st_id, vt.model_number, @now_year, @season_art, @artpostfix),
+				Products.ArticleGet_v2(@brand_id, @st_id, vt.model_number, @now_year, @season_art, @direction_id, @artpostfix),
 				@ct_id,
 				@direction_id,
 				@imt_name,
@@ -432,7 +434,8 @@ AS
 				@season_local_id,
 				@plan_site_dt,
 				@is_china_sample,
-				@now_year
+				@now_year,
+				@artpostfix
 		FROM	(SELECT	ISNULL(MAX(s.model_number) + 1, 200) model_number
 		    	 FROM	Products.Sketch s
 		    	 WHERE	s.brand_id = @brand_id
