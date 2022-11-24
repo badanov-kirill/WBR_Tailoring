@@ -115,5 +115,6 @@
     <Build Include="Sale\Stored Procedures\MonthReport_GetList.sql" />
     <Build Include="Sale\Stored Procedures\MonthRedortDetail_Return_GetByID_v4.sql" />
     <Build Include="Sale\User Defined Types\MonthReportIDTabType.sql" />
+    <Build Include="Sale\Stored Procedures\MonthRedortDetail_GetByID_KZ.sql" />
   </ItemGroup>
 </Project>
