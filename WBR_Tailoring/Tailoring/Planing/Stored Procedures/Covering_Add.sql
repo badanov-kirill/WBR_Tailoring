@@ -430,7 +430,7 @@ AS
 		(
 			pants_id
 		)
-		SELECT pants.pants_id
+		SELECT DISTINCT pants.pants_id
 		FROM	@spcv_tab cd  
 				INNER JOIN	Planing.SketchPlanColorVariant spcv
 					ON	spcv.spcv_id = cd.spcv_id   
