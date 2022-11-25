@@ -593,7 +593,7 @@ AS
 							ON	ptfw.pan_id = panfo.pan_id
 			) 
 		MERGE cte_target t
-		USING @spcv_tab s
+		USING (SELECT distinct st.pan_id FROM @spcv_tab st) s
 				ON s.pan_id = t.pan_id
 		WHEN MATCHED AND (t.send_dt IS NOT NULL OR t.load_ozon_id_dt IS NOT NULL OR t.is_deleted = 1) THEN 
 		     UPDATE	
@@ -621,11 +621,9 @@ AS
 			covering_id,
 			dt
 		)
-		VALUES
-		(
-			@covering_id,
-			@dt
-		)
+		SELECT	@covering_id,
+				@dt
+		WHERE NOT EXISTS (SELECT NULL FROM Synchro.Upload_Covering_BuhVas t WHERE t.covering_id = @covering_id)
 		
 		IF EXISTS(
 		   	SELECT	1
