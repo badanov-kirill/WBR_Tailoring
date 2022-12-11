@@ -615,15 +615,18 @@ AS
 		     		@dt,
 		     		0
 		     	);
-					
-		INSERT INTO Synchro.Upload_Covering_BuhVas
-		(
-			covering_id,
-			dt
-		)
-		SELECT	@covering_id,
-				@dt
-		WHERE NOT EXISTS (SELECT NULL FROM Synchro.Upload_Covering_BuhVas t WHERE t.covering_id = @covering_id)
+				
+		IF @covering_id > 10000
+		BEGIN		
+			INSERT INTO Synchro.Upload_Covering_BuhVas
+			(
+				covering_id,
+				dt
+			)
+			SELECT	@covering_id,
+					@dt
+			WHERE NOT EXISTS (SELECT NULL FROM Synchro.Upload_Covering_BuhVas t WHERE t.covering_id = @covering_id)
+		END
 		
 		IF EXISTS(
 		   	SELECT	1

@@ -1646,6 +1646,7 @@
     <Build Include="Synchro\Stored Procedures\Upload_DetMirShip_BuhVas_Loaded.sql" />
     <Build Include="RefBook\Tables\Company.sql" />
     <Build Include="RefBook\Stored Procedures\Company_Get.sql" />
+    <Build Include="Wildberries\Stored Procedures\ProdArticleForWB_LoadNM_v3.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
