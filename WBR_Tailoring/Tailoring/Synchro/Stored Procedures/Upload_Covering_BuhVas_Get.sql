@@ -16,7 +16,7 @@ AS
 			CAST(ucbv.rv AS BIGINT)       rv_bigint
 	FROM	Synchro.Upload_Covering_BuhVas ucbv
 	
-	SELECT	t.covering_id,
+	SELECT	CASE WHEN t.covering_id < 20000 THEN -t.covering_id ELSE t.covering_id END covering_id,
 			t.dt,
 			t.rv_bigint,
 			c.office_id,
@@ -26,7 +26,7 @@ AS
 	INNER JOIN Planing.Covering c ON c.covering_id = t.covering_id
 	INNER JOIN Settings.OfficeSetting o ON o.office_id = c.office_id
 	
-	SELECT	t.covering_id,
+	SELECT	CASE WHEN t.covering_id < 20000 THEN -t.covering_id ELSE t.covering_id END covering_id,
 			cd.spcv_id,
 			pa.sketch_id,
 			pa.sa + pan.sa     sa,			
@@ -72,7 +72,7 @@ AS
 				  )                    oa_cwo
 	WHERE	s.is_deleted = 0
 	
-	SELECT	t.covering_id,
+	SELECT	CASE WHEN t.covering_id < 20000 THEN -t.covering_id ELSE t.covering_id END covering_id,
 			spcvc.spcv_id,
 			cr.shkrm_id,
 			rmt.rmt_id,
@@ -97,7 +97,7 @@ AS
 				ON	o.okei_id = cr.okei_id
 	
 	
-	SELECT	t.covering_id,
+	SELECT	CASE WHEN t.covering_id < 20000 THEN -t.covering_id ELSE t.covering_id END covering_id,
 			cis.shkrm_id,
 			rmt.rmt_id,
 			o2.okei_id,

@@ -9,7 +9,7 @@ AS
 	BEGIN TRY
 		DELETE	
 		FROM	Synchro.Upload_Covering_BuhVas
-		WHERE	covering_id = @covering_id
+		WHERE	covering_id = ABS(@covering_id)
 				AND	rv = @rv
 	END TRY
 	BEGIN CATCH
