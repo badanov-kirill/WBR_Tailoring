@@ -23,12 +23,16 @@
     [fist_package_dt]        DATETIME2 (0)       NULL,
     [deadline_package_dt]    DATETIME2 (0)       NULL,
     [master_employee_id]     INT                 NULL,
+    [sew_fabricator_id]      INT                 NOT NULL,
     CONSTRAINT [PK_SketchPlanColorVariant] PRIMARY KEY CLUSTERED ([spcv_id] ASC),
     CONSTRAINT [FK_SketchPlanColorVariant] FOREIGN KEY ([pan_id]) REFERENCES [Products].[ProdArticleNomenclature] ([pan_id]),
+    CONSTRAINT [FK_SketchPlanColorVariant_sew_fabricator_id] FOREIGN KEY ([sew_fabricator_id]) REFERENCES [Settings].[Fabricators] ([fabricator_id]),
     CONSTRAINT [FK_SketchPlanColorVariant_sew_office_id] FOREIGN KEY ([sew_office_id]) REFERENCES [Settings].[OfficeSetting] ([office_id]),
     CONSTRAINT [FK_SketchPlanColorVariant_sp_id] FOREIGN KEY ([sp_id]) REFERENCES [Planing].[SketchPlan] ([sp_id]),
     CONSTRAINT [FK_SketchPlanColorVariant_spcv_id] FOREIGN KEY ([cvs_id]) REFERENCES [Planing].[ColorVariantStatus] ([cvs_id])
 );
+
+
 
 
 

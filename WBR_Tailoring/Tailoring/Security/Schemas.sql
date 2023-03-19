@@ -1,5 +1,12 @@
-﻿CREATE SCHEMA [History]
+﻿/************************************************************
+ * Code formatted by SoftTree SQL Assistant © v11.5.355
+ * Time: 09.03.2023 14:11:10
+ ************************************************************/
+
+CREATE SCHEMA [History]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -8,6 +15,10 @@
 GO
 CREATE SCHEMA [Material]
     AUTHORIZATION [dbo];
+
+
+
+
 
 
 
@@ -46,10 +57,16 @@ CREATE SCHEMA [Warehouse]
 
 
 
+
+
+
+
 GO
 
-CREATE SCHEMA Settings
-	AUTHORIZATION [dbo];
+CREATE SCHEMA [Settings]
+    AUTHORIZATION [dbo];
+
+
 
 GO	
 CREATE SCHEMA Documents
@@ -95,6 +112,8 @@ CREATE SCHEMA [Manufactory]
 
 
 
+
+
     
 GO
 CREATE SCHEMA [Logistics]
@@ -107,10 +126,14 @@ CREATE SCHEMA [Logistics]
 GO
 CREATE SCHEMA [Reports]
     AUTHORIZATION [dbo];
+
+
     
 GO
 CREATE SCHEMA [Planing]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -136,6 +159,8 @@ CREATE SCHEMA [Synchro]
 
 
 
+
+
 GO
 CREATE SCHEMA [SyncFinance]
     AUTHORIZATION [dbo];
@@ -154,6 +179,8 @@ CREATE SCHEMA [Salary]
 GO
 CREATE SCHEMA [Wildberries]
     AUTHORIZATION [dbo];
+
+
 
 
 

@@ -201,5 +201,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

@@ -616,8 +616,7 @@ AS
 		     		0
 		     	);
 				
-		IF @covering_id > 10000
-		BEGIN		
+	
 			INSERT INTO Synchro.Upload_Covering_BuhVas
 			(
 				covering_id,
@@ -626,7 +625,7 @@ AS
 			SELECT	@covering_id,
 					@dt
 			WHERE NOT EXISTS (SELECT NULL FROM Synchro.Upload_Covering_BuhVas t WHERE t.covering_id = @covering_id)
-		END
+
 		
 		IF EXISTS(
 		   	SELECT	1

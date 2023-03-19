@@ -6,6 +6,7 @@
 	@plan_year SMALLINT = NULL,
 	@plan_month TINYINT = NULL,
 	@office_id INT = NULL,
+	@fabricator_id INT = NULL,
 	@qp_id INT = NULL,
 	@ps_id TINYINT = NULL,
 	@is_work BIT = NULL,
@@ -73,6 +74,8 @@ AS
 			oa_res.rmo_id,
 			spcv.sew_office_id,
 			os.office_name sew_office_name,
+			sp.sew_fabricator_id,
+			f.fabricator_name sew_fabricator_name,
 			sp.qp_id,
 			qp.qp_name,
 			CAST(sp.plan_sew_dt AS DATETIME) plan_sew_dt,
@@ -110,6 +113,8 @@ AS
 				ON	spcvc.rmt_id = ct.rmt_id 
 			LEFT JOIN Settings.OfficeSetting os
 				ON os.office_id = spcv.sew_office_id 
+			LEFT JOIN Fabricators.Fabricators f 
+				ON f.fabricator_id = sp.sew_fabricator_id
 			INNER JOIN Products.QueuePriority qp
 				ON qp.qp_id = sp.qp_id 
 			LEFT JOIN Suppliers.Supplier sup 
@@ -154,6 +159,7 @@ AS
 			AND (@plan_year IS NULL OR sp.plan_year = @plan_year)
 			AND (@plan_month IS NULL OR sp.plan_month = @plan_month)
 			AND (@office_id IS NULL OR sp.sew_office_id = @office_id)
+			AND (@fabricator_id IS NULL OR sp.sew_fabricator_id = @fabricator_id)
 			AND (@qp_id IS NULL OR sp.qp_id = @qp_id)
 			AND (@ps_id IS NULL OR sp.ps_id = @ps_id)
 			AND (@frame_width IS NULL OR spcvc.frame_width = @frame_width)

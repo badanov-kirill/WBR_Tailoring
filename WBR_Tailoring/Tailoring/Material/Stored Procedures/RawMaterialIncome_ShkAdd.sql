@@ -38,6 +38,8 @@ AS
 	DECLARE @rmi_status_allow_accept TINYINT = 2 -- Разрешена приемка
 	DECLARE @stuff_model_id INT
 	DECLARE @rmtv_out TABLE (rmtv_id INT)
+	DECLARE @fabricator_id INT
+	DECLARE @fabricator_name VARCHAR(100)
 	
 	IF @stor_unit_residues_qty <= 0
 	   OR @qty <= 0
@@ -58,7 +60,9 @@ AS
 	      	              END,
 			@doc_id                  = su.doc_id,
 			@suppliercontract_id     = rmi.suppliercontract_id,
-			@supplier_name           = s.supplier_name
+			@supplier_name           = s.supplier_name,
+			@fabricator_id			 = rmi.fabricator_id,
+			@fabricator_name		 = f.fabricator_name	
 	FROM	(VALUES(@shksu_id))v(shksu_id)   
 			LEFT JOIN	Warehouse.SHKSpaceUnit su   
 			INNER JOIN	Material.RawMaterialIncome rmi   
@@ -69,6 +73,8 @@ AS
 			INNER JOIN	Material.RawMaterialIncomeStatus rmis
 				ON	rmis.rmis_id = rmi.rmis_id
 				ON	su.shksu_id = v.shksu_id
+			LEFT JOIN Settings.Fabricators f 
+				ON f.fabricator_id = rmi.fabricator_id
 	
 	IF @error_text IS NOT NULL
 	BEGIN
@@ -338,7 +344,8 @@ AS
 		    is_deleted,
 		    nds,
 		    gross_mass,
-		    tissue_density
+		    tissue_density,
+			fabricator_id
 		  )OUTPUT	INSERTED.shkrm_id,
 		   		INSERTED.doc_id,
 		   		INSERTED.doc_type_id,
@@ -406,7 +413,8 @@ AS
 		    0,
 		    @nds,
 		    @gross_mass,
-		    @tissue_density
+		    @tissue_density,
+			@fabricator_id
 		  )
 		
 		INSERT INTO Warehouse.SHKRawMaterialInfo
@@ -579,7 +587,8 @@ AS
 						INSERTED.comment,
 						INSERTED.payment_comment,
 						INSERTED.plan_sum,
-						INSERTED.scan_load_dt
+						INSERTED.scan_load_dt,
+						INSERTED.fabricator_id
 				INTO	History.RawMaterialIncome (
 						doc_id,
 						doc_type_id,
@@ -594,7 +603,8 @@ AS
 						comment,
 						payment_comment,
 						plan_sum,
-						scan_load_dt
+						scan_load_dt,
+						fabricator_id
 					)
 		WHERE	doc_id = @doc_id
 				AND	doc_type_id = @doc_type_id
@@ -676,7 +686,9 @@ AS
 		COMMIT TRANSACTION
 		
 		SELECT	@shkrm_id          shkrm_id,
-				@supplier_name     supplier_name
+				@supplier_name     supplier_name,
+				@fabricator_id	   fabricator_id,		
+				@fabricator_name   fabricator_name	
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
@@ -690,5 +702,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

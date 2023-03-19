@@ -18,12 +18,16 @@
     [plan_start_dt]       DATE                NOT NULL,
     [spcvts_id]           INT                 NULL,
     [cutting_tariff]      DECIMAL (9, 6)      NOT NULL,
+    [fabricator_id]       INT                 NOT NULL,
     CONSTRAINT [PK_Cutting] PRIMARY KEY CLUSTERED ([cutting_id] ASC),
     CONSTRAINT [FK_Cutting_chrt_id] FOREIGN KEY ([pants_id]) REFERENCES [Products].[ProdArticleNomenclatureTechSize] ([pants_id]),
+    CONSTRAINT [FK_Cutting_fabricator_id] FOREIGN KEY ([fabricator_id]) REFERENCES [Settings].[Fabricators] ([fabricator_id]),
     CONSTRAINT [FK_Cutting_office_id] FOREIGN KEY ([office_id]) REFERENCES [Settings].[OfficeSetting] ([office_id]),
     CONSTRAINT [FK_Cutting_pt_id] FOREIGN KEY ([pt_id]) REFERENCES [Products].[ProductType] ([pt_id]),
     CONSTRAINT [FK_Cutting_spcvts_id] FOREIGN KEY ([spcvts_id]) REFERENCES [Planing].[SketchPlanColorVariantTS] ([spcvts_id])
 );
+
+
 
 
 

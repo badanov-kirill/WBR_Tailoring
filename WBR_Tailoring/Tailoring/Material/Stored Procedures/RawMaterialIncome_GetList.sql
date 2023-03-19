@@ -1,4 +1,6 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialIncome_GetList]
+﻿--12.03.2023 Иванилова Е.   Добавлен  вывод поля fabricator id
+-----------------------------------------------------------------------------------
+CREATE PROCEDURE [Material].[RawMaterialIncome_GetList]
 	@top_n INT = 500,
 	@supplier_id INT = NULL,
 	@start_create_dt DATETIME2(0) = NULL,
@@ -7,7 +9,8 @@
 	@goods_dt DATE = NULL,
 	@rmis_id INT = NULL,
 	@suppliercontract_erp_id INT = NULL,
-	@is_ots BIT = NULL
+	@is_ots BIT = NULL,
+	@fabricator_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -32,7 +35,9 @@ AS
 			STUFF(oa_inv.x, 1, 3, '')     invoices,
 			c.currency_name_shot,
 			rmi.ots_id,
-			cmp.company_name
+			cmp.company_name,
+			f.fabricator_name,
+			f.fabricator_id
 	FROM	Documents.DocumentID di   
 			INNER JOIN	Material.RawMaterialIncome rmi
 				ON	di.doc_id = rmi.doc_id
@@ -43,6 +48,7 @@ AS
 				ON	s.supplier_id = rmi.supplier_id   
 			INNER JOIN	Suppliers.SupplierContract sc
 				ON	sc.suppliercontract_id = rmi.suppliercontract_id 
+			LEFT JOIN Settings.Fabricators f ON f.fabricator_id = rmi.fabricator_id
 			LEFT JOIN RefBook.Currency c ON c.currency_id = sc.currency_id  
 			LEFT JOIN RefBook.Company cmp ON rmi.company_id = cmp.company_id
 			OUTER APPLY (
@@ -72,6 +78,7 @@ AS
 			AND rmi.is_deleted = 0
 			AND (@suppliercontract_erp_id IS NULL OR sc.suppliercontract_erp_id = @suppliercontract_erp_id)
 			AND (@is_ots IS NULL OR (@is_ots = 1 AND rmi.ots_id IS NOT NULL) OR (@is_ots = 0 AND rmi.ots_id IS NULL))
+			AND (@fabricator_id IS NULL OR rmi.fabricator_id = @fabricator_id)
 	ORDER BY
 		di.doc_id                         DESC
 GO

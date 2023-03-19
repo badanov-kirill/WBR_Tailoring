@@ -16,6 +16,7 @@
 	@model_year SMALLINT = NULL,
 	@season_local_id INT = NULL,
 	@supplier_id INT = NULL,
+	@fabricator_id INT = NULL,
 	@is_preorder BIT = NULL
 AS
 	SET NOCOUNT ON
@@ -60,6 +61,8 @@ AS
 			oa_res.rmo_id,
 			spcv.sew_office_id,
 			os.office_name sew_office_name,
+			f.fabricator_name sew_fabricator_name,
+			sp.sew_fabricator_id,
 			sp.qp_id,
 			qp.qp_name,
 			CAST(sp.plan_sew_dt AS DATETIME) plan_sew_dt,
@@ -79,7 +82,7 @@ AS
 				ON	sj.subject_id = s.subject_id   
 			INNER JOIN	Products.Brand b
 				ON	b.brand_id = s.brand_id   
-			INNER JOIN	Planing.SketchPlanColorVariant spcv
+			INNER JOIN	Planing.SketchPlanColorVariant spcv--
 				ON	spcv.sp_id = sp.sp_id   
 			INNER JOIN	Planing.SketchPlanColorVariantCompleting spcvc
 				ON	spcvc.spcv_id = spcv.spcv_id   
@@ -99,6 +102,8 @@ AS
 				ON qp.qp_id = sp.qp_id 
 			LEFT JOIN Suppliers.Supplier sup 
 				ON sup.supplier_id = spcvc.supplier_id
+			LEFT JOIN Settings.Fabricators f 
+				ON f.fabricator_id = sp.sew_fabricator_id
 			OUTER APPLY (
 			      	SELECT	SUM(CASE WHEN rmodfr.rmodr_id IS NULL AND	rms.end_dt_offer > @dt THEN rmsr.qty ELSE 0 END) qty_reserv,
 			      			MAX(CASE WHEN rmodfr.rmods_id = @rmod_status_deleted THEN NULL ELSE sup.supplier_name END) supplier_name,
@@ -148,6 +153,7 @@ AS
 			AND (@model_year IS NULL OR sp.season_model_year = @model_year)
 			AND	(@season_local_id IS NULL OR sp.season_local_id = @season_local_id)
 			AND (@supplier_id IS NULL OR spcvc.supplier_id = @supplier_id)
+			AND (@fabricator_id IS NULL OR sp.sew_fabricator_id = @fabricator_id)
 			AND (@is_preorder IS NULL OR sp.is_preorder = @is_preorder)
 			AND (
 			    	@is_work IS NULL

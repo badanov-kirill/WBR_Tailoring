@@ -22,13 +22,15 @@ AS
 		
 		SELECT	pafw.pa_id,
 				dbo.bin2uid(pafw.imt_uid) imt_uid,
-				pa.sa,
-				b.brand_name
+				pa.sa + pan.sa sa,
+				b.brand_name				
 		FROM	@tab t   
 				INNER JOIN	Wildberries.ProdArticleForWB pafw
 					ON	pafw.pa_id = t.pa_id   
 				INNER JOIN	Products.ProdArticle pa
 					ON	pa.pa_id = pafw.pa_id
+				INNER JOIN Products.ProdArticleNomenclature pan
+					ON pan.pa_id = pa.pa_id
 				INNER JOIN Products.Brand b
 					ON b.brand_id = pa.brand_id
 				

@@ -63,7 +63,9 @@ AS
 			ots.comment ots_comment,
 			c_ots.currency_name_shot ots_currency_name_shot,
 			ots.amount,
-			rmi.company_id
+			rmi.company_id,
+			rmi.fabricator_id,
+			f.fabricator_name
 	FROM	Documents.DocumentID di   
 			INNER JOIN	Material.RawMaterialIncome rmi
 				ON	di.doc_id = rmi.doc_id
@@ -84,7 +86,9 @@ AS
 				ON	stopt.type_of_payment_id = ots.type_of_payment_id   
 			LEFT JOIN	RefBook.Currency c_ots
 				ON	c_ots.currency_id = sc_ots.currency_id
-			ON ots.ots_id = rmi.ots_id
+				ON ots.ots_id = rmi.ots_id
+			LEFT JOIN Settings.Fabricators f 
+				ON f.fabricator_id = rmi.fabricator_id
 				
 	WHERE	di.doc_id = @doc_id
 			AND	di.doc_type_id = @doc_type_id

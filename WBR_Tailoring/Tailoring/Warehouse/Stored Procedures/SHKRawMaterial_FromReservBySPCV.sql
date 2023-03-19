@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Warehouse].[SHKRawMaterial_FromReservBySPCV]
+﻿
+CREATE PROCEDURE [Warehouse].[SHKRawMaterial_FromReservBySPCV]
 	@spcv_id INT,
 	@rmt_id INT = NULL,
 	@color_id INT = NULL,
@@ -6,12 +7,14 @@
 	@frame_width SMALLINT = NULL,
 	@shkrm_id INT = NULL,
 	@color_name VARCHAR(20) = NULL,
-	@with_terminal_residues BIT = 0
+	@with_terminal_residues BIT = 0,
+	@fabricator_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	DECLARE @sew_office_id INT
 	DECLARE @main_office_id INT
+
 	
 	--SELECT	@main_office_id = os.office_id
 	--FROM	Settings.OfficeSetting os
@@ -37,7 +40,8 @@ AS
 			os.office_name,
 			oa_or.x office_reserv,
 			rmtp.rmtp_id,
-			smlsd.state_name logic_state_name
+			smlsd.state_name logic_state_name,
+			f.fabricator_name
 	FROM	Warehouse.SHKRawMaterialActualInfo smai   
 			INNER JOIN	Warehouse.SHKRawMaterialOnPlace smop
 				ON	smop.shkrm_id = smai.shkrm_id   
@@ -63,6 +67,8 @@ AS
 				ON	sms.shkrm_id = smai.shkrm_id   
 			INNER JOIN	Warehouse.SHKRawMaterialAmount sma
 				ON	sma.shkrm_id = smai.shkrm_id
+			INNER JOIN Settings.Fabricators f
+				ON	f.fabricator_id = smai.fabricator_id  
 			LEFT JOIN Material.RawMaterialTypePhoto rmtp
 				ON rmtp.art_id = smai.art_id 
 				AND rmtp.rmt_id = smai.rmt_id 
@@ -100,6 +106,7 @@ AS
 			AND	(zor.office_id = @sew_office_id OR zor.office_id IN (100,-2) )--@main_office_id)
 			AND smai.stor_unit_residues_qty > ISNULL(oa.qty, 0)
 			AND (smai.is_terminal_residues = 0 OR @with_terminal_residues = 1)
+		    AND	(smai.fabricator_id = @fabricator_id)
 	ORDER BY
 		CASE 
 		     WHEN zor.office_id = @sew_office_id THEN 0

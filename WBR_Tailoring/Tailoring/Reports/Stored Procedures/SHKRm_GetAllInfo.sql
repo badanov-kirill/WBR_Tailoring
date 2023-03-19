@@ -23,9 +23,15 @@ AS
 			smai.nds,
 			smai.gross_mass,
 			smai.doc_type_id,
-			is_terminal_residues,
-			smai.tissue_density
+			smai.is_terminal_residues,
+			smai.tissue_density,
+			f.fabricator_id,
+			f.fabricator_name			
 	FROM	History.SHKRawMaterialActualInfo smai   
+	        LEFT JOIN Warehouse.SHKRawMaterialActualInfo sm
+				ON sm.shkrm_id = smai.shkrm_id
+			LEFT JOIN Fabricators.Fabricators f
+				ON f.fabricator_id = sm.fabricator_id
 			LEFT JOIN	Documents.DocumentType dt
 				ON	dt.doc_type_id = smai.doc_type_id   
 			LEFT JOIN	Material.RawMaterialType rmt
