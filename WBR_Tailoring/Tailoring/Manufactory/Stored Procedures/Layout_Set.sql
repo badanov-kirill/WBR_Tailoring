@@ -30,6 +30,7 @@ AS
 	DECLARE @cvc_state_covered_wh TINYINT = 3
 	DECLARE @sketch_plan_output TABLE (sp_id INT, sketch_id INT)
 	DECLARE @sew_office_id INT
+	DECLARE @sew_fabricator_id INT
 	DECLARE @spcv_output TABLE(
 	        	spcv_id INT NOT NULL,
 	        	sp_id INT NOT NULL,
@@ -47,7 +48,8 @@ AS
 	        	sew_office_id INT NULL,
 	        	sew_deadline_dt DATE NULL,
 	        	cost_plan_year SMALLINT NULL,
-	        	cost_plan_month TINYINT NULL
+	        	cost_plan_month TINYINT NULL,
+				fabricator_id  INT NULL
 	)
 	DECLARE @proc_id INT
 
@@ -58,16 +60,25 @@ AS
 	      	                   ELSE NULL
 	      	              END,
 	      	@sew_office_id = spcv.sew_office_id,
-			@base_spcv_id = tl.spcv_id
+			@base_spcv_id = tl.spcv_id,
+			@sew_fabricator_id = sp.sew_fabricator_id
 	FROM	(VALUES(@tl_id))v(tl_id)   
 			LEFT JOIN	Manufactory.TaskLayout tl
 			INNER JOIN Planing.SketchPlanColorVariant spcv
 			ON spcv.spcv_id = tl.spcv_id
 				ON	tl.tl_id = v.tl_id
+			INNER JOIN Planing.SketchPlan sp
+				ON sp.sp_id = spcv.sp_id
 	
 	IF @error_text IS NOT NULL
 	BEGIN
 	    RAISERROR('%s', 16, 1, @error_text)
+	    RETURN
+	END
+
+	IF @sew_fabricator_id  is NULL
+	BEGIN
+	    RAISERROR('%s', 16, 1, 'Изготовитель не определен')
 	    RETURN
 	END
 	
@@ -647,7 +658,8 @@ AS
 		        is_deleted,
 		        comment,
 		        pan_id,
-		        sew_office_id
+		        sew_office_id,
+				sew_fabricator_id
 		      )	OUTPUT	INSERTED.spcv_id,
 		    				INSERTED.sp_id,
 		    				INSERTED.spcv_name,
@@ -664,7 +676,8 @@ AS
 		    				INSERTED.sew_office_id,
 		    				INSERTED.sew_deadline_dt,
 		    				INSERTED.cost_plan_year,
-		    				INSERTED.cost_plan_month
+		    				INSERTED.cost_plan_month,
+							INSERTED.sew_fabricator_id
 		    		INTO	@spcv_output (
 		    				spcv_id,
 		    				sp_id,
@@ -682,7 +695,8 @@ AS
 		    				sew_office_id,
 		    				sew_deadline_dt,
 		    				cost_plan_year,
-		    				cost_plan_month
+		    				cost_plan_month,
+						    fabricator_id
 		    			)
 		    SELECT	spo.sp_id,
 		    		'Компаньен',
@@ -693,8 +707,10 @@ AS
 		    		0,
 		    		NULL,
 		    		NULL,
-		    		@sew_office_id
+		    		@sew_office_id,
+					@sew_fabricator_id
 		    FROM	@sketch_plan_output spo
+			
 		    
 		    INSERT INTO History.SketchPlanColorVariant
 		    	(
@@ -715,7 +731,8 @@ AS
 		    		sew_deadline_dt,
 		    		cost_plan_year,
 		    		cost_plan_month,
-		    		proc_id
+		    		proc_id,
+					sew_fabricator_id
 		    	)
 		    SELECT	sot.spcv_id,
 		    		sot.sp_id,
@@ -734,7 +751,8 @@ AS
 		    		sot.sew_deadline_dt,
 		    		sot.cost_plan_year,
 		    		sot.cost_plan_month,
-		    		@proc_id
+		    		@proc_id,
+					fabricator_id
 		    FROM	@spcv_output sot	
 		    
 		    INSERT INTO Planing.AddedSketchPlanMapping
@@ -831,5 +849,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		
-		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
+		--WITH LOG;
 	END CATCH 

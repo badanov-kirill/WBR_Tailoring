@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Planing].[SketchPlan_Add]
+﻿
+CREATE PROCEDURE [Planing].[SketchPlan_Add]
 	@sketch_id INT,
 	@employee_id INT,
 	@comment VARCHAR(200) = NULL,
@@ -151,6 +152,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 
 	

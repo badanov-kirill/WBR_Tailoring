@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Manufactory].[CoveringInfoByProdUnicCode]
+﻿
+CREATE PROCEDURE [Manufactory].[CoveringInfoByProdUnicCode]
 	@product_unic_code INT
 AS
 	SET NOCOUNT ON
@@ -6,32 +7,35 @@ AS
 	
 	INSERT INTO Synchro.ProductsForEAN
 		(
-			pants_id
+			pants_id,
+			fabricator_id
 		)
-	SELECT	pants.pants_id
-	FROM	Manufactory.ProductUnicCode puc   
-			INNER JOIN	Manufactory.Cutting c0
-				ON	c0.cutting_id = puc.cutting_id   
-			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt0
-				ON	spcvt0.spcvts_id = c0.spcvts_id   
-			INNER JOIN	Planing.CoveringDetail cd
-				ON	cd.spcv_id = spcvt0.spcv_id   
-			INNER JOIN	Planing.SketchPlanColorVariant spcv
-				ON	spcv.spcv_id = cd.spcv_id   
-			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
-				ON	spcvt.spcv_id = spcv.spcv_id   
-			INNER JOIN	Products.ProdArticleNomenclature pan
-				ON	pan.pan_id = spcv.pan_id   
-			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
-				ON	pants.pan_id = pan.pan_id
-				AND	pants.ts_id = spcvt.ts_id   
-			LEFT JOIN	Manufactory.EANCode e
-				ON	e.pants_id = pants.pants_id   
-			LEFT JOIN	Synchro.ProductsForEAN se
-				ON	se.pants_id = pants.pants_id
-	WHERE	puc.product_unic_code = @product_unic_code
-			AND	e.pants_id IS NULL
-			AND	se.pants_id IS NULL
+		SELECT	 pants.pants_id, f.fabricator_id
+		FROM	Manufactory.ProductUnicCode puc   
+				INNER JOIN	Manufactory.Cutting c0
+					ON	c0.cutting_id = puc.cutting_id   
+				INNER JOIN	Planing.SketchPlanColorVariantTS spcvt0
+					ON	spcvt0.spcvts_id = c0.spcvts_id   
+				INNER JOIN	Planing.CoveringDetail cd
+					ON	cd.spcv_id = spcvt0.spcv_id   
+				INNER JOIN	Planing.SketchPlanColorVariant spcv
+					ON	spcv.spcv_id = cd.spcv_id   
+				INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+					ON	spcvt.spcv_id = spcv.spcv_id   
+				INNER JOIN	Products.ProdArticleNomenclature pan
+					ON	pan.pan_id = spcv.pan_id   
+				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
+					ON	pants.pan_id = pan.pan_id
+					AND	pants.ts_id = spcvt.ts_id   
+				LEFT JOIN	Manufactory.EANCode e
+					ON	e.pants_id = pants.pants_id   
+				LEFT JOIN	Synchro.ProductsForEAN se
+					ON	se.pants_id = pants.pants_id
+				CROSS JOIN Settings.Fabricators f
+		WHERE	puc.product_unic_code = @product_unic_code
+				AND	e.pants_id IS NULL
+				AND	se.pants_id IS NULL; 
+	
 	
 	SELECT	pa.sa + pan.sa     sa,
 			an.art_name,

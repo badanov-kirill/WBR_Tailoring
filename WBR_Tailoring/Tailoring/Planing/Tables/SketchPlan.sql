@@ -20,7 +20,7 @@
     [season_model_year]  SMALLINT            NULL,
     [is_preorder]        BIT                 CONSTRAINT [DF_SketchPlan_is_preorder] DEFAULT ((0)) NOT NULL,
     [supplier_id]        INT                 NULL,
-    [sew_fabricator_id]  INT                 NOT NULL,
+    [sew_fabricator_id]  INT                 NULL,
     CONSTRAINT [PK_SketchPlan] PRIMARY KEY CLUSTERED ([sp_id] ASC),
     CONSTRAINT [FK_SketchPlan_ps_id] FOREIGN KEY ([ps_id]) REFERENCES [Planing].[PlanStatus] ([ps_id]),
     CONSTRAINT [FK_SketchPlan_qp_id] FOREIGN KEY ([qp_id]) REFERENCES [Products].[QueuePriority] ([qp_id]),
@@ -30,6 +30,8 @@
     CONSTRAINT [FK_SketchPlan_spp_id] FOREIGN KEY ([spp_id]) REFERENCES [Planing].[SketchPrePlan] ([spp_id]),
     CONSTRAINT [FK_SketchPlan_supplier_id] FOREIGN KEY ([supplier_id]) REFERENCES [Suppliers].[Supplier] ([supplier_id])
 );
+
+
 
 
 

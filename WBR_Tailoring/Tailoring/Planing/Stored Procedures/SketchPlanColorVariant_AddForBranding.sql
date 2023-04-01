@@ -1,7 +1,10 @@
-﻿CREATE PROCEDURE [Planing].[SketchPlanColorVariant_AddForBranding]
-@pan_id INT,
+﻿
+CREATE PROCEDURE [Planing].[SketchPlanColorVariant_AddForBranding]
+	@pan_id INT,
 	@data_xml XML,
-	@employee_id INT
+	@employee_id INT,
+	@fabricator_id INT
+
 AS
 	SET NOCOUNT ON
 	DECLARE @dt DATETIME2(0) = GETDATE()
@@ -33,7 +36,8 @@ AS
 	        	sew_office_id INT NULL,
 	        	sew_deadline_dt DATE NULL,
 	        	cost_plan_year SMALLINT NULL,
-	        	cost_plan_month TINYINT NULL
+	        	cost_plan_month TINYINT NULL,
+				sew_fabricator_id INT NULL
 	        )
 	
 	DECLARE @spcvts_out TABLE (spcvts_id INT, ts_id INT, qty SMALLINT)
@@ -44,6 +48,7 @@ AS
 	        	FROM	Settings.OfficeSetting os
 	        	WHERE	os.is_main_wh = 1
 	        )
+
 	
 	IF @office_id IS NULL
 	BEGIN
@@ -116,12 +121,14 @@ AS
 		
 		INSERT INTO Synchro.ProductsForEAN
 			(
-				pants_id
+				pants_id,
+				fabricator_id
 			)
-		SELECT	pants.pants_id
+		SELECT	pants.pants_id,f.fabricator_id
 		FROM	Products.ProdArticleNomenclatureTechSize pants   
 				LEFT JOIN	Synchro.ProductsForEAN pfe
 					ON	pfe.pants_id = pants.pants_id
+				CROSS JOIN Settings.Fabricators f
 		WHERE	pants.pan_id = @pan_id
 				AND	pfe.pants_id IS NULL
 		
@@ -141,7 +148,8 @@ AS
 				cv_qty,
 				plan_sew_dt,
 				season_local_id,
-				sew_office_id
+				sew_office_id,
+				sew_fabricator_id
 			)OUTPUT	INSERTED.sp_id,
 			 		INSERTED.sketch_id
 			 INTO	@sketch_plan_output (
@@ -164,7 +172,8 @@ AS
 				@qty,
 				@dt,
 				@season_local_id,
-				NULL
+				NULL,
+				@fabricator_id
 			)
 		
 		INSERT INTO History.SketchPlan
@@ -197,7 +206,8 @@ AS
 				pan_id,
 				corrected_qty,
 				cost_plan_year,
-				cost_plan_month
+				cost_plan_month,
+				sew_fabricator_id
 			)OUTPUT	INSERTED.spcv_id,
 			 		INSERTED.sp_id,
 			 		INSERTED.spcv_name,
@@ -214,7 +224,8 @@ AS
 			 		INSERTED.sew_office_id,
 			 		INSERTED.sew_deadline_dt,
 			 		INSERTED.cost_plan_year,
-			 		INSERTED.cost_plan_month
+			 		INSERTED.cost_plan_month,
+					INSERTED.sew_fabricator_id
 			 INTO	@spcv_output_tab (
 			 		spcv_id,
 			 		sp_id,
@@ -232,7 +243,8 @@ AS
 			 		sew_office_id,
 			 		sew_deadline_dt,
 			 		cost_plan_year,
-			 		cost_plan_month
+			 		cost_plan_month,
+					sew_fabricator_id
 			 	)
 		SELECT	spo.sp_id,
 				'Брендирование',
@@ -245,7 +257,8 @@ AS
 				@pan_id,
 				@qty,
 				YEAR(@dt),
-				MONTH(@dt)
+				MONTH(@dt),
+				@fabricator_id
 		FROM	@sketch_plan_output spo
 		
 		INSERT INTO History.SketchPlanColorVariant
@@ -267,7 +280,8 @@ AS
 				sew_deadline_dt,
 				cost_plan_year,
 				cost_plan_month,
-				proc_id
+				proc_id,
+				sew_fabricator_id
 			)
 		SELECT	sot.spcv_id,
 				sot.sp_id,
@@ -286,7 +300,8 @@ AS
 				sot.sew_deadline_dt,
 				sot.cost_plan_year,
 				sot.cost_plan_month,
-				@proc_id
+				@proc_id,
+				@fabricator_id
 		FROM	@spcv_output_tab sot
 		
 		INSERT INTO Planing.SketchPlanColorVariantTS
@@ -333,7 +348,7 @@ AS
 			(
 				office_id,
 				plan_year,
-				plan_month,
+				plan_month, 
 				pants_id,
 				plan_count,
 				create_employee_id,
@@ -439,5 +454,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

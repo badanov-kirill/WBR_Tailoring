@@ -12,9 +12,13 @@ CREATE SCHEMA [History]
 
 
 
+
+
 GO
 CREATE SCHEMA [Material]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -61,6 +65,8 @@ CREATE SCHEMA [Warehouse]
 
 
 
+
+
 GO
 
 CREATE SCHEMA [Settings]
@@ -95,6 +101,10 @@ CREATE SCHEMA [Products]
 
 
 
+
+
+
+
 	
 GO
 CREATE SCHEMA [Budget]
@@ -104,6 +114,10 @@ CREATE SCHEMA [Budget]
 GO
 CREATE SCHEMA [Manufactory]
     AUTHORIZATION [dbo];
+
+
+
+
 
 
 
@@ -145,6 +159,12 @@ CREATE SCHEMA [Planing]
 
 
 
+
+
+
+
+
+
 GO
 CREATE SCHEMA [Technology]
     AUTHORIZATION [dbo];
@@ -154,6 +174,8 @@ CREATE SCHEMA [Technology]
 GO 
 CREATE SCHEMA [Synchro]
     AUTHORIZATION [dbo];
+
+
 
 
 

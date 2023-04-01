@@ -75,10 +75,16 @@ AS
 				ON	su.shksu_id = v.shksu_id
 			LEFT JOIN Settings.Fabricators f 
 				ON f.fabricator_id = rmi.fabricator_id
-	
+					
 	IF @error_text IS NOT NULL
 	BEGIN
 	    RAISERROR('%s', 16, 1, @error_text)
+	    RETURN
+	END
+
+	IF @fabricator_name IS  NULL
+	BEGIN
+	    RAISERROR('%s', 16, 1, 'Изготовитель не определен.')
 	    RETURN
 	END
 	
@@ -367,7 +373,8 @@ AS
 		   		INSERTED.nds,
 		   		INSERTED.gross_mass,
 		   		INSERTED.is_terminal_residues,
-		   		INSERTED.tissue_density
+		   		INSERTED.tissue_density,
+				@fabricator_id
 		   INTO	History.SHKRawMaterialActualInfo (
 		   		shkrm_id,
 		   		doc_id,
@@ -390,7 +397,8 @@ AS
 		   		nds,
 		   		gross_mass,
 		   		is_terminal_residues,
-		   		tissue_density
+		   		tissue_density,
+				fabricator_id
 		   	)
 		VALUES
 		  (

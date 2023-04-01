@@ -1,5 +1,4 @@
-﻿
-CREATE PROCEDURE [Warehouse].[SHKRawMaterial_FromReservBySPCV]
+﻿CREATE PROCEDURE [Warehouse].[SHKRawMaterial_FromReservBySPCV]
 	@spcv_id INT,
 	@rmt_id INT = NULL,
 	@color_id INT = NULL,
@@ -41,7 +40,8 @@ AS
 			oa_or.x office_reserv,
 			rmtp.rmtp_id,
 			smlsd.state_name logic_state_name,
-			f.fabricator_name
+			smai.fabricator_id,
+			f.fabricator_name  
 	FROM	Warehouse.SHKRawMaterialActualInfo smai   
 			INNER JOIN	Warehouse.SHKRawMaterialOnPlace smop
 				ON	smop.shkrm_id = smai.shkrm_id   
