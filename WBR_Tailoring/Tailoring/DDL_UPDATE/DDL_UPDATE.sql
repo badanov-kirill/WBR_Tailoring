@@ -1,3 +1,6 @@
+INSERT INTO [Settings].[Fabricators] ([fabricator_name],[INN],[activ])VALUES ('OOO ''Василиса''','9723096830',1);
+INSERT INTO [Settings].[Fabricators] ([fabricator_name],[INN],[activ])VALUES ('OOO ''Мангуст-Т''','-',0);
+
 Alter table Planing.SketchPlan add  sew_fabricator_id  int;
 UPDATE Planing.SketchPlan SET sew_fabricator_id = 1 WHERE sew_fabricator_id is null;
 ALTER TABLE [Planing].[SketchPlan]  WITH CHECK ADD CONSTRAINT [FK_SketchPlan_sew_fabricator_id] FOREIGN KEY([sew_fabricator_id ]) REFERENCES [Settings].[Fabricators] (fabricator_id);

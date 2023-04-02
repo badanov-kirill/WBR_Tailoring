@@ -443,6 +443,7 @@ AS
 					ON	pfe.pants_id = pants.pants_id
 				CROSS JOIN Settings.Fabricators f
 		WHERE	pfe.pants_id IS NULL
+				AND f.activ = 1;
 		
 		COMMIT TRANSACTION
 		

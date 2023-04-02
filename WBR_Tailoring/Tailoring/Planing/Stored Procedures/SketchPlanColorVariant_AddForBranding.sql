@@ -131,6 +131,7 @@ AS
 				CROSS JOIN Settings.Fabricators f
 		WHERE	pants.pan_id = @pan_id
 				AND	pfe.pants_id IS NULL
+				AND f.activ = 1; 
 		
 		INSERT INTO Planing.SketchPlan
 			(

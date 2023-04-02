@@ -191,6 +191,7 @@ AS
 				ON	e.pants_id = pants.pants_id
 			CROSS JOIN Settings.Fabricators f
 	WHERE	e.pants_id IS NULL
+			AND f.activ = 1; 
 
 
 	SELECT	@error_text = CASE 

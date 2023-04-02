@@ -3,7 +3,7 @@ AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 	
-	DECLARE @tab TABLE (pants_id INT)
+	DECLARE @tab TABLE (pants_id INT, fabricator_id INT)
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @lining_ao_id INT = 4
 	
@@ -44,12 +44,15 @@ AS
 		     		@dt,
 					s.fabricator_id
 		     	) 
-		     OUTPUT	INSERTED.pants_id
+		     OUTPUT	INSERTED.pants_id,
+					INSERTED.fabricator_id
 		     INTO	@tab (
-		     		pants_id
+		     		pants_id,
+					fabricator_id
 		     	);	
 		
 		SELECT	pfe.pants_id,
+				pfe.fabricator_id,
 				b.brand_name,
 				ISNULL(sj.subject_name_sf, sj.subject_name) subject_name,
 				pa.sa + pan.sa sa,
@@ -67,7 +70,7 @@ AS
 				CASE WHEN t.tnved_cod IS NULL THEN '61' ELSE t3.tnved_cod END tnved_cod3,
 				CASE WHEN t.tnved_cod IS NULL THEN '[60-70]' ELSE t4.tnved_cod END tnved_cod4,
 				t5.tnved_cod tnved_cod5,
-				t6.tnved_cod tnved_cod6
+				t6.tnved_cod tnved_cod6				
 		FROM	@tab pfe   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = pfe.pants_id   

@@ -34,7 +34,8 @@ AS
 				CROSS JOIN Settings.Fabricators f
 		WHERE	puc.product_unic_code = @product_unic_code
 				AND	e.pants_id IS NULL
-				AND	se.pants_id IS NULL; 
+				AND	se.pants_id IS NULL
+				AND f.activ = 1; 
 	
 	
 	SELECT	pa.sa + pan.sa     sa,
