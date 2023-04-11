@@ -21,7 +21,7 @@
     [rv]                         ROWVERSION          NOT NULL,
     [is_terminal_residues]       BIT                 CONSTRAINT [DF_SHKRawMaterialActualInfo_is_terminal_residues] DEFAULT ((0)) NOT NULL,
     [tissue_density]             SMALLINT            NULL,
-    [fabricator_id]              INT                 NOT NULL,
+    [fabricator_id]              INT                 NULL,
     CONSTRAINT [PK_SHKRawMaterialActualInfo] PRIMARY KEY CLUSTERED ([shkrm_id] ASC),
     CONSTRAINT [CH_SHKRawMaterialActualInfo_qty] CHECK ([qty]>(0)),
     CONSTRAINT [CH_SHKRawMaterialActualInfo_stor_unit_res_qty] CHECK ([stor_unit_residues_qty]>(0)),
@@ -37,6 +37,8 @@
     CONSTRAINT [FK_SHKRawMaterialActualInfo_supcontr_id] FOREIGN KEY ([suppliercontract_id]) REFERENCES [Suppliers].[SupplierContract] ([suppliercontract_id]),
     CONSTRAINT [FK_SHKRawMaterialActualInfok_fabricator_id] FOREIGN KEY ([fabricator_id]) REFERENCES [Settings].[Fabricators] ([fabricator_id])
 );
+
+
 
 
 

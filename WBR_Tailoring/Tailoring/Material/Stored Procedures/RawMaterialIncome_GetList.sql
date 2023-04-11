@@ -20,6 +20,7 @@ AS
 	SELECT	TOP(@top_n) 
 	      	rmi.doc_id,
 			rmis.rmis_name,
+			rmis.rmis_id,
 			CAST(di.create_dt AS DATETIME) create_dt,
 			s.supplier_id,
 			s.supplier_name,

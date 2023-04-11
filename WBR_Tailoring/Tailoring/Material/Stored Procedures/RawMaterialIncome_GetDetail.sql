@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialIncome_GetDetail]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialIncome_GetDetail]
 	@doc_id INT
 AS
 	SET NOCOUNT ON
@@ -54,6 +55,7 @@ AS
 			CAST(CAST(rmi.rv AS BIGINT) AS VARCHAR(20)) rv_bigint,
 			CAST(rmi.scan_load_dt AS DATETIME) scan_load_dt,
 			rmis.rmis_name,
+			rmis.rmis_id,
 			s.supplier_name,
 			'(' + ISNULL(c.currency_name_shot, ' ') + ') ' + sc.suppliercontract_name suppliercontract_name,
 			ots.ots_id,
