@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialIncome_GetDetail]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialIncome_GetDetail]
 	@doc_id INT
 AS
 	SET NOCOUNT ON
@@ -54,6 +55,7 @@ AS
 			CAST(CAST(rmi.rv AS BIGINT) AS VARCHAR(20)) rv_bigint,
 			CAST(rmi.scan_load_dt AS DATETIME) scan_load_dt,
 			rmis.rmis_name,
+			rmis.rmis_id,
 			s.supplier_name,
 			'(' + ISNULL(c.currency_name_shot, ' ') + ') ' + sc.suppliercontract_name suppliercontract_name,
 			ots.ots_id,
@@ -63,7 +65,9 @@ AS
 			ots.comment ots_comment,
 			c_ots.currency_name_shot ots_currency_name_shot,
 			ots.amount,
-			rmi.company_id
+			rmi.company_id,
+			rmi.fabricator_id,
+			f.fabricator_name
 	FROM	Documents.DocumentID di   
 			INNER JOIN	Material.RawMaterialIncome rmi
 				ON	di.doc_id = rmi.doc_id
@@ -84,7 +88,9 @@ AS
 				ON	stopt.type_of_payment_id = ots.type_of_payment_id   
 			LEFT JOIN	RefBook.Currency c_ots
 				ON	c_ots.currency_id = sc_ots.currency_id
-			ON ots.ots_id = rmi.ots_id
+				ON ots.ots_id = rmi.ots_id
+			LEFT JOIN Settings.Fabricators f 
+				ON f.fabricator_id = rmi.fabricator_id
 				
 	WHERE	di.doc_id = @doc_id
 			AND	di.doc_type_id = @doc_type_id

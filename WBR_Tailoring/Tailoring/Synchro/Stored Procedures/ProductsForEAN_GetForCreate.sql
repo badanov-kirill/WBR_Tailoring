@@ -3,7 +3,7 @@ AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 	
-	DECLARE @tab TABLE (pants_id INT)
+	DECLARE @tab TABLE (pants_id INT, fabricator_id INT)
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @lining_ao_id INT = 4
 	
@@ -11,14 +11,14 @@ AS
 		;
 		MERGE Synchro.ProductsForEANCnt t
 		USING (
-		      	SELECT	pfe.pants_id
+		      	SELECT	pfe.pants_id, pfe.fabricator_id 
 		      	FROM	Synchro.ProductsForEAN pfe   
 		      			LEFT JOIN	Synchro.ProductsForEANCnt pfec
 		      				ON	pfec.pants_id = pfe.pants_id
 		      	WHERE	pfe.dt_create IS NULL
 		      			AND	ISNULL(pfec.cnt_create, 0) < 10
 		      ) s
-				ON t.pants_id = s.pants_id
+				ON t.pants_id = s.pants_id AND  t.fabricator_id = s.fabricator_id
 		WHEN MATCHED THEN 
 		     UPDATE	
 		     SET 	cnt_create     = t.cnt_create + 1,
@@ -31,7 +31,8 @@ AS
 		     		cnt_publish,
 		     		dt,
 		     		dt_create,
-		     		dt_publish
+		     		dt_publish,
+					fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -40,14 +41,18 @@ AS
 		     		0,
 		     		@dt,
 		     		@dt,
-		     		@dt
+		     		@dt,
+					s.fabricator_id
 		     	) 
-		     OUTPUT	INSERTED.pants_id
+		     OUTPUT	INSERTED.pants_id,
+					INSERTED.fabricator_id
 		     INTO	@tab (
-		     		pants_id
+		     		pants_id,
+					fabricator_id
 		     	);	
 		
 		SELECT	pfe.pants_id,
+				pfe.fabricator_id,
 				b.brand_name,
 				ISNULL(sj.subject_name_sf, sj.subject_name) subject_name,
 				pa.sa + pan.sa sa,
@@ -65,7 +70,7 @@ AS
 				CASE WHEN t.tnved_cod IS NULL THEN '61' ELSE t3.tnved_cod END tnved_cod3,
 				CASE WHEN t.tnved_cod IS NULL THEN '[60-70]' ELSE t4.tnved_cod END tnved_cod4,
 				t5.tnved_cod tnved_cod5,
-				t6.tnved_cod tnved_cod6
+				t6.tnved_cod tnved_cod6				
 		FROM	@tab pfe   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = pfe.pants_id   
@@ -151,6 +156,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO

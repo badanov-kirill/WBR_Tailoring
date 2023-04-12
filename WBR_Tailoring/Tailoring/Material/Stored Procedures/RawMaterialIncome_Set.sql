@@ -8,7 +8,8 @@
 	@plan_sum DECIMAL(18, 2) = NULL,
 	@employee_id INT,
 	@rv_bigint BIGINT,
-	@company_id INT = NULL	
+	@company_id INT = NULL,	
+	@fabricator_id INT = NULL	
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -36,7 +37,8 @@ AS
 	        	payment_comment VARCHAR(200) NULL,
 	        	plan_sum DECIMAL(18, 2) NULL,
 	        	scan_load_dt DATETIME2(0) NULL,
-	        	rv_bigint BIGINT NOT NULL
+	        	rv_bigint BIGINT NOT NULL,
+				fabricator_id INT NOT NULL
 	        )  
 	
 	IF @supply_dt IS NULL
@@ -133,7 +135,8 @@ AS
 		      			@supply_dt           supply_dt,
 		      			@goods_dt            goods_dt,
 		      			@comment             comment,
-		      			@company_id			 company_id
+		      			@company_id			 company_id,
+						@fabricator_id		 fabricator_id
 		      ) s
 				ON t.doc_id = s.doc_id
 				AND t.doc_type_id = s.doc_type_id
@@ -148,7 +151,8 @@ AS
 		     		t.supply_dt = s.supply_dt,
 		     		t.goods_dt = s.goods_dt,
 		     		t.comment = s.comment,
-		     		t.company_id = s.company_id
+		     		t.company_id = s.company_id,
+					t.fabricator_id = s.fabricator_id
 		WHEN NOT MATCHED  THEN 
 		     INSERT
 		     	(
@@ -165,7 +169,8 @@ AS
 		     		goods_dt,
 		     		comment,
 		     		suppliercontract_id,
-		     		company_id
+		     		company_id,
+					fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -182,7 +187,8 @@ AS
 		     		s.goods_dt,
 		     		s.comment,
 		     		s.suppliercontract_id,
-		     		s.company_id
+		     		s.company_id,
+					s.fabricator_id
 		     	)
 		     OUTPUT	INSERTED.doc_id,
 		     		INSERTED.doc_type_id,
@@ -198,7 +204,8 @@ AS
 		     		INSERTED.payment_comment,
 		     		INSERTED.plan_sum,
 		     		INSERTED.scan_load_dt,
-		     		CAST(INSERTED.rv AS BIGINT)
+		     		CAST(INSERTED.rv AS BIGINT),
+					INSERTED.fabricator_id
 		     INTO	@income_output (
 		     		doc_id,
 		     		doc_type_id,
@@ -214,7 +221,8 @@ AS
 		     		payment_comment,
 		     		plan_sum,
 		     		scan_load_dt,
-		     		rv_bigint
+		     		rv_bigint,
+					fabricator_id
 		     	);
 		
 		INSERT History.RawMaterialIncome
@@ -232,7 +240,8 @@ AS
 		    comment,
 		    payment_comment,
 		    plan_sum,
-		    scan_load_dt
+		    scan_load_dt,
+			fabricator_id
 		  )
 		SELECT	inc_o.doc_id,
 				inc_o.doc_type_id,
@@ -247,7 +256,8 @@ AS
 				inc_o.comment,
 				inc_o.payment_comment,
 				inc_o.plan_sum,
-				inc_o.scan_load_dt
+				inc_o.scan_load_dt,
+				fabricator_id
 		FROM	@income_output inc_o		     	
 		
 		IF @@ROWCOUNT = 0
@@ -297,6 +307,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		---WITH LOG;
 	END CATCH
 GO

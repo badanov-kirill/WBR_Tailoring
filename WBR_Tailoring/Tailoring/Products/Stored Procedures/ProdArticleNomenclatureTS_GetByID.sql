@@ -1,19 +1,23 @@
-﻿CREATE PROCEDURE [Products].[ProdArticleNomenclatureTS_GetByID]
+﻿
+CREATE PROCEDURE [Products].[ProdArticleNomenclatureTS_GetByID]
 @pants_id INT
 AS
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	SET NOCOUNT ON
-	
+
 	INSERT INTO Synchro.ProductsForEAN
 		(
-			pants_id
+			pants_id,
+			fabricator_id
 		)
-	SELECT	pants.pants_id
+	SELECT	pants.pants_id, f.fabricator_id
 	FROM	Products.ProdArticleNomenclatureTechSize pants   
 			LEFT JOIN	Synchro.ProductsForEAN pfe
 				ON	pfe.pants_id = pants.pants_id
+			CROSS JOIN Settings.Fabricators f
 	WHERE	pants.pants_id = @pants_id
 			AND	pfe.pants_id IS NULL
+			AND f.activ = 1; 
 	
 	SELECT	pants.pants_id,
 			ts.ts_name,

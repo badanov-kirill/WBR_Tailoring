@@ -5,9 +5,13 @@
 
 
 
+
+
 GO
 CREATE SCHEMA [Material]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -46,10 +50,14 @@ CREATE SCHEMA [Warehouse]
 
 
 
+
+
 GO
 
-CREATE SCHEMA Settings
-	AUTHORIZATION [dbo];
+CREATE SCHEMA [Settings]
+    AUTHORIZATION [dbo];
+
+
 
 GO	
 CREATE SCHEMA Documents
@@ -58,6 +66,8 @@ CREATE SCHEMA Documents
 GO
 CREATE SCHEMA [Products]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -95,6 +105,8 @@ CREATE SCHEMA [Manufactory]
 
 
 
+
+
     
 GO
 CREATE SCHEMA [Logistics]
@@ -107,10 +119,14 @@ CREATE SCHEMA [Logistics]
 GO
 CREATE SCHEMA [Reports]
     AUTHORIZATION [dbo];
+
+
     
 GO
 CREATE SCHEMA [Planing]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -131,6 +147,8 @@ CREATE SCHEMA [Technology]
 GO 
 CREATE SCHEMA [Synchro]
     AUTHORIZATION [dbo];
+
+
 
 
 

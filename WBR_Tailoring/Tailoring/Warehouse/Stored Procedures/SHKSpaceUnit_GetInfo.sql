@@ -15,9 +15,12 @@ AS
 			CAST(rmi.supply_dt AS DATETIME) supply_dt,
 			s.supplier_name,
 			di.create_employee_id,
-			ISNULL(oa_inv.inv_cnt, 0) inv_cnt
+			ISNULL(oa_inv.inv_cnt, 0) inv_cnt,
+			rmi.fabricator_id,
+			f.fabricator_name
 	FROM	Warehouse.SHKSpaceUnit su   
-			LEFT JOIN	Material.RawMaterialIncome rmi   
+			LEFT JOIN	Material.RawMaterialIncome rmi 
+			LEFT JOIN Settings.Fabricators f on f.fabricator_id = rmi.fabricator_id
 			INNER JOIN	Suppliers.Supplier s
 				ON	s.supplier_id = rmi.supplier_id   
 			INNER JOIN	Documents.DocumentID di

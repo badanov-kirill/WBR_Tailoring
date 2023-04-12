@@ -51,7 +51,9 @@ AS
 			pa.sa + pan.sa     sketch_sa,
 			CAST(sp.create_dt AS DATETIME) create_dt,
 			os.office_name     sew_office_name,
-			spcv.sew_office_id
+			spcv.sew_office_id,
+			sp.sew_fabricator_id as fabricator_id,
+			f.fabricator_name as fabricator_name
 	FROM	@spcv_tab st   
 			INNER JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = st.spcv_id   
@@ -69,6 +71,8 @@ AS
 				ON	pa.pa_id = pan.pa_id   
 			LEFT JOIN	Settings.OfficeSetting os
 				ON	os.office_id = spcv.sew_office_id   
+			LEFT JOIN	Settings.Fabricators f
+				ON	f.fabricator_id = sp.sew_fabricator_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) spcvc.color_id,
 			      			cc.color_name,

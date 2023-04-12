@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Products].[ProdArticleNomenclatureTS_GetByPanID]
-	@pan_id INT
+@pan_id INT,
+@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -14,6 +15,7 @@ AS
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id
 	WHERE	pants.pan_id = @pan_id
+		AND e.fabricator_id = @fabricator_id 
 	ORDER BY
 		ts.visible_queue,
 		ts.ts_name

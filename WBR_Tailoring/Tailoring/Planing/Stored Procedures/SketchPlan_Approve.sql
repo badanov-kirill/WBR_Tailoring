@@ -1,8 +1,22 @@
-﻿CREATE PROCEDURE [Planing].[SketchPlan_Approve]
+﻿/*
+Обновляется информация Planing.SketchPlan, утверждаются:
+-тип изделия
+-офис
+-период
+-предварительный Изготовитель. 
+
+--------------------------------------------------
+
+-09.03.2023 upd Иванилова Е. Добавлено поле fabricator_id
+
+*/
+---------------------------------------------------
+CREATE PROCEDURE [Planing].[SketchPlan_Approve]
 	@sp_id INT,
 	@employee_id INT,
 	@comment VARCHAR(200) = NULL,
-	@office_id INT
+	@office_id INT,
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON 
 	
@@ -74,6 +88,16 @@ AS
 	    RAISERROR('Офиса с кодом %d не существует', 16, 1, @office_id)
 	    RETURN
 	END
+
+	IF NOT EXISTS (
+	   	SELECT	1
+	   	FROM	Settings.Fabricators fs
+	   	WHERE	fs.fabricator_id = @fabricator_id 
+	   )
+	BEGIN
+	    RAISERROR('Изготовителя с кодом %d не существует', 16, 1, @fabricator_id)
+	    RETURN
+	END
 	
 	BEGIN TRY
 		UPDATE	Planing.SketchPlan
@@ -87,7 +111,11 @@ AS
 				sew_office_id = CASE 
 				                     WHEN ps_id = @status_addSM THEN NULL
 				                     ELSE @office_id
-				                END		
+				                END,		
+				sew_fabricator_id = CASE 
+				                     WHEN ps_id = @status_addSM THEN NULL
+				                     ELSE @fabricator_id
+				                END	
 				OUTPUT	INSERTED.sp_id,
 						INSERTED.sketch_id,
 						INSERTED.ps_id,
@@ -267,6 +295,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 
 	

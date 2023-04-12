@@ -170,12 +170,13 @@ AS
 	    RAISERROR('%s', 16, 1, @error_text)
 	    RETURN
 	END
-	
+
 	INSERT INTO Synchro.ProductsForEAN
 		(
-			pants_id
+			pants_id,
+			fabricator_id
 		)
-	SELECT	pants.pants_id
+	SELECT	pants.pants_id, f.fabricator_id
 	FROM	@spcv_tab st   
 			INNER JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = st.spcv_id   
@@ -188,8 +189,11 @@ AS
 				AND	pants.ts_id = spcvt.ts_id   
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id
+			CROSS JOIN Settings.Fabricators f
 	WHERE	e.pants_id IS NULL
-	
+			AND f.activ = 1; 
+
+
 	SELECT	@error_text = CASE 
 	      	                   WHEN st.spcv_id IS NULL THEN 'Цветовариант в выдаче, с кодом ' + CAST(st.spcv_id AS VARCHAR(10)) + ' не имеет себестомости'
 	      	                   WHEN skt.sketch_id IS NULL THEN 'Для эскиза с кодом ' + CAST(skt.sketch_id AS VARCHAR(10)) + ' нет данных '
@@ -700,6 +704,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 	

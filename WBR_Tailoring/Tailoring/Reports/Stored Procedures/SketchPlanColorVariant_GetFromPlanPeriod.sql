@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Reports].[SketchPlanColorVariant_GetFromPlanPeriod]
+﻿
+CREATE PROCEDURE [Reports].[SketchPlanColorVariant_GetFromPlanPeriod]
 	@plan_year SMALLINT,
 	@plan_month TINYINT
 AS
@@ -7,6 +8,8 @@ AS
 	
 	SELECT	ISNULL(v.office_name, ossp.office_name) sew_office_name,
 			ISNULL(v.sew_office_id, sp.sew_office_id) sew_office_id,
+			ISNULL(v.fabricator_name, ff.fabricator_name) sew_office_name,
+			ISNULL(v.sew_office_id, sp.sew_fabricator_id) sew_fabricator_id,
 			s.ct_id,
 			ct.ct_name,
 			sp.sketch_id,
@@ -19,6 +22,8 @@ AS
 	FROM	Planing.SketchPlan sp   
 			LEFT JOIN Settings.OfficeSetting ossp
 				ON ossp.office_id = sp.sew_office_id
+			LEFT JOIN	Settings.Fabricators ff
+			    ON	ff.fabricator_id = sp.sew_fabricator_id
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = sp.sketch_id   
 			INNER JOIN	Products.ArtName an
@@ -35,17 +40,24 @@ AS
 			      ) oa_p(x) 
 			LEFT JOIN	(SELECT	spcv.sp_id,
 			    	     	 		spcv.sew_office_id,
+									spcv.sew_fabricator_id,
 			    	     	 		os.office_name,
+									f.fabricator_name,
 			    	     	 		SUM(spcv.qty) qty,
 			    	     	 		SUM(ISNULL(spcv.corrected_qty, spcv.qty)) corrected_qty
 			    	     	 FROM	Planing.SketchPlanColorVariant spcv   
 			    	     	 		LEFT JOIN	Settings.OfficeSetting os
 			    	     	 			ON	os.office_id = spcv.sew_office_id
+									LEFT JOIN	Settings.Fabricators f
+			    	     	 			ON	f.fabricator_id = spcv.sew_fabricator_id
 			    	     	 WHERE	spcv.is_deleted = 0
 			    	     	 GROUP BY
 			    	     	 	spcv.sp_id,
 			    	     	 	spcv.sew_office_id,
-			    	     	 	os.office_name)v
+			    	     	 	os.office_name,
+								spcv.sew_fabricator_id,
+								f.fabricator_name
+								)v
 				ON	v.sp_id = sp.sp_id
 	WHERE	sp.plan_year = @plan_year
 			AND	sp.plan_month = @plan_month

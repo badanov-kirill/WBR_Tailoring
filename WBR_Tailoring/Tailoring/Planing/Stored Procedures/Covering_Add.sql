@@ -425,12 +425,13 @@ AS
 		     	)
 		WHEN NOT MATCHED BY SOURCE THEN 
 		     DELETE	; 			
-		
+
 		INSERT INTO Synchro.ProductsForEAN
 		(
-			pants_id
+			pants_id,
+			fabricator_id
 		)
-		SELECT DISTINCT pants.pants_id
+		SELECT DISTINCT pants.pants_id, f.fabricator_id
 		FROM	@spcv_tab cd  
 				INNER JOIN	Planing.SketchPlanColorVariant spcv
 					ON	spcv.spcv_id = cd.spcv_id   
@@ -440,7 +441,9 @@ AS
 					ON	pants.pan_id = pan.pan_id   
 				LEFT JOIN	Synchro.ProductsForEAN pfe
 					ON	pfe.pants_id = pants.pants_id
+				CROSS JOIN Settings.Fabricators f
 		WHERE	pfe.pants_id IS NULL
+				AND f.activ = 1;
 		
 		COMMIT TRANSACTION
 		
@@ -460,6 +463,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 	
