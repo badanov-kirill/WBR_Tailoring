@@ -28,7 +28,7 @@ AS
 	
 	IF NOT EXISTS (
 	   	SELECT	1
-	   	FROM	[Fabricators].[Fabricators] fs
+	   	FROM	[Settings].[Fabricators] fs
 	   	WHERE	fs.fabricator_id = @fabricator_id
 	   )
 	BEGIN
@@ -115,7 +115,7 @@ AS
 					ON	sp.sp_id = spcv.sp_id
 				INNER JOIN	Settings.OfficeSetting os
 					ON	os.office_id = spcv.sew_office_id
-				INNER JOIN	Fabricators.Fabricators fs
+				INNER JOIN	Settings.Fabricators fs
 					ON	fs.fabricator_id = spcv.sew_fabricator_id
 		WHERE	sp.sp_id = @sp_id
 	END TRY

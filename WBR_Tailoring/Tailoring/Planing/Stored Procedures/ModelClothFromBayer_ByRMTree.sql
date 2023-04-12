@@ -113,7 +113,7 @@ AS
 				ON	spcvc.rmt_id = ct.rmt_id 
 			LEFT JOIN Settings.OfficeSetting os
 				ON os.office_id = spcv.sew_office_id 
-			LEFT JOIN Fabricators.Fabricators f 
+			LEFT JOIN Settings.Fabricators f 
 				ON f.fabricator_id = sp.sew_fabricator_id
 			INNER JOIN Products.QueuePriority qp
 				ON qp.qp_id = sp.qp_id 

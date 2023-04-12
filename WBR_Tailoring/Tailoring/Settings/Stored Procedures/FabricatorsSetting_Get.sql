@@ -9,5 +9,5 @@ AS
 	SELECT	f.fabricator_id,
 			f.fabricator_name
 	FROM	[Settings].Fabricators f
-	WHERE	@Fabricator_id IS NULL
+	WHERE	@fabricator_id IS NULL
 			OR	f.fabricator_id = @fabricator_id
