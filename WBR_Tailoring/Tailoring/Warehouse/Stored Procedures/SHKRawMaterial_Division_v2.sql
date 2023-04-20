@@ -31,6 +31,7 @@ AS
 	DECLARE @tissue_density SMALLINT
 	DECLARE @dst_reserv_tab TABLE (spcvc_id INT)
 	DECLARE @base_src_stor_unit_residues_qty DECIMAL(9, 3)
+	DECLARE @fabricator_id INT
 	
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
 	
@@ -110,7 +111,8 @@ AS
 			@place_id = smop.place_id,
 			@shkrm_state_dst2 = sms.state_id,
 			@tissue_density = smi.tissue_density,
-			@base_src_stor_unit_residues_qty = smai.stor_unit_residues_qty
+			@base_src_stor_unit_residues_qty = smai.stor_unit_residues_qty,
+			@fabricator_id = smai.fabricator_id
 	FROM	(VALUES(@src_shkrm_id))v(shkrm_id)   
 			LEFT JOIN	Warehouse.SHKRawMaterialActualInfo smai
 				ON	smai.shkrm_id = v.shkrm_id   
@@ -242,7 +244,8 @@ AS
 				is_deleted,
 				nds,
 				gross_mass,
-				tissue_density
+				tissue_density,
+				fabricator_id
 			)OUTPUT	INSERTED.shkrm_id,
 			 		INSERTED.doc_id,
 			 		INSERTED.doc_type_id,
@@ -264,7 +267,8 @@ AS
 			 		INSERTED.nds,
 			 		INSERTED.gross_mass,
 			 		INSERTED.is_terminal_residues,
-			 		INSERTED.tissue_density
+			 		INSERTED.tissue_density,
+					INSERTED.fabricator_id
 			 INTO	History.SHKRawMaterialActualInfo (
 			 		shkrm_id,
 			 		doc_id,
@@ -287,7 +291,8 @@ AS
 			 		nds,
 			 		gross_mass,
 			 		is_terminal_residues,
-			 		tissue_density
+			 		tissue_density,
+					fabricator_id
 			 	)
 		VALUES
 			(
@@ -310,7 +315,8 @@ AS
 				0,
 				@nds,
 				@dst_gross_mass,
-				@tissue_density
+				@tissue_density,
+				@fabricator_id
 			)
 		
 		INSERT INTO Warehouse.SHKRawMaterialInfo
@@ -656,7 +662,8 @@ AS
 		
 		IF @with_log = 1
 		BEGIN
-		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
+			--WITH LOG;
 		END
 		ELSE
 		BEGIN

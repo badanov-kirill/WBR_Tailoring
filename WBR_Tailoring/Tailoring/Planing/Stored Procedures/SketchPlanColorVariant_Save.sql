@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Planing].[SketchPlanColorVariant_Save]
+﻿
+CREATE PROCEDURE [Planing].[SketchPlanColorVariant_Save]
 	@sp_id INT,
 	@employee_id INT,
 	@xml_data XML
@@ -15,6 +16,7 @@ AS
 	DECLARE @deadline_package_dt DATE
 	DECLARE @cost_plan_year SMALLINT
 	DECLARE @cost_plan_month TINYINT
+	DECLARE @sew_fabricator_id INT
 	
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
 	
@@ -37,7 +39,8 @@ AS
 	        	sew_office_id INT NULL,
 	        	sew_deadline_dt DATE NULL,
 	        	cost_plan_year SMALLINT NULL,
-	        	cost_plan_month TINYINT NULL
+	        	cost_plan_month TINYINT NULL,
+				sew_fabricator_id INT NULL
 	        )
 	
 	DECLARE @var_compl_tab TABLE(
@@ -59,6 +62,7 @@ AS
 	      	                   ELSE NULL
 	      	              END,
 			@sew_office_id           = sp.sew_office_id,
+			@sew_fabricator_id		 = sp.sew_fabricator_id,
 			@deadline_package_dt     =
 			CASE 
 			     WHEN sp.spp_id IS NULL THEN NULL
@@ -257,7 +261,8 @@ AS
 					spcv.sew_deadline_dt,
 					spcv.cost_plan_year,
 					spcv.cost_plan_month,
-					spcv.deadline_package_dt
+					spcv.deadline_package_dt,
+					spcv.sew_fabricator_id
 			FROM	Planing.SketchPlanColorVariant spcv
 			WHERE	spcv.sp_id = @sp_id
 		)
@@ -272,7 +277,8 @@ AS
 		     		dt                      = @dt,
 		     		is_deleted              = 0,
 		     		comment                 = s.comment,
-		     		sew_office_id           = ISNULL(t.sew_office_id, @sew_office_id)
+		     		sew_office_id           = ISNULL(t.sew_office_id, @sew_office_id),
+					sew_fabricator_id		= ISNULL(t.sew_office_id, @sew_fabricator_id)
 		     		--,deadline_package_dt     = @deadline_package_dt
 		WHEN NOT MATCHED BY TARGET THEN 
 		     INSERT
@@ -288,7 +294,8 @@ AS
 		     		sew_office_id,
 		     		deadline_package_dt,
 		     		cost_plan_year,
-					cost_plan_month
+					cost_plan_month,
+					sew_fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -303,7 +310,8 @@ AS
 		     		@sew_office_id,
 		     		NULL,
 		     		@cost_plan_year,
-		     		@cost_plan_month
+		     		@cost_plan_month,
+					@sew_fabricator_id
 		     	)
 		WHEN NOT MATCHED BY SOURCE THEN 
 		     UPDATE	
@@ -327,7 +335,8 @@ AS
 		     				INSERTED.sew_office_id,
 		     				INSERTED.sew_deadline_dt,
 		     				INSERTED.cost_plan_year,
-		     				INSERTED.cost_plan_month
+		     				INSERTED.cost_plan_month,
+							INSERTED.sew_fabricator_id
 		     		INTO	@spcv_output_tab (
 		     				rn,
 		     				spcv_id,
@@ -346,7 +355,8 @@ AS
 		     				sew_office_id,
 		     				sew_deadline_dt,
 		     				cost_plan_year,
-		     				cost_plan_month
+		     				cost_plan_month,
+							sew_fabricator_id
 		     			);
 		
 		INSERT INTO History.SketchPlanColorVariant
@@ -368,7 +378,8 @@ AS
 				sew_deadline_dt,
 				cost_plan_year,
 				cost_plan_month,
-				proc_id
+				proc_id,
+				sew_fabricator_id
 			)
 		SELECT	sot.spcv_id,
 				sot.sp_id,
@@ -387,7 +398,8 @@ AS
 				sot.sew_deadline_dt,
 				sot.cost_plan_year,
 				sot.cost_plan_month,
-				@proc_id
+				@proc_id,
+				sot.sew_fabricator_id
 		FROM	@spcv_output_tab sot
 		
 		;

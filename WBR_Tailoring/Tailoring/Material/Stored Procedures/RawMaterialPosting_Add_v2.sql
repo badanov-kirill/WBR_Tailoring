@@ -29,6 +29,7 @@ AS
 	DECLARE @shk_state INT = 2
 	DECLARE @proc_id INT
 	DECLARE @is_terminal_residues BIT = 0
+	DECLARE @fabricator_id INT
 	
 	IF @stor_unit_residues_qty <= 0
 	   OR @qty <= 0
@@ -53,7 +54,8 @@ AS
 	      	                        + ', использовать для приемки нельзя.'
 	      	                   WHEN sm.dt_mapping IS NOT NULL THEN 'Нельзя использовать шк ' + CAST(sms.shkrm_id AS VARCHAR(10)) + ' повторно'
 	      	                   ELSE NULL
-	      	              END
+	      	              END,
+			@fabricator_id = smai.fabricator_id
 	FROM	(VALUES(@shkrm_id))v(shkrm_id)   
 			LEFT JOIN	Warehouse.SHKRawMaterial sm
 				ON	sm.shkrm_id = v.shkrm_id   
@@ -307,7 +309,8 @@ AS
 		    nds,
 		    gross_mass,
 		    is_terminal_residues,
-		    tissue_density
+		    tissue_density,
+			fabricator_id
 		  )OUTPUT	INSERTED.shkrm_id,
 		   		INSERTED.doc_id,
 		   		INSERTED.doc_type_id,
@@ -329,7 +332,8 @@ AS
 		   		INSERTED.nds,
 		   		INSERTED.gross_mass,
 		   		INSERTED.is_terminal_residues,
-		   		INSERTED.tissue_density
+		   		INSERTED.tissue_density,
+				INSERTED.fabricator_id
 		   INTO	History.SHKRawMaterialActualInfo (
 		   		shkrm_id,
 		   		doc_id,
@@ -352,7 +356,8 @@ AS
 		   		nds,
 		   		gross_mass,
 		   		is_terminal_residues,
-		   		tissue_density
+		   		tissue_density,
+				fabricator_id
 		   	)
 		VALUES
 		  (
@@ -376,7 +381,8 @@ AS
 		    @nds,
 		    @gross_mass,
 		    @is_terminal_residues,
-		    @tissue_density
+		    @tissue_density,
+			@fabricator_id
 		  )
 		
 		INSERT INTO Warehouse.SHKRawMaterialInfo
@@ -545,5 +551,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

@@ -599,7 +599,8 @@ AS
 		        employee_id,
 		        dt,
 		        comment,
-		        qp_id
+		        qp_id,
+				sew_fabricator_id
 		      )OUTPUT	INSERTED.sp_id,
 		       		INSERTED.sketch_id
 		       INTO	@sketch_plan_output (
@@ -613,7 +614,8 @@ AS
 		    		@employee_id,
 		    		@dt,
 		    		NULL,
-		    		2
+		    		2,
+					@sew_fabricator_id 
 		    FROM	(SELECT	DISTINCT laso.sketch_id
 		        	 FROM	@layout_added_sketch_output laso
 		        	 WHERE	laso.act != 'D')v
@@ -658,7 +660,8 @@ AS
 						INSERTED.sew_deadline_dt,
 						INSERTED.cost_plan_year,
 						INSERTED.cost_plan_month,
-						@proc_id
+						@proc_id,
+						INSERTED.sew_fabricator_id
 				INTO	History.SketchPlanColorVariant (
 						spcv_id,
 						sp_id,
@@ -677,7 +680,8 @@ AS
 						sew_deadline_dt,
 						cost_plan_year,
 						cost_plan_month,
-						proc_id
+						proc_id,
+						sew_fabricator_id
 					)
 		    FROM	Planing.SketchPlanColorVariant spcv
 					INNER JOIN Planing.SketchPlan sp 
@@ -851,7 +855,8 @@ AS
 		        			INSERTED.sew_deadline_dt,
 		        			INSERTED.cost_plan_year,
 		        			INSERTED.cost_plan_month,
-		        			@proc_id
+		        			@proc_id,
+							INSERTED.sew_fabricator_id
 		        	INTO	History.SketchPlanColorVariant (
 		        			spcv_id,
 		        			sp_id,
@@ -870,7 +875,8 @@ AS
 		        			sew_deadline_dt,
 		        			cost_plan_year,
 		        			cost_plan_month,
-		        			proc_id
+		        			proc_id,
+							sew_fabricator_id
 		        		)
 		    FROM	Planing.SketchPlanColorVariant spcv
 		    		INNER JOIN	@added_spcv_tab_out asto

@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialExchange_Change]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialExchange_Change]
 	@rme_id INT,
 	@shkrm_xml XML,
 	@employee_id INT
@@ -384,7 +385,8 @@ AS
 						INSERTED.nds,
 						INSERTED.gross_mass,
 						INSERTED.is_terminal_residues,
-						INSERTED.tissue_density
+						INSERTED.tissue_density,
+						INSERTED.fabricator_id
 				INTO	History.SHKRawMaterialActualInfo (
 						shkrm_id,
 						doc_id,
@@ -407,7 +409,8 @@ AS
 						nds,
 						gross_mass,
 						is_terminal_residues,
-						tissue_density
+						tissue_density,
+						fabricator_id
 					)
 		FROM	Warehouse.SHKRawMaterialActualInfo smai
 				INNER JOIN	@data_tab dt
@@ -624,7 +627,8 @@ AS
 		
 		IF @with_log = 1
 		BEGIN
-		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
+			--WITH LOG;
 		END
 		ELSE
 		BEGIN

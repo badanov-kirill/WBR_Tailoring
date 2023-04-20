@@ -21,6 +21,8 @@ CREATE SCHEMA [Material]
 
 
 
+
+
 GO
 CREATE SCHEMA Qualifiers
     AUTHORIZATION [dbo];
@@ -43,6 +45,8 @@ GO
 
 CREATE SCHEMA [Warehouse]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -107,6 +111,8 @@ CREATE SCHEMA [Manufactory]
 
 
 
+
+
     
 GO
 CREATE SCHEMA [Logistics]
@@ -121,10 +127,14 @@ CREATE SCHEMA [Reports]
     AUTHORIZATION [dbo];
 
 
+
+
     
 GO
 CREATE SCHEMA [Planing]
     AUTHORIZATION [dbo];
+
+
 
 
 

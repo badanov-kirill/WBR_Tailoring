@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialReturn_Cancel]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialReturn_Cancel]
 	@rmr_id INT,
 	@employee_id INT
 AS
@@ -73,7 +74,8 @@ AS
 		    		is_deleted,
 		    		nds,
 		    		gross_mass,
-		    		tissue_density
+		    		tissue_density,
+					fabricator_id
 		    	)OUTPUT	INSERTED.shkrm_id,
 		    	 		INSERTED.doc_id,
 		    	 		INSERTED.doc_type_id,
@@ -95,7 +97,8 @@ AS
 		    	 		INSERTED.nds,
 		    	 		INSERTED.gross_mass,
 		    	 		INSERTED.is_terminal_residues,
-		    	 		INSERTED.tissue_density
+		    	 		INSERTED.tissue_density,
+						INSERTED.fabricator_id
 		    	 INTO	History.SHKRawMaterialActualInfo (
 		    	 		shkrm_id,
 		    	 		doc_id,
@@ -118,7 +121,8 @@ AS
 		    	 		nds,
 		    	 		gross_mass,
 		    	 		is_terminal_residues,
-		    	 		tissue_density
+		    	 		tissue_density,
+						fabricator_id
 		    	 	)
 		    SELECT	smi.shkrm_id,
 		    		smi.doc_id,
@@ -139,8 +143,10 @@ AS
 		    		0,
 		    		smi.nds,
 		    		@gross_mass,
-		    		@tissue_density
+		    		@tissue_density,
+					ri.fabricator_id
 		    FROM	Material.RawMaterialReturn smi
+				left JOIN Material.RawMaterialIncome ri on  ri.doc_id = smi.doc_id and ri.doc_type_id = smi.doc_type_id
 		    WHERE	smi.rmr_id = @rmr_id
 		    
 		    INSERT INTO Warehouse.SHKRawMaterialState
@@ -248,6 +254,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO	

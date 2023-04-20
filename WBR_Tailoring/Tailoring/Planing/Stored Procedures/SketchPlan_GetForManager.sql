@@ -15,7 +15,7 @@ AS
 	
 	DECLARE @states_approve TINYINT = 2
 	DECLARE @status_bayer_to_designer TINYINT = 6
-	DECLARE @rmt_tab TABLE (rmt_id INT)
+		DECLARE @rmt_tab TABLE (rmt_id INT)
 	
 	IF @rmt_id2 IS NOT NULL
 	BEGIN
@@ -75,10 +75,14 @@ AS
 			sp.cv_qty,
 			os.office_name sew_office_name,
 			CAST(sp.plan_sew_dt AS DATETIME) plan_sew_dt,
-			sup.supplier_name sp_supplier_name
+			sup.supplier_name sp_supplier_name,
+			sp.sew_fabricator_id,
+			f.fabricator_name
 	FROM	Planing.SketchPlan sp   
 			INNER JOIN	Planing.PlanStatus ps
 				ON	ps.ps_id = sp.ps_id   
+			LEFT JOIN Settings.Fabricators f
+				ON f.fabricator_id = sp.sew_fabricator_id
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = sp.sketch_id   
 			INNER JOIN	Products.SketchStatus ss
