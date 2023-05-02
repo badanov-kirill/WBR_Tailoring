@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialPosting_Add_v2]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialPosting_Add_v2]
 	@shkrm_id INT,
 	@rmt_id INT,
 	@art_name VARCHAR(12),
@@ -16,7 +17,8 @@
 	@is_defected BIT = 0,
 	@defected_descr VARCHAR(900) = NULL,
 	@gross_mass INT,
-	@tissue_density SMALLINT = NULL
+	@tissue_density SMALLINT = NULL,
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -29,7 +31,6 @@ AS
 	DECLARE @shk_state INT = 2
 	DECLARE @proc_id INT
 	DECLARE @is_terminal_residues BIT = 0
-	DECLARE @fabricator_id INT
 	
 	IF @stor_unit_residues_qty <= 0
 	   OR @qty <= 0
@@ -54,8 +55,8 @@ AS
 	      	                        + ', использовать для приемки нельзя.'
 	      	                   WHEN sm.dt_mapping IS NOT NULL THEN 'Нельзя использовать шк ' + CAST(sms.shkrm_id AS VARCHAR(10)) + ' повторно'
 	      	                   ELSE NULL
-	      	              END,
-			@fabricator_id = smai.fabricator_id
+	      	              END
+
 	FROM	(VALUES(@shkrm_id))v(shkrm_id)   
 			LEFT JOIN	Warehouse.SHKRawMaterial sm
 				ON	sm.shkrm_id = v.shkrm_id   
