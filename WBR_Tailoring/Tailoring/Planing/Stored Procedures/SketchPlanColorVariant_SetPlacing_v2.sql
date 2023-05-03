@@ -143,7 +143,8 @@ AS
 						INSERTED.sew_deadline_dt,
 						INSERTED.cost_plan_year,
 						INSERTED.cost_plan_month,
-						@proc_id
+						@proc_id,
+						INSERTED.sew_fabricator_id
 				INTO	History.SketchPlanColorVariant (
 						spcv_id,
 						sp_id,
@@ -162,7 +163,8 @@ AS
 						sew_deadline_dt,
 						cost_plan_year,
 						cost_plan_month,
-						proc_id
+						proc_id,
+						sew_fabricator_id
 					)
 		FROM	Planing.SketchPlanColorVariant spcv
 				INNER JOIN	@data_tab dt
@@ -182,7 +184,8 @@ AS
 		      			s.pt_id,
 		      			spcv.sew_deadline_dt plan_start_dt,
 		      			spcvt.spcvts_id,
-		      			@cutting_tariff      cutting_tariff
+		      			@cutting_tariff      cutting_tariff,
+						spcv.sew_fabricator_id fabricator_id
 		      	FROM	Planing.SketchPlanColorVariant spcv   
 		      			INNER JOIN	Planing.SketchPlan sp
 		      				ON	sp.sp_id = spcv.sp_id   
@@ -229,7 +232,8 @@ AS
 		     		pt_id,
 		     		plan_start_dt,
 		     		spcvts_id,
-		     		cutting_tariff
+		     		cutting_tariff,
+					fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -246,7 +250,8 @@ AS
 		     		s.pt_id,
 		     		s.plan_start_dt,
 		     		s.spcvts_id,
-		     		s.cutting_tariff
+		     		s.cutting_tariff,
+					s.fabricator_id
 		     	);		     	
 		
 		UPDATE	s
@@ -300,5 +305,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

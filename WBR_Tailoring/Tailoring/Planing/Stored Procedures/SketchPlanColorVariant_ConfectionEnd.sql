@@ -220,7 +220,8 @@ AS
 						INSERTED.sew_deadline_dt,
 						INSERTED.cost_plan_year,
 						INSERTED.cost_plan_month,
-						@proc_id
+						@proc_id,
+						INSERTED.sew_fabricator_id
 				INTO	History.SketchPlanColorVariant (
 						spcv_id,
 						sp_id,
@@ -239,7 +240,8 @@ AS
 						sew_deadline_dt,
 						cost_plan_year,
 						cost_plan_month,
-						proc_id
+						proc_id,
+						sew_fabricator_id
 				)
 		FROM Planing.SketchPlanColorVariant spcv
 				OUTER APPLY (
@@ -271,7 +273,8 @@ AS
 		      				s.pt_id,
 		      				@dt plan_start_dt,
 		      				spcvt.spcvts_id,
-		      				@cutting_tariff      cutting_tariff
+		      				@cutting_tariff      cutting_tariff,
+							spcv.sew_fabricator_id fabricator_id
 		      		FROM	Planing.SketchPlanColorVariant spcv   
 		      				INNER JOIN	Planing.SketchPlan sp
 		      					ON	sp.sp_id = spcv.sp_id   
@@ -300,7 +303,8 @@ AS
 		     			plan_year         = s.plan_year,
 		     			plan_month        = s.plan_month,
 		     			pants_id          = s.pants_id,
-		     			cutting_tariff	  = s.cutting_tariff
+		     			cutting_tariff	  = s.cutting_tariff,
+						fabricator_id	  = s.fabricator_id
 			WHEN NOT MATCHED BY TARGET THEN 
 				 INSERT
 		     		(
@@ -317,7 +321,8 @@ AS
 		     			pt_id,
 		     			plan_start_dt,
 		     			spcvts_id,
-		     			cutting_tariff
+		     			cutting_tariff,
+						fabricator_id
 		     		)
 				 VALUES
 		     		(
@@ -334,7 +339,8 @@ AS
 		     			s.pt_id,
 		     			s.plan_start_dt,
 		     			s.spcvts_id,
-		     			s.cutting_tariff
+		     			s.cutting_tariff,
+						s.fabricator_id
 		     		);
 		END
 		
@@ -465,5 +471,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 
