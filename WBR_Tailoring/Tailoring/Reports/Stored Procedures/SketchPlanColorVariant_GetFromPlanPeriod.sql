@@ -1,5 +1,4 @@
-﻿
-CREATE PROCEDURE [Reports].[SketchPlanColorVariant_GetFromPlanPeriod]
+﻿CREATE PROCEDURE [Reports].[SketchPlanColorVariant_GetFromPlanPeriod]
 	@plan_year SMALLINT,
 	@plan_month TINYINT
 AS
@@ -8,7 +7,7 @@ AS
 	
 	SELECT	ISNULL(v.office_name, ossp.office_name) sew_office_name,
 			ISNULL(v.sew_office_id, sp.sew_office_id) sew_office_id,
-			ISNULL(v.fabricator_name, ff.fabricator_name) sew_office_name,
+			ISNULL(v.fabricator_name, ff.fabricator_name) sew_fabricator_name,
 			ISNULL(v.sew_office_id, sp.sew_fabricator_id) sew_fabricator_id,
 			s.ct_id,
 			ct.ct_name,
