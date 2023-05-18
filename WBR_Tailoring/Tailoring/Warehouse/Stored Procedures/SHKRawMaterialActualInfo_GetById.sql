@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Warehouse].[SHKRawMaterialActualInfo_GetById]
+﻿
+CREATE PROCEDURE [Warehouse].[SHKRawMaterialActualInfo_GetById]
 	@shkrm_id INT
 AS
 	SET NOCOUNT ON
@@ -33,7 +34,8 @@ AS
 			smai.gross_mass,
 			cc.color_name,
 			s.supplier_name,
-			smai.tissue_density
+			smai.tissue_density,
+			smai.fabricator_id
 	FROM	Warehouse.SHKRawMaterialActualInfo smai   
 			INNER JOIN	Material.Article a
 				ON	a.art_id = smai.art_id   

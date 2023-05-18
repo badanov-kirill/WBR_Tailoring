@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Warehouse].[SHKRawMaterialActualInfo_Upd]
+﻿
+CREATE PROCEDURE [Warehouse].[SHKRawMaterialActualInfo_Upd]
 	@shkrm_id INT,
 	@rmt_id INT,
 	@art_name VARCHAR(12),
@@ -194,7 +195,8 @@ AS
 						INSERTED.nds,
 						INSERTED.gross_mass,
 						INSERTED.is_terminal_residues,
-						INSERTED.tissue_density
+						INSERTED.tissue_density,
+						INSERTED.fabricator_id
 				INTO	History.SHKRawMaterialActualInfo (
 						shkrm_id,
 						doc_id,
@@ -217,7 +219,8 @@ AS
 						nds,
 						gross_mass,
 						is_terminal_residues,
-						tissue_density
+						tissue_density,
+						fabricator_id
 					)
 		WHERE	shkrm_id = @shkrm_id
 		
@@ -387,5 +390,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

@@ -1,5 +1,4 @@
-﻿
-CREATE PROCEDURE [Planing].[SketchPlanColorVariant_AddForBranding]
+﻿CREATE PROCEDURE [Planing].[SketchPlanColorVariant_AddForBranding]
 	@pan_id INT,
 	@data_xml XML,
 	@employee_id INT,
@@ -360,7 +359,8 @@ AS
 				pt_id,
 				plan_start_dt,
 				spcvts_id,
-				cutting_tariff
+				cutting_tariff,
+				fabricator_id
 			)OUTPUT	INSERTED.cutting_id,
 			 		INSERTED.plan_count
 			 INTO	@cutting_out (
@@ -380,7 +380,8 @@ AS
 				@pt_id           pt_id,
 				@dt              plan_start_dt,
 				so.spcvts_id     spcvts_id,
-				0                cutting_tariff
+				0                cutting_tariff,
+				@fabricator_id
 		FROM	@spcvts_out so   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.ts_id = so.ts_id

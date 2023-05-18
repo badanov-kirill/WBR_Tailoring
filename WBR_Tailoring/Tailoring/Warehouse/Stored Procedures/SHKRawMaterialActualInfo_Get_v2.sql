@@ -59,8 +59,11 @@ AS
 			smai.is_terminal_residues is_terminal_residues,
 			s.supplier_name,
 			smai.tissue_density,
-			smlsd.state_name logic_state_name
-	FROM	Warehouse.SHKRawMaterialActualInfo smai   
+			smlsd.state_name logic_state_name,
+			f.fabricator_name
+	FROM	Warehouse.SHKRawMaterialActualInfo smai 
+			INNER JOIN Settings.Fabricators f
+				ON f.fabricator_id = smai.fabricator_id
 			INNER JOIN	Material.Article a
 				ON	a.art_id = smai.art_id   
 			INNER JOIN	Material.RawMaterialType rmt

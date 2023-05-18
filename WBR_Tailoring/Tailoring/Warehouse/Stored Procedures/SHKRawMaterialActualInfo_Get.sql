@@ -37,8 +37,12 @@ AS
 			CAST(sm.dt_mapping AS DATETIME) dt_mapping,
 			smai.stor_unit_residues_qty - ISNULL(oa_res.resrv_qtu, 0) free_qty,
 			rmtp.rmtp_id,
-			smlsd.state_name logic_state_name
-	FROM	Warehouse.SHKRawMaterialActualInfo smai   
+			smlsd.state_name logic_state_name,
+			smai.fabricator_id,
+			f.fabricator_name
+	FROM	Warehouse.SHKRawMaterialActualInfo smai  
+			INNER JOIN	Settings.Fabricators f
+				ON	f.fabricator_id = smai.fabricator_id
 			INNER JOIN	Warehouse.SHKRawMaterial sm
 				ON	sm.shkrm_id = smai.shkrm_id   
 			INNER JOIN	Material.Article a

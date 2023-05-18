@@ -81,9 +81,9 @@ AS
 	BEGIN TRY
 		INSERT INTO Synchro.ProductsForEAN
 			(
-				pants_id
+				pants_id, fabricator_id
 			)
-		SELECT	pants2.pants_id
+		SELECT	pants2.pants_id, f.fabricator_id
 		FROM	Manufactory.ProductUnicCode puc   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = puc.pants_id   
@@ -91,8 +91,10 @@ AS
 					ON	pants2.pan_id = pants.pan_id   
 				LEFT JOIN	Synchro.ProductsForEAN pfe
 					ON	pfe.pants_id = pants2.pants_id
+				CROSS JOIN Settings.Fabricators f				
 		WHERE	puc.product_unic_code = @product_unic_code
 				AND	pfe.pants_id IS NULL
+				AND f.activ = 1;
 		
 		IF @need_chectny_znak = 1 AND @oczdi_id IS NULL
 		BEGIN 

@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialPosting_Add_v2]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialPosting_Add_v2]
 	@shkrm_id INT,
 	@rmt_id INT,
 	@art_name VARCHAR(12),
@@ -16,7 +17,8 @@
 	@is_defected BIT = 0,
 	@defected_descr VARCHAR(900) = NULL,
 	@gross_mass INT,
-	@tissue_density SMALLINT = NULL
+	@tissue_density SMALLINT = NULL,
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -54,6 +56,7 @@ AS
 	      	                   WHEN sm.dt_mapping IS NOT NULL THEN 'Нельзя использовать шк ' + CAST(sms.shkrm_id AS VARCHAR(10)) + ' повторно'
 	      	                   ELSE NULL
 	      	              END
+
 	FROM	(VALUES(@shkrm_id))v(shkrm_id)   
 			LEFT JOIN	Warehouse.SHKRawMaterial sm
 				ON	sm.shkrm_id = v.shkrm_id   
@@ -307,7 +310,8 @@ AS
 		    nds,
 		    gross_mass,
 		    is_terminal_residues,
-		    tissue_density
+		    tissue_density,
+			fabricator_id
 		  )OUTPUT	INSERTED.shkrm_id,
 		   		INSERTED.doc_id,
 		   		INSERTED.doc_type_id,
@@ -329,7 +333,8 @@ AS
 		   		INSERTED.nds,
 		   		INSERTED.gross_mass,
 		   		INSERTED.is_terminal_residues,
-		   		INSERTED.tissue_density
+		   		INSERTED.tissue_density,
+				INSERTED.fabricator_id
 		   INTO	History.SHKRawMaterialActualInfo (
 		   		shkrm_id,
 		   		doc_id,
@@ -352,7 +357,8 @@ AS
 		   		nds,
 		   		gross_mass,
 		   		is_terminal_residues,
-		   		tissue_density
+		   		tissue_density,
+				fabricator_id
 		   	)
 		VALUES
 		  (
@@ -376,7 +382,8 @@ AS
 		    @nds,
 		    @gross_mass,
 		    @is_terminal_residues,
-		    @tissue_density
+		    @tissue_density,
+			@fabricator_id
 		  )
 		
 		INSERT INTO Warehouse.SHKRawMaterialInfo
@@ -545,5 +552,5 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH 

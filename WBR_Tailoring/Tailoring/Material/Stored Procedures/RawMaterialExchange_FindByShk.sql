@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Material].[RawMaterialExchange_FindByShk]
+﻿
+CREATE PROCEDURE [Material].[RawMaterialExchange_FindByShk]
 	@shkrm_id INT
 AS
 	SET NOCOUNT ON
@@ -32,8 +33,14 @@ AS
 			cc2.color_name                 need_color_name,
 			rme.need_qty,
 			o2.symbol                      need_okei_symbol,
-			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount
+			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount,
+			ri.fabricator_id,
+			f.fabricator_name
 	FROM	Material.RawMaterialExchange rme   
+			INNER JOIN Material.RawMaterialIncome ri 
+				ON  ri.doc_id = rme.doc_id and ri.doc_type_id = rme.doc_type_id
+			INNER JOIN Settings.Fabricators f
+				ON f.fabricator_id = ri.fabricator_id
 			INNER JOIN	Suppliers.SupplierContract sc
 				ON	sc.suppliercontract_id = rme.suppliercontract_id   
 			INNER JOIN	Suppliers.Supplier s

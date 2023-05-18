@@ -1,5 +1,4 @@
-﻿
-CREATE PROCEDURE [Reports].[SHKRm_GetAllInfo]
+﻿CREATE PROCEDURE [Reports].[SHKRm_GetAllInfo]
 	@shkrm_id INT
 AS
 	SET NOCOUNT ON
@@ -26,7 +25,7 @@ AS
 			smai.doc_type_id,
 			smai.is_terminal_residues,
 			smai.tissue_density,
-			smai .fabricator_id,
+			smai.fabricator_id,
 			f.fabricator_name			
 	FROM	History.SHKRawMaterialActualInfo smai   
 	        LEFT JOIN Warehouse.SHKRawMaterialActualInfo sm
@@ -99,7 +98,8 @@ AS
 			spcvc.completing_number,
 			ISNULL(pa.sa + pan.sa, s.sa)     sa,
 			an.art_name,
-			spcv.spcv_name
+			spcv.spcv_name,
+			spcv.sew_fabricator_id
 	FROM	History.SHKRawMaterialReserv smr   
 			LEFT JOIN	Qualifiers.OKEI o
 				ON	o.okei_id = smr.okei_id   
@@ -388,7 +388,8 @@ AS
 			cc2.color_name                 need_color_name,
 			rme.need_qty,
 			o2.symbol                      need_okei_symbol,
-			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount
+			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount,
+			f.fabricator_name
 	FROM	Material.RawMaterialExchange rme   
 			INNER JOIN	Suppliers.SupplierContract sc
 				ON	sc.suppliercontract_id = rme.suppliercontract_id   
@@ -410,6 +411,10 @@ AS
 				ON	o2.okei_id = rme.need_okei_id   
 			LEFT JOIN	Warehouse.SHKRawMaterialAmount sma
 				ON	sma.shkrm_id = rme.shkrm_id
+			INNER JOIN Material.RawMaterialIncome ri 
+				ON  ri.doc_id = rme.doc_id and ri.doc_type_id = rme.doc_type_id
+			INNER JOIN Settings.Fabricators f
+				ON f.fabricator_id = ri.fabricator_id
 	WHERE	rme.shkrm_id = @shkrm_id
 	
 	SELECT	rmedc.rmed_id,
@@ -455,7 +460,8 @@ AS
 			o.symbol                       okei_symbol,
 			rme.frame_width,
 			rme.is_defected,
-			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount
+			sma.amount * rme.stor_unit_residues_qty / sma.stor_unit_residues_qty amount,
+			f.fabricator_name
 	FROM	Material.RawMaterialReturn rme   
 			INNER JOIN	Suppliers.SupplierContract sc
 				ON	sc.suppliercontract_id = rme.suppliercontract_id   
@@ -471,6 +477,10 @@ AS
 				ON	o.okei_id = rme.stor_unit_residues_okei_id    
 			LEFT JOIN	Warehouse.SHKRawMaterialAmount sma
 				ON	sma.shkrm_id = rme.shkrm_id
+			INNER JOIN Material.RawMaterialIncome ri 
+				ON  ri.doc_id = rme.doc_id and ri.doc_type_id = rme.doc_type_id
+			INNER JOIN Settings.Fabricators f
+				ON f.fabricator_id = ri.fabricator_id
 	WHERE	rme.shkrm_id = @shkrm_id
 	
 	SELECT	rme.rmicd_id,
@@ -501,5 +511,5 @@ AS
 			INNER JOIN	Material.ClothColor cc
 				ON	cc.color_id = rme.color_id   
 			INNER JOIN	Qualifiers.OKEI o
-				ON	o.okei_id = rme.stor_unit_residues_okei_id    
+				ON	o.okei_id = rme.stor_unit_residues_okei_id  
 	WHERE	rme.shkrm_id = @shkrm_id

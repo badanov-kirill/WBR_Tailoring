@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Warehouse].[SHKRawMaterial_ReturnWarehouse]
+﻿
+CREATE PROCEDURE [Warehouse].[SHKRawMaterial_ReturnWarehouse]
 	@shkrm_id INT,
 	@employee_id INT,
 	@return_employee_id INT,
@@ -448,7 +449,8 @@ AS
 		    				INSERTED.nds,
 		    				INSERTED.gross_mass,
 		    				INSERTED.is_terminal_residues,
-		    				INSERTED.tissue_density
+		    				INSERTED.tissue_density,
+							INSERTED.fabricator_id
 		    		INTO	History.SHKRawMaterialActualInfo (
 		    				shkrm_id,
 		    				doc_id,
@@ -471,7 +473,8 @@ AS
 		    				nds,
 		    				gross_mass,
 		    				is_terminal_residues,
-		    				tissue_density
+		    				tissue_density,
+							fabricator_id
 		    			)
 		    WHERE	shkrm_id = @shkrm_id
 		    
@@ -684,7 +687,8 @@ AS
 		
 		IF @with_log = 1
 		BEGIN
-		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		    RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
+			--WITH LOG;
 		END
 		ELSE
 		BEGIN
