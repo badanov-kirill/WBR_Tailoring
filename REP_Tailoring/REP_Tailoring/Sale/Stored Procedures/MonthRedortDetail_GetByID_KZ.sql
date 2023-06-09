@@ -11,7 +11,7 @@ AS
 			SUM(mrd.ppvz_for_pay - mrd.delivery_rub) retail_amount,
 			CAST(MAX(mrd.sale_dt) AS DATETIME)
 			sale_dt,
-			CAST(MAX(mrd.sale_dt) AS DATETIME) sale_period_dt
+			CAST(DATEADD(DAY, 1, EOMONTH(MAX(mr.period_to_dt) , -1)) AS DATETIME) sale_period_dt
 	FROM	Sale.MonthReportDetail mrd   
 			INNER JOIN	Sale.MonthReport mr
 				ON	mr.realizationreport_id = mrd.realizationreport_id   
