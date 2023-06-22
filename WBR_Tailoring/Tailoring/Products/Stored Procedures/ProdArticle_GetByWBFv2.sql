@@ -76,7 +76,7 @@ AS
 	     		0,
 	     		@dt
 	     	);
-	
+	--0
 	SELECT	pa.pa_id,
 			ISNULL(pa.descr, s.descr)     descr,
 			CASE WHEN LEFT(b.brand_name, 1) = '&' THEN REPLACE(b.brand_name, '&' , 'And') ELSE  b.brand_name END brand_name,
@@ -150,8 +150,8 @@ AS
 			      	FOR XML	PATH('')
 			      ) con(x)
 	WHERE	pa.pa_id = @pa_id
-	
-	SELECT	pan.pan_id,
+	--1
+	SELECT top(5)	pan.pan_id,
 			pan.nm_id,
 			pan.sa,
 			mc.color_name main_color,
@@ -159,6 +159,7 @@ AS
 			pan.whprice,
 			pan.price_ru,
 			LOWER(dbo.bin2uid(panfw.wb_uid)) nm_uid
+	into #pan_tab
 	FROM	Products.ProdArticleNomenclature pan 
 			LEFT JOIN Products.ProdArticleNomenclatureColor pancm
 				ON pancm.pan_id = pan.pan_id AND pancm.is_main = 1
@@ -185,7 +186,12 @@ AS
 			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
 			              	WHERE	panfw.pan_id = pan.pan_id
 							)) OR @for_upd = 1) 
+	order by case when pan.nm_id is null then 0 else 1 end asc, pan.sa 
 	
+	SELECT *
+	from #pan_tab pt
+							
+	--2
 	SELECT	pan.pan_id,
 			ts.rus_name ts_name,
 			e.ean,
@@ -200,10 +206,11 @@ AS
 				ON	e.pants_id = pants.pants_id
 			LEFT JOIN Wildberries.ProdArticleNomenclatureTSForWB pantw
 				ON pantw.pants_id = e.pants_id
+			inner join #pan_tab pt on pan.pan_id = pt.pan_id
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0	 
 			AND pants.is_deleted = 0 
-	
+	--3
 	SELECT	c.consist_name,
 			pac.percnt
 	FROM	Products.ProdArticleConsist pac   
@@ -213,13 +220,14 @@ AS
 	ORDER BY
 		pac.percnt DESC 
 	
-	
-	SELECT	ISNULL(v.ao_parrent_name, v.ao_name) pname,
-			ISNULL(MAX(CAST(v.ao_value AS VARCHAR(512))), string_agg(v.ao_name, ';')) val,
+	--4 
+	SELECT	MAX(v.pname) pname,
+			string_agg(v.val, ';') val,	
 			MAX(v.required_mode) required_mode
-	FROM	(SELECT	aop.ao_name     ao_parrent_name,
-    	 			ao.ao_name,
-    	 			paao.ao_value,
+	FROM	(SELECT	aop.ao_name as pname,
+    	 			ao.ao_name as val,
+   				    ao.ao_id,
+					aop.ao_id as aop_id,
     	 			ISNULL(oa.required_mode, 0) required_mode,
     	 			ROW_NUMBER() OVER(PARTITION BY aop.ao_name ORDER BY ao.ao_id) rn
     		 FROM	Products.ProdArticle pa   
@@ -231,8 +239,6 @@ AS
     	 				ON	ao.ao_id = paao.ao_id   
     	 			LEFT JOIN	Products.AddedOption aop
     	 				ON	aop.ao_id = ao.ao_id_parent   
-    	 			LEFT JOIN	Products.SI si
-    	 				ON	si.si_id = paao.si_id   
     	 			OUTER APPLY (
     	 		      		SELECT	TOP(1) sao.required_mode
     	 		      		FROM	Products.SubjectAddedOption sao
@@ -244,11 +250,42 @@ AS
     	 			AND	ao.isdeleted = 0
     	 			AND	(ao.ao_id_parent != 7 OR ao.ao_id_parent IS NULL)
 					AND EXISTS (SELECT NULL FROM Products.SubjectAddedOption sao WHERE sao.subject_id = s.subject_id AND sao.ao_id = paao.ao_id)
+					AND aop.ao_name  is not null
 	)v
-	WHERE	v.rn <= 3
+	WHERE 
+		(v.aop_id = 671 and v.rn =1) --Декоративные элементы
+		or (v.aop_id = 200 and v.rn =1) --Назначение
+		or (v.aop_id not in (671, 200)and v.rn < 4)
 	GROUP BY
-		ISNULL(v.ao_parrent_name, v.ao_name)
+		v.pname
 	
+	--5
+	SELECT	ao.ao_name as pname,
+			ao.ao_id,
+			case
+				when ao.ao_id in (1337,1338,1339) then ROUND(paao.ao_value,0)  --Ширина упаковки, Высота упаковки, Длина упаковки
+				else paao.ao_value
+			end as val,
+    		ISNULL(oa.required_mode, 0) required_mode   	 			
+		FROM	Products.ProdArticle pa   
+    		INNER JOIN	Products.Sketch s
+    	 		ON	s.sketch_id = pa.sketch_id   
+    		INNER JOIN	Products.ProdArticleAddedOption paao
+    	 		ON	paao.pa_id = pa.pa_id   
+    		INNER JOIN	Products.AddedOption ao
+    	 		ON	ao.ao_id = paao.ao_id      
+    		OUTER APPLY (
+    	 			SELECT	TOP(1) sao.required_mode
+    	 			FROM	Products.SubjectAddedOption sao
+    	 			WHERE	sao.subject_id = s.subject_id
+    	 		      		AND	sao.ao_id = ao.ao_id
+    	 			)         oa
+		WHERE	pa.pa_id = @pa_id
+    		AND	ao.content_id IS NOT NULL
+    		AND	ao.isdeleted = 0
+    		AND	(ao.ao_id_parent != 7 OR ao.ao_id_parent IS NULL)
+			AND EXISTS (SELECT NULL FROM Products.SubjectAddedOption sao WHERE sao.subject_id = s.subject_id AND sao.ao_id = paao.ao_id)
+			AND ao.ao_id_parent  is null
 	
 	END TRY
 	BEGIN CATCH
@@ -264,6 +301,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO
