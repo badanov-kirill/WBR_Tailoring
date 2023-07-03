@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Synchro].[ProductsForEAN_ErrorSet]
 	@pants_id INT,
+	@fabricator_id INT,
 	@error_num VARCHAR(10),
 	@error_name VARCHAR(250),
 	@error_desc VARCHAR(900),
@@ -19,6 +20,7 @@ AS
 				error_xml = @error_xml,
 				error_dt = @dt
 		WHERE	pants_id = @pants_id
+				AND fabricator_id = @fabricator_id 
 		
 		COMMIT TRANSACTION
 	END TRY
@@ -34,7 +36,7 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		
-		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess); 
 	END CATCH
 GO
 

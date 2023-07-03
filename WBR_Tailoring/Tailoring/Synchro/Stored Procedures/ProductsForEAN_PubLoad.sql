@@ -1,5 +1,7 @@
 ﻿CREATE PROCEDURE [Synchro].[ProductsForEAN_PubLoad]
-	@pants_id INT
+	@pants_id INT,
+	@fabricator_id INT
+	
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -12,10 +14,12 @@ AS
 		UPDATE	Synchro.ProductsForEAN
 		SET 	dt_publish = @dt
 		WHERE	pants_id = @pants_id
+				AND  fabricator_id = @fabricator_id
 		
 		DELETE	
 		FROM	Synchro.ProductsForEANCnt
 		WHERE	pants_id = @pants_id
+			AND  fabricator_id = @fabricator_id
 		
 		COMMIT TRANSACTION
 	END TRY
@@ -31,7 +35,7 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		
-		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) WITH LOG;
+		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess);
 	END CATCH
 GO
 

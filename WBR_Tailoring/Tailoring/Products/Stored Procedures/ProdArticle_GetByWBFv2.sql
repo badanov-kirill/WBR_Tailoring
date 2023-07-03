@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [Products].[ProdArticle_GetByWBFv2]
-	@pa_id INT
-	,@for_upd BIT = 0
+	@pa_id INT,
+	@fabricator_id INT,
+	@for_upd BIT = 0
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -50,9 +51,11 @@ AS
 	;
 	MERGE Wildberries.ProdArticleForWBCnt t
 	USING (
-	      	SELECT	@pa_id pa_id
-	      ) s(pa_id)
+	      	SELECT	@pa_id pa_id,
+					@fabricator_id
+	      ) s(pa_id, fabricator_id)
 			ON s.pa_id = t.pa_id
+				AND s.fabricator_id = t.fabricator_id
 	WHEN MATCHED THEN 
 	     UPDATE	
 	     SET 	cnt_save     = cnt_save + 1,
@@ -65,7 +68,8 @@ AS
 	     		dt,
 	     		dt_save,
 	     		cnt_load, 
-	     		dt_load
+	     		dt_load,
+				fabricator_id
 	     	)
 	     VALUES
 	     	(
@@ -74,7 +78,8 @@ AS
 	     		@dt,
 	     		@dt,
 	     		0,
-	     		@dt
+	     		@dt,
+				@fabricator_id
 	     	);
 	--0
 	SELECT	pa.pa_id,
@@ -96,10 +101,15 @@ AS
 			'Россия' country_name,
 			kw.key_word,
 			LOWER(dbo.bin2uid(pafw.imt_uid)) imt_uid, 
-			pafw.imt_id
+			pafw.imt_id,
+			pafw.fabricator_id,
+			case 
+				when f.taxation = 0  then '0'
+				when f.taxation = 1  then k.tax
+			end tax
 	FROM	Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
-				ON	s.sketch_id = pa.sketch_id   
+				ON	s.sketch_id = pa.sketch_id 
 			INNER JOIN	Products.Brand b
 				ON	b.brand_id = pa.brand_id   
 			LEFT JOIN	Products.Season sn
@@ -125,7 +135,9 @@ AS
 			LEFT JOIN Products.KeyWords kw
 				ON kw.kw_id = s.kw_id  
 			LEFT JOIN Wildberries.ProdArticleForWB pafw
-				ON pafw.pa_id = pa.pa_id
+				ON pafw.pa_id = pa.pa_id AND pafw.fabricator_id = @fabricator_id 
+			LEFT JOIN Settings.Fabricators f
+				ON f.fabricator_id = pafw.fabricator_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -150,8 +162,9 @@ AS
 			      	FOR XML	PATH('')
 			      ) con(x)
 	WHERE	pa.pa_id = @pa_id
+			
 	--1
-	SELECT top(5)	pan.pan_id,
+	SELECT	pan.pan_id,
 			pan.nm_id,
 			pan.sa,
 			mc.color_name main_color,
@@ -159,7 +172,6 @@ AS
 			pan.whprice,
 			pan.price_ru,
 			LOWER(dbo.bin2uid(panfw.wb_uid)) nm_uid
-	into #pan_tab
 	FROM	Products.ProdArticleNomenclature pan 
 			LEFT JOIN Products.ProdArticleNomenclatureColor pancm
 				ON pancm.pan_id = pan.pan_id AND pancm.is_main = 1
@@ -180,17 +192,13 @@ AS
 			AND	pan.is_deleted = 0
 			AND ISNULL(pan.price_ru, 0) > 0 	
 			AND ((@for_upd = 0 
-							AND pan.nm_id IS NULL
+							AND pan.nm_id IS NULL 
 							AND NOT EXISTS(
 			              	SELECT	1
 			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
-			              	WHERE	panfw.pan_id = pan.pan_id
+			              	WHERE	panfw.pan_id = pan.pan_id AND panfw.fabricator_id = @fabricator_id 
 							)) OR @for_upd = 1) 
-	order by case when pan.nm_id is null then 0 else 1 end asc, pan.sa 
 	
-	SELECT *
-	from #pan_tab pt
-							
 	--2
 	SELECT	pan.pan_id,
 			ts.rus_name ts_name,
@@ -205,8 +213,7 @@ AS
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id
 			LEFT JOIN Wildberries.ProdArticleNomenclatureTSForWB pantw
-				ON pantw.pants_id = e.pants_id
-			inner join #pan_tab pt on pan.pan_id = pt.pan_id
+				ON pantw.pants_id = e.pants_id 
 	WHERE	pan.pa_id = @pa_id
 			AND	pan.is_deleted = 0	 
 			AND pants.is_deleted = 0 
@@ -238,7 +245,7 @@ AS
     	 			INNER JOIN	Products.AddedOption ao
     	 				ON	ao.ao_id = paao.ao_id   
     	 			LEFT JOIN	Products.AddedOption aop
-    	 				ON	aop.ao_id = ao.ao_id_parent   
+    	 				ON	aop.ao_id = ao.ao_id_parent    
     	 			OUTER APPLY (
     	 		      		SELECT	TOP(1) sao.required_mode
     	 		      		FROM	Products.SubjectAddedOption sao
@@ -260,12 +267,12 @@ AS
 		v.pname
 	
 	--5
-	SELECT	ao.ao_name as pname,
-			ao.ao_id,
-			case
-				when ao.ao_id in (1337,1338,1339) then ROUND(paao.ao_value,0)  --Ширина упаковки, Высота упаковки, Длина упаковки
-				else paao.ao_value
-			end as val,
+	SELECT ao.ao_name as pname,
+	ao.ao_id,
+    case
+		when ao.ao_id in (1337,1338,1339) then ROUND(paao.ao_value,0)  --Ширина упаковки, Высота упаковки, Длина упаковки
+		else paao.ao_value
+	end as val,
     		ISNULL(oa.required_mode, 0) required_mode   	 			
 		FROM	Products.ProdArticle pa   
     		INNER JOIN	Products.Sketch s
@@ -286,6 +293,7 @@ AS
     		AND	(ao.ao_id_parent != 7 OR ao.ao_id_parent IS NULL)
 			AND EXISTS (SELECT NULL FROM Products.SubjectAddedOption sao WHERE sao.subject_id = s.subject_id AND sao.ao_id = paao.ao_id)
 			AND ao.ao_id_parent  is null
+
 	
 	END TRY
 	BEGIN CATCH

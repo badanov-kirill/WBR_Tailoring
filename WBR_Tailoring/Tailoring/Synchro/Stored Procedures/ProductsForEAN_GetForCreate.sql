@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [Synchro].[ProductsForEAN_GetForCreate]
+	@fabricator_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -70,7 +71,8 @@ AS
 				CASE WHEN t.tnved_cod IS NULL THEN '61' ELSE t3.tnved_cod END tnved_cod3,
 				CASE WHEN t.tnved_cod IS NULL THEN '[60-70]' ELSE t4.tnved_cod END tnved_cod4,
 				t5.tnved_cod tnved_cod5,
-				t6.tnved_cod tnved_cod6				
+				t6.tnved_cod tnved_cod6,
+				pfe.fabricator_id
 		FROM	@tab pfe   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = pfe.pants_id   
@@ -142,6 +144,8 @@ AS
 				                    			AND	ao.ao_id != 26
 				                    	FOR XML	PATH('')
 				                    )oal(x)
+			WHERE @fabricator_id IS NULL
+			OR	pfe.fabricator_id = @fabricator_id
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0
