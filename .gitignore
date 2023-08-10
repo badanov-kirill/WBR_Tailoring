@@ -246,3 +246,6 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /WBR_Tailoring/Tailoring/WBR_Tailoring.jfm
+/WBR_Tailoring/Tailoring/Products/Stored Procedures/ProdArticle_GetByWBFv2_TEST.sql
+/WBR_Tailoring/Tailoring/Products/Stored Procedures/ProdArticle_GetByWBFv2_TEST2.sql
+/WBR_Tailoring/Tailoring/Security/Test.sql

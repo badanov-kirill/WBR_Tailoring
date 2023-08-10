@@ -1650,6 +1650,9 @@
     <Build Include="Settings\Tables\Fabricators.sql" />
     <Build Include="Settings\Stored Procedures\FabricatorsSetting_Get.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlan_Setfabricator.sql" />
+    <Build Include="Security\Test.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticle_GetByWBFv2_TEST2.sql" />
+    <Build Include="Products\Stored Procedures\ProdArticle_GetByWBFv2_TEST.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
