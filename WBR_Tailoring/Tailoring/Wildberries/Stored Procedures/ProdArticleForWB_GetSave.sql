@@ -13,7 +13,9 @@ AS
 			CAST(pafw.send_dt AS DATETIME) send_dt,
 			pa.imt_id,
 			oaean.x eans,
-			pa.sketch_id
+			pa.sketch_id,
+			pafw.fabricator_id,
+			f.fabricator_name
 	FROM	Wildberries.ProdArticleForWB pafw   
 			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pafw.pa_id   
@@ -24,7 +26,9 @@ AS
 			INNER JOIN	Products.ArtName an
 				ON	an.art_name_id = s.art_name_id   
 			INNER JOIN	Products.[Subject] sj
-				ON	sj.subject_id = s.subject_id   
+				ON	sj.subject_id = s.subject_id 
+		   LEFT JOIN Settings.Fabricators f
+				ON f.fabricator_id = pafw.fabricator_id
 			OUTER APPLY (
 			      	SELECT	pan.sa + ';'
 			      	FROM	Products.ProdArticleNomenclature pan

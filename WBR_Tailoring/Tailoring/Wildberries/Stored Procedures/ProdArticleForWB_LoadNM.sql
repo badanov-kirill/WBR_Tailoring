@@ -1,6 +1,8 @@
-﻿CREATE PROCEDURE [Wildberries].[ProdArticleForWB_LoadNM]
+﻿
+CREATE PROCEDURE [Wildberries].[ProdArticleForWB_LoadNM]
 	@pa_id INT,
 	@imt_id INT,
+	@fabricator_id INT = NULL,
 	@nm_tab Wildberries.LoadNomenclatureTab READONLY
 AS
 	SET NOCOUNT ON
@@ -22,6 +24,7 @@ AS
 					ON	pan.sa = nt.sa_nm
 		WHERE	panfw.pa_id = @pa_id
 				AND	panfw.nm_id IS NULL
+				AND panfw.fabricator_id = ISNULL(@fabricator_id, panfw.fabricator_id)
 		
 		UPDATE	pa
 		SET 	pa.imt_id = @imt_id
@@ -60,6 +63,7 @@ AS
 		    SET 	load_nm_dt = @dt,
 		    		is_error = 0
 		    WHERE	pa_id = @pa_id
+					AND fabricator_id = ISNULL(@fabricator_id, fabricator_id)
 		    
 		    DELETE	
 		    FROM	Wildberries.ProdArticleForWBCnt
@@ -68,6 +72,7 @@ AS
 		    DELETE	
 		    FROM	Wildberries.ProdArticleForWBError
 		    WHERE	pa_id = @pa_id
+					AND fabricator_id = ISNULL(@fabricator_id, fabricator_id)
 		END
 		
 		COMMIT TRANSACTION
@@ -85,6 +90,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO
