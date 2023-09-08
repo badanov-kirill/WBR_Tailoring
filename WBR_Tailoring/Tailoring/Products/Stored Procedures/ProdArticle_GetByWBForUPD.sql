@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Products].[ProdArticle_GetByWBForUPD]
-	@pa_id INT
+	@pa_id INT,
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -49,9 +50,11 @@ AS
 	;
 	MERGE Wildberries.ProdArticleForWBCnt t
 	USING (
-	      	SELECT	@pa_id pa_id
-	      ) s(pa_id)
+	      	SELECT	@pa_id pa_id,
+					@fabricator_id
+	      ) s(pa_id, fabricator)
 			ON s.pa_id = t.pa_id
+			AND s.fabricator = t.fabricator_id
 	WHEN MATCHED THEN 
 	     UPDATE	
 	     SET 	cnt_save     = cnt_save + 1,
@@ -64,7 +67,8 @@ AS
 	     		dt,
 	     		dt_save,
 	     		cnt_load, 
-	     		dt_load
+	     		dt_load,
+				fabricator_id
 	     	)
 	     VALUES
 	     	(
@@ -73,10 +77,11 @@ AS
 	     		@dt,
 	     		@dt,
 	     		0,
-	     		@dt
+	     		@dt,
+				@fabricator_id
 	     	);
 	
-	SELECT	pa.pa_id,
+	SELECT pa.pa_id,
 			ISNULL(pa.descr, s.descr)     descr,
 			CASE WHEN LEFT(b.brand_name, 1) = '&' THEN REPLACE(b.brand_name, '&' , 'And') ELSE  b.brand_name END brand_name,
 			ISNULL(sn.season_name, sn2.season_name) season_name,
@@ -124,7 +129,7 @@ AS
 			LEFT JOIN Products.KeyWords kw
 				ON kw.kw_id = s.kw_id  
 			LEFT JOIN Wildberries.ProdArticleForWB pafw
-				ON pafw.pa_id = pa.pa_id
+				ON pafw.pa_id = pa.pa_id AND pafw.fabricator_id = @fabricator_id
 			OUTER APPLY (
 			      	SELECT	TOP(1) c.consist_type_id
 			      	FROM	Products.ProdArticleConsist pac   
@@ -149,6 +154,7 @@ AS
 			      	FOR XML	PATH('')
 			      ) con(x)
 	WHERE	pa.pa_id = @pa_id
+
 	
 	SELECT	pan.pan_id,
 			pan.nm_id,
@@ -164,7 +170,7 @@ AS
 			LEFT JOIN Products.Color mc
 				ON mc.color_cod = pancm.color_cod	
 			LEFT JOIN Wildberries.ProdArticleNomenclatureForWB panfw
-				ON panfw.pan_id = pan.pan_id		  
+				ON panfw.pan_id = pan.pan_id AND panfw.fabricator_id = @fabricator_id		  
 			OUTER APPLY (
 			      	SELECT	'; ' + c.color_name
 			      	FROM	Products.ProdArticleNomenclatureColor panc   
@@ -250,6 +256,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO

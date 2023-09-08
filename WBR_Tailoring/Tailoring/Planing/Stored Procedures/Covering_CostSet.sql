@@ -9,12 +9,12 @@ AS
 	
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
-	DECLARE @spcv_tab TABLE (spcv_id INT, pan_id INT, cost_rm DECIMAL(9, 2), cost_work DECIMAL(9, 2), cost_fix DECIMAL(9, 2), cost_add DECIMAL(9, 2), price_ru DECIMAL(9, 2), cost_cutting     DECIMAL(9, 2), cost_rm_without_nds DECIMAL(9, 2) )
+	DECLARE @spcv_tab TABLE (spcv_id INT, pan_id INT, cost_rm DECIMAL(9, 2), cost_work DECIMAL(9, 2), cost_fix DECIMAL(9, 2), cost_add DECIMAL(9, 2), price_ru DECIMAL(9, 2), cost_cutting     DECIMAL(9, 2), cost_rm_without_nds DECIMAL(9, 2), fabricator_id INT)
 	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, order_num INT )
 	DECLARE @order_chestny_znak_out TABLE (ocz_id INT, order_num INT)
 	DECLARE @count_spcv_cz INT
 	DECLARE @season_local_id INT
-	DECLARE @pa_tab_for_wb TABLE(pa_id INT)
+	DECLARE @pa_tab_for_wb TABLE(pa_id INT, fabricator_id INT)
 	
 	DECLARE @sketch_tab TABLE (sketch_id INT, cutting_cnt SMALLINT, amount_rm DECIMAL(9, 2), amount_cutting     DECIMAL(9, 2))
 	DECLARE @proc_id INT	
@@ -33,7 +33,8 @@ AS
 			cost_add,
 			price_ru,
 			cost_cutting,
-			cost_rm_without_nds
+			cost_rm_without_nds,
+			fabricator_id
 		)
 	SELECT	ml.value('@spcv', 'int'),
 			spcv.pan_id,
@@ -43,7 +44,8 @@ AS
 			ml.value('@add', 'decimal(9,2)'),
 			ml.value('@price', 'decimal(9,2)'),
 			ml.value('@cut', 'decimal(9,2)'),
-			ml.value('@rm_no_nds', 'decimal(9,2)')
+			ml.value('@rm_no_nds', 'decimal(9,2)'),
+			spcv.sew_fabricator_id as fabricator_id
 	FROM	@spcv_xml.nodes('root/det')x(ml)   
 			LEFT JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = ml.value('@spcv',
@@ -297,6 +299,7 @@ AS
 			      			INNER JOIN	Manufactory.CuttingActual ca
 			      				ON	ca.cutting_id = cut.cutting_id
 			      	WHERE	cut.spcvts_id = spcvt.spcvts_id
+							and cut.fabricator_id = spcv.sew_fabricator_id
 			      ) oa_ac 
 			OUTER APPLY (
 	      			SELECT	SUM(1) write_off
@@ -353,10 +356,17 @@ AS
 	
 	INSERT INTO @pa_tab_for_wb
 		(
-			pa_id
+			pa_id,
+			fabricator_id
 		)
-	SELECT	pa.pa_id
+	SELECT	pa.pa_id,
+			t.fabricator_id
 	FROM	Products.ProdArticle pa
+		outer APPLY ( select  top 1 st.fabricator_id from Products.ProdArticleNomenclature pan   
+	     				INNER JOIN	@spcv_tab  st
+	     					ON	st.pan_id = pan.pan_id
+	     		WHERE	pan.pa_id = pa.pa_id
+	     			) as t
 	WHERE	EXISTS (
 	     		SELECT	1
 	     		FROM	Products.ProdArticleNomenclature pan   
@@ -558,7 +568,8 @@ AS
 						pafw.send_dt,
 						pafw.imt_uid,
 						pafw.is_error,
-						pafw.load_nm_dt
+						pafw.load_nm_dt,
+						pafw.fabricator_id
 				FROM	Wildberries.ProdArticleForWB pafw   
 						INNER JOIN	@pa_tab_for_wb ptfw
 							ON	ptfw.pa_id = pafw.pa_id
@@ -575,12 +586,15 @@ AS
 		     INSERT
 		     	(
 		     		pa_id,
-		     		dt
+		     		dt,
+					fabricator_id
+					
 		     	)
 		     VALUES
 		     	(
 		     		s.pa_id,
-		     		@dt
+		     		@dt,
+					s.fabricator_id
 		     	);			
 		
 		;

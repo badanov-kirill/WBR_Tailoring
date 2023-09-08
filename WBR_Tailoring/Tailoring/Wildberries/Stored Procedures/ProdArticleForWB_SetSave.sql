@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Wildberries].[ProdArticleForWB_SetSave]
 	@pa_id INT,
+	@fabricator_id INT,
 	@imt_uid CHAR(36),
 	@pan_tab dbo.List READONLY
 AS
@@ -16,21 +17,24 @@ AS
 		SET 	send_dt = @dt,
 				imt_uid = dbo.uid2bin(@imt_uid)
 		WHERE	pa_id = @pa_id
+				AND fabricator_id = @fabricator_id
 		
 		INSERT INTO Wildberries.ProdArticleNomenclatureForWB
 			(
 				pan_id,
 				pa_id,
-				dt
+				dt,
+				fabricator_id
 			)
 		SELECT	t.id,
 				@pa_id,
-				@dt
+				@dt,
+				@fabricator_id
 		FROM	@pan_tab t
 		WHERE	NOT EXISTS(
 		     		SELECT	1
 		     		FROM	Wildberries.ProdArticleNomenclatureForWB panfw
-		     		WHERE	panfw.pan_id = t.id
+		     		WHERE	panfw.pan_id = t.id AND panfw.fabricator_id = @fabricator_id
 		     	)
 		
 		COMMIT TRANSACTION
@@ -48,6 +52,6 @@ AS
 		        + CHAR(10) + ERROR_MESSAGE();
 		
 		RAISERROR('Ошибка %d в строке %d  %s', @esev, @estate, @ErrNum, @Line, @Mess) 
-		WITH LOG;
+		--WITH LOG;
 	END CATCH
 GO

@@ -63,6 +63,8 @@ CREATE SCHEMA [Settings]
 
 
 
+
+
 GO	
 CREATE SCHEMA Documents
 	AUTHORIZATION [dbo];
@@ -70,6 +72,8 @@ CREATE SCHEMA Documents
 GO
 CREATE SCHEMA [Products]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -129,10 +133,14 @@ CREATE SCHEMA [Reports]
 
 
 
+
+
     
 GO
 CREATE SCHEMA [Planing]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -164,6 +172,8 @@ CREATE SCHEMA [Synchro]
 
 
 
+
+
 GO
 CREATE SCHEMA [SyncFinance]
     AUTHORIZATION [dbo];
@@ -182,6 +192,8 @@ CREATE SCHEMA [Salary]
 GO
 CREATE SCHEMA [Wildberries]
     AUTHORIZATION [dbo];
+
+
 
 
 

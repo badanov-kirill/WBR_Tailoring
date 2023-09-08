@@ -11,7 +11,9 @@ AS
 			pa.sa,
 			oasa.x                        sa_nms,
 			pa.imt_id,
-			ISNULL(oas.have_not_save, 0) have_not_save
+			ISNULL(oas.have_not_save, 0) have_not_save,
+			pafw.fabricator_id,
+			f.fabricator_name
 	FROM	Wildberries.ProdArticleForWB pafw   
 			INNER JOIN	Products.ProdArticle pa
 				ON	pa.pa_id = pafw.pa_id   
@@ -23,6 +25,8 @@ AS
 				ON	an.art_name_id = s.art_name_id   
 			INNER JOIN	Products.[Subject] sj
 				ON	sj.subject_id = s.subject_id   
+			INNER JOIN	Settings.Fabricators f
+				ON f.fabricator_id = pafw.fabricator_id
 			OUTER APPLY (
 			      	SELECT	pan.sa + ';'
 			      	FROM	Products.ProdArticleNomenclature pan
@@ -37,7 +41,7 @@ AS
 			      	AND NOT EXISTS(
 			              	SELECT	1
 			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
-			              	WHERE	panfw.pan_id = pan2.pan_id
+			              	WHERE	panfw.pan_id = pan2.pan_id AND panfw.fabricator_id = pafw.fabricator_id
 							)
 			)     oas  
 			OUTER APPLY (
@@ -48,4 +52,4 @@ AS
 			)     oan  
 	WHERE	pafw.send_dt IS NULL
 			AND (ISNULL(oas.have_not_save, 0) = 1 OR (ISNULL(oas.have_not_save, 0) = 0 AND oan.have_save = 1))
-			--AND	ISNULL(pafw.is_error, 0) = 0 
+			--AND	ISNULL(pafw.is_error, 0) = 0
