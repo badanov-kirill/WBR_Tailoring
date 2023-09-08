@@ -12,7 +12,9 @@ AS
 			f.fabricator_name,
 			f.activ,
 			f.taxation,
-			f.token 
+			f.token,
+			f.EANLogin,
+			f.EANPass
 	FROM	[Settings].Fabricators f
 	WHERE	(@fabricator_id IS NULL
 			OR	f.fabricator_id = @fabricator_id)
