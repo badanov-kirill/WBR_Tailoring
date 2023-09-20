@@ -1652,6 +1652,19 @@
     <Build Include="Settings\Tables\Fabricators.sql" />
     <Build Include="Settings\Stored Procedures\FabricatorsSetting_Get.sql" />
     <Build Include="Planing\Stored Procedures\SketchPlan_Setfabricator.sql" />
+    <Build Include="Settings\Tables\Declarations_TNVED.sql" />
+    <Build Include="Settings\Tables\Declarations.sql" />
+    <Build Include="Settings\Tables\Declaration_types.sql" />
+    <Build Include="Settings\Stored Procedures\Declarations_TNVED_UPD.sql" />
+    <Build Include="Settings\Stored Procedures\Declarations_TNVED_add.sql" />
+    <Build Include="Settings\Stored Procedures\Declarations_Get.sql" />
+    <Build Include="Settings\Stored Procedures\Declarations_dellete.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_UPD.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_types_Get.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_TNVED_UPD.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_TNVED_Actual_GET.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_add.sql" />
+    <Build Include="Products\Stored Procedures\TNVED_Get.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
