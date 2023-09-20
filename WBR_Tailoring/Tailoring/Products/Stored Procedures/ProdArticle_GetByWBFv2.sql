@@ -1,4 +1,5 @@
-﻿CREATE PROCEDURE [Products].[ProdArticle_GetByWBFv2]
+﻿--exec [Products].[ProdArticle_GetByWBFv2] 11512, 1
+CREATE PROCEDURE [Products].[ProdArticle_GetByWBFv2]
 	@pa_id INT,
 	@fabricator_id INT,
 	@for_upd BIT = 0
@@ -96,6 +97,17 @@ AS
 			STUFF(con.x, 1, 1, '')        contents,
 			tsz.rus_name                   ao_ts_name,
 			t.tnved_cod,
+			t.tnved_id,
+			case 
+				when sd.declaration_type_id = 1 then sd.declaration_number 
+				else null
+			end  declaration_name,
+			case 
+				when sd.declaration_type_id = 2 then sd.declaration_number 
+				else null
+			end  certificate_name,
+			sd.start_date,
+			sd.end_date,
 			s.ct_id,
 			oa_ct.consist_type_id,
 			'Россия' country_name,
@@ -152,7 +164,12 @@ AS
 				AND	tnvds.ct_id = s.ct_id
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
 			LEFT JOIN	Products.TNVED t
-				ON	t.tnved_id = tnvds.tnved_id   
+				ON	t.tnved_id = tnvds.tnved_id 
+			LEFT JOIN Settings.Declarations_TNVED dt
+				ON dt.tnved_id = t.tnved_id
+			LEFT JOIN  Settings.Declarations sd
+				ON sd.declaration_id = dt.declaration_id
+				/*AND NOW() between sd.start_date and sd.end_date-18*/
 			OUTER APPLY (
 			      	SELECT	';' + c.contents_name
 			      	FROM	Products.SketchContent sc   
