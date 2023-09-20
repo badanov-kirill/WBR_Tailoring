@@ -169,7 +169,7 @@ AS
 				ON dt.tnved_id = t.tnved_id
 			LEFT JOIN  Settings.Declarations sd
 				ON sd.declaration_id = dt.declaration_id
-				/*AND NOW() between sd.start_date and sd.end_date-18*/
+					AND NOW() between sd.start_date and sd.end_date
 			OUTER APPLY (
 			      	SELECT	';' + c.contents_name
 			      	FROM	Products.SketchContent sc   
