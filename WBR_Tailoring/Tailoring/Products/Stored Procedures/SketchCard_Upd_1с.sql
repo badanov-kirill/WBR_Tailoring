@@ -24,7 +24,8 @@
 	@is_china_sample BIT = 0,
 	@construction_sale BIT = 0,
 	@subject_id INT = NULL,
-	@key_word VARCHAR(400) = NULL
+	@key_word VARCHAR(400) = NULL,
+	@declaration_id INT = NULL
 AS
 	SET NOCOUNT ON
 	DECLARE @content_list Products.ContentList 
@@ -83,4 +84,5 @@ AS
 		 @is_china_sample = @is_china_sample,
 		 @construction_sale = @construction_sale,
 		 @subject_id = @subject_id,
-		 @key_word = @key_word
+		 @key_word = @key_word,
+		 @declaration_id = @declaration_id

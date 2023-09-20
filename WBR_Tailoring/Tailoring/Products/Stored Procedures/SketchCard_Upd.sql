@@ -28,6 +28,7 @@
 	@construction_sale BIT = 0,
 	@subject_id INT = NULL,
 	@key_word VARCHAR(400) = NULL
+	@declaration_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
