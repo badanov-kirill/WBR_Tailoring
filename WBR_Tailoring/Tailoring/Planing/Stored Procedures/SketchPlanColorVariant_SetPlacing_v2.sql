@@ -215,7 +215,8 @@ AS
 		     		plan_year         = s.plan_year,
 		     		plan_month        = s.plan_month,
 		     		pants_id          = s.pants_id,
-		     		cutting_tariff	  = s.cutting_tariff
+		     		cutting_tariff	  = s.cutting_tariff,
+					fabricator_id	  = s.fabricator_id
 		WHEN NOT MATCHED BY TARGET THEN 
 		     INSERT
 		     	(

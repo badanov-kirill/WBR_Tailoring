@@ -132,11 +132,11 @@ AS
 			@currency_id = sc.currency_id,
 			@ots_id = rmi.ots_id,
 			@need_sync_wb = CASE 
-			                     WHEN s.supplier_source_id = 1 THEN 1
+			                     WHEN s.supplier_source_id = 1 AND ISNULL(rmi.fabricator_id, 1) = 1 THEN 1
 			                     ELSE 0
 			                END,
 			@need_sync_vas = CASE 
-			                      WHEN s.supplier_source_id = 2 THEN 1
+			                      WHEN s.supplier_source_id = 2 AND ISNULL(rmi.fabricator_id, 1) = 1 THEN 1
 			                      ELSE 0
 			                 END
 	FROM	(VALUES(@doc_id,

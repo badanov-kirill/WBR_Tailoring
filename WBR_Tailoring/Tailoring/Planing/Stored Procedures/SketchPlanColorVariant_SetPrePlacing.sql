@@ -182,7 +182,8 @@ AS
 		      			s.pt_id,
 		      			spcv.sew_deadline_dt plan_start_dt,
 		      			spcvt.spcvts_id,
-		      			@cutting_tariff      cutting_tariff
+		      			@cutting_tariff      cutting_tariff,
+						spcv.sew_fabricator_id fabricator_id
 		      	FROM	Planing.SketchPlanColorVariant spcv   
 		      			INNER JOIN	Planing.SketchPlan sp
 		      				ON	sp.sp_id = spcv.sp_id   
@@ -212,7 +213,8 @@ AS
 		     		plan_year         = s.plan_year,
 		     		plan_month        = s.plan_month,
 		     		pants_id          = s.pants_id,
-		     		cutting_tariff	  = s.cutting_tariff
+		     		cutting_tariff	  = s.cutting_tariff,
+					fabricator_id	  = s.fabricator_id
 		WHEN NOT MATCHED BY TARGET THEN 
 		     INSERT
 		     	(
@@ -229,7 +231,8 @@ AS
 		     		pt_id,
 		     		plan_start_dt,
 		     		spcvts_id,
-		     		cutting_tariff
+		     		cutting_tariff,
+					fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -246,7 +249,8 @@ AS
 		     		s.pt_id,
 		     		s.plan_start_dt,
 		     		s.spcvts_id,
-		     		s.cutting_tariff
+		     		s.cutting_tariff,
+					s.fabricator_id
 		     	);		     	
 		
 		UPDATE	s
