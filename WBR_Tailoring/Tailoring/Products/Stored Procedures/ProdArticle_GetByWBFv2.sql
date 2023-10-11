@@ -82,7 +82,7 @@ AS
 				@fabricator_id
 	     	);
 	--0
-	SELECT	pa.pa_id,
+	SELECT 	pa.pa_id,
 			ISNULL(pa.descr, s.descr)     descr,
 			CASE WHEN LEFT(b.brand_name, 1) = '&' THEN REPLACE(b.brand_name, '&' , 'And') ELSE  b.brand_name END brand_name,
 			ISNULL(sn.season_name, sn2.season_name) season_name,
@@ -164,7 +164,7 @@ AS
 	WHERE	pa.pa_id = @pa_id
 			
 	--1
-	SELECT	pan.pan_id,
+	SELECT top(5)	pan.pan_id,
 			pan.nm_id,
 			pan.sa,
 			mc.color_name main_color,
