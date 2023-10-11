@@ -142,6 +142,7 @@
     <Folder Include="Ozon\Tables\" />
     <Folder Include="Ozon\Stored Procedures\" />
     <Folder Include="Ozon\User Defined Types\" />
+    <Folder Include="dbo\Stored Procedures\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Storage\Indexes.sql" />
@@ -1665,6 +1666,9 @@
     <Build Include="Settings\Stored Procedures\Declaration_TNVED_Actual_GET.sql" />
     <Build Include="Settings\Stored Procedures\Declaration_add.sql" />
     <Build Include="Products\Stored Procedures\TNVED_Get.sql" />
+    <Build Include="Settings\Stored Procedures\DeclarationForTNVED.sql" />
+    <Build Include="Products\Stored Procedures\SketchCard_Upd_1.sql" />
+    <Build Include="dbo\Stored Procedures\DeclarationForTNVED.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

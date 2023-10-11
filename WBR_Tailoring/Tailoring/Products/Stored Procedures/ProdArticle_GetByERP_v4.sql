@@ -36,7 +36,7 @@ AS
 			ISNULL(st.erp_id, st2.erp_id) style_id,
 			ISNULL(d.erp_id, d2.erp_id)     direction_id,
 			rk.rule_id                      kind_rule_id,
-			sj.erp_id                       subject_id,
+			sj.subject_id                       subject_id,
 			ISNULL(s.imt_name, sj.subject_name_sf) imt_name,
 			t.erp_id                        tpgroup_id,
 			ISNULL(pa.sa, s.sa + CAST(pa.model_number AS VARCHAR(10)) + '/') sa,
