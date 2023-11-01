@@ -39,7 +39,8 @@ AS
 			spcvc.price_ru,
 			spcvc.cost_cutting,
 			spcvc.cost_rm_without_nds,
-			sl.season_local_name
+			sl.season_local_name,
+			f.fabricator_name
 	FROM	Planing.SketchPlan sp   
 			INNER JOIN	Planing.PlanStatus ps
 				ON	ps.ps_id = sp.ps_id   
@@ -63,6 +64,7 @@ AS
 				ON	spcvc.spcv_id = spcv.spcv_id 
 			LEFT JOIN Products.SeasonLocal sl
 				ON sl.season_local_id = sp.season_local_id  
+			LEFT JOIN Settings.Fabricators AS f ON f.fabricator_id = spcv.sew_fabricator_id
 			OUTER APPLY (
 			      	SELECT	SUM(ca.actual_count) actual_count
 			      	FROM	Manufactory.CuttingActual ca   
