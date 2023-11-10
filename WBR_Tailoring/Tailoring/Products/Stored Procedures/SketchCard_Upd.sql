@@ -27,7 +27,8 @@
 	@is_china_sample BIT = 0,
 	@construction_sale BIT = 0,
 	@subject_id INT = NULL,
-	@key_word VARCHAR(400) = NULL
+	@key_word VARCHAR(400) = NULL,
+	@declaration_id INT = NULL
 AS
 	SET NOCOUNT ON
 	SET XACT_ABORT ON
@@ -96,7 +97,7 @@ AS
 	IF @kind_id IS NOT NULL
 	   AND NOT EXISTS (
 	       	SELECT	1
-	       	FROM	Products.Kind k
+	       	FROM	 Products.Kind k
 	       	WHERE	k.kind_id = @kind_id
 	       )
 	BEGIN
@@ -107,7 +108,7 @@ AS
 	IF @qp_id IS NOT NULL
 	   AND NOT EXISTS (
 	       	SELECT	1
-	       	FROM	Products.QueuePriority qp
+	       	FROM	 Products.QueuePriority qp
 	       	WHERE	qp.qp_id = @qp_id
 	       )
 	BEGIN
@@ -118,7 +119,7 @@ AS
 	IF @ct_id IS NOT NULL
 	   AND NOT EXISTS (
 	       	SELECT	1
-	       	FROM	Material.ClothType ct
+	       	FROM	 Material.ClothType ct
 	       	WHERE	ct.ct_id = @ct_id
 	       )
 	BEGIN
@@ -129,7 +130,7 @@ AS
 	IF @style_id IS NOT NULL
 	   AND NOT EXISTS (
 	       	SELECT	1
-	       	FROM	Products.Style s
+	       	FROM 	Products.Style s
 	       	WHERE	s.style_id = @style_id
 	       )
 	BEGIN
@@ -140,7 +141,7 @@ AS
 	IF @wb_size_group_id IS NOT NULL
 	   AND NOT EXISTS(
 	       	SELECT	1
-	       	FROM	Products.WbSizeGroup wsg
+	       	FROM	 Products.WbSizeGroup wsg
 	       	WHERE	wsg.wb_size_group_id = @wb_size_group_id
 	       )
 	BEGIN
@@ -158,7 +159,7 @@ AS
 	IF @season_local_id IS NOT NULL
 	   AND NOT EXISTS(
 	       	SELECT	1
-	       	FROM	Products.SeasonLocal sl
+	       	FROM	 Products.SeasonLocal sl
 	       	WHERE	sl.season_local_id = @season_local_id
 	       )
 	BEGIN
@@ -168,7 +169,7 @@ AS
 	
 	SELECT	@error_text = 'Коллекцию ' + sl.season_local_name + ' ' + CAST(@model_year AS VARCHAR(10)) + ' бренда ' + b.brand_name 
 	      	+ ' уже закрыл ' + ISNULL(es.employee_name, '') + ' , дата закрытия: ' + CONVERT(VARCHAR(20), cl.close_dt, 121) + ', копировать в неё нельзя.'
-	FROM	Products.CollectionLocal cl   
+	FROM 	Products.CollectionLocal cl   
 			INNER JOIN	Products.SeasonLocal sl
 				ON	sl.season_local_id = cl.season_local_id   
 			INNER JOIN	Products.Brand b
@@ -190,7 +191,7 @@ AS
 	      	                   WHEN ts.ts_id IS NULL THEN 'Техразмера с кодом ' + CAST(tsl.id AS VARCHAR(10)) + ' не существует.'
 	      	                   ELSE NULL
 	      	              END
-	FROM	@tech_size_list tsl   
+	FROM	 @tech_size_list tsl   
 			LEFT JOIN	Products.TechSize ts
 				ON	ts.ts_id = tsl.id
 	WHERE	ts.ts_id IS NULL
@@ -209,12 +210,12 @@ AS
 	      	                   WHEN oac.cnt > 1 THEN 'Элемент комплекта с наименованием ' + cl.contents_name + ' указан более одного раза.'
 	      	                   ELSE NULL
 	      	              END
-	FROM	@content_list cl   
+	FROM	 @content_list cl   
 			LEFT JOIN	Products.[Content] c
 				ON	c.contents_id = cl.contents_id   
 			OUTER APPLY (
 			      	SELECT	COUNT(*) cnt
-			      	FROM	@content_list clo
+			      	FROM	 @content_list clo
 			      	WHERE	clo.contents_name = cl.contents_name
 			      ) oac
 	
@@ -235,10 +236,10 @@ AS
 			@dt               dt,
 			@employee_id      employee_id,
 			0                 is_deleted
-	FROM	@content_list     ct
+	FROM	 @content_list     ct
 	WHERE	NOT EXISTS(
 	     		SELECT	1
-	     		FROM	Products.Content c
+	     		FROM 	Products.Content c
 	     		WHERE	c.contents_name = ct.contents_name
 	     	)
 			AND	ct.contents_id IS NULL
@@ -248,11 +249,11 @@ AS
 	    contents_id
 	  )
 	SELECT	cl.contents_id
-	FROM	@content_list cl
+	FROM	 @content_list cl
 	WHERE	cl.contents_id IS NOT NULL
 	UNION
 	SELECT	c.contents_id
-	FROM	@content_list cl   
+	FROM 	@content_list cl   
 			INNER JOIN	Products.[Content] c
 				ON	cl.contents_id IS NULL
 				AND	c.contents_name = cl.contents_name
@@ -342,7 +343,7 @@ AS
 						DELETED.ss_id,
 						INSERTED.base_sketch_id,
 						INSERTED.plan_site_dt
-				INTO	@sketch_output (
+				INTO 	@sketch_output (
 						sketch_id,
 						is_deleted,
 						st_id,
@@ -385,7 +386,7 @@ AS
 		END
 				
 		SELECT	@rv_bigint = so.rv_bigint
-		FROM	@sketch_output so	
+		FROM 	@sketch_output so	
 		
 		IF @content_modify = 1
 		BEGIN
@@ -394,7 +395,7 @@ AS
 		    (
 		    	SELECT	sc.sketch_id,
 		    			sc.contents_id
-		    	FROM	Products.SketchContent sc
+		    	FROM	 Products.SketchContent sc
 		    	WHERE	sc.sketch_id = @sketch_id
 		    )
 		    MERGE cte_Target t
@@ -421,7 +422,7 @@ AS
 		    (
 		    	SELECT	sts.sketch_id,
 		    			sts.ts_id
-		    	FROM	Products.SketchTechSize sts
+		    	FROM 	Products.SketchTechSize sts
 		    	WHERE	sts.sketch_id = @sketch_id
 		    )
 		    MERGE cte_Target t
@@ -495,7 +496,7 @@ AS
 				so.direction_id,
 				so.imt_name,
 				so.base_sketch_id
-		FROM	@sketch_output so
+		FROM	 @sketch_output so
 		
 		INSERT INTO History.SketchStatus
 		  (
@@ -512,7 +513,7 @@ AS
 				so.dt,
 				so.status_comment,
 				so.plan_site_dt
-		FROM	@sketch_output so
+		FROM	 @sketch_output so
 		WHERE so.ss_id != so.old_ss_id
 		
 		IF @season_local_id IS NOT NULL
@@ -580,7 +581,7 @@ AS
 		    		@brand_id
 		    WHERE	NOT EXISTS (
 		         		SELECT	1
-		         		FROM	Products.CollectionLocal cl
+		         		FROM 	Products.CollectionLocal cl
 		         		WHERE	cl.season_model_year = @model_year
 		         				AND	cl.season_local_id = @season_local_id
 		         				AND	cl.brand_id = @brand_id
@@ -601,14 +602,14 @@ AS
 		    		@employee_id
 		    WHERE	NOT EXISTS (
 		         		SELECT	1
-		         		FROM	Products.SketchConstructionSale scs
+		         		FROM 	Products.SketchConstructionSale scs
 		         		WHERE	scs.sketch_id = @sketch_id
 		         	)
 		END
 		ELSE
 		BEGIN
 		    DELETE	
-		    FROM	Products.SketchConstructionSale
+		    FROM 	Products.SketchConstructionSale
 		    WHERE	sketch_id = @sketch_id
 		END;	
 		

@@ -65,6 +65,8 @@ CREATE SCHEMA [Settings]
 
 
 
+
+
 GO	
 CREATE SCHEMA Documents
 	AUTHORIZATION [dbo];
@@ -72,6 +74,8 @@ CREATE SCHEMA Documents
 GO
 CREATE SCHEMA [Products]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -165,6 +169,8 @@ CREATE SCHEMA [Technology]
 GO 
 CREATE SCHEMA [Synchro]
     AUTHORIZATION [dbo];
+
+
 
 
 
