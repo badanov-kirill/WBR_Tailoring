@@ -1669,6 +1669,10 @@
     <Build Include="Settings\Stored Procedures\DeclarationForTNVED.sql" />
     <Build Include="Products\Stored Procedures\SketchCard_Upd_1.sql" />
     <Build Include="dbo\Stored Procedures\DeclarationForTNVED.sql" />
+    <Build Include="Settings\Tables\Declaration_Fabricators.sql" />
+    <Build Include="Settings\Stored Procedures\Fabricators_Declaration_Actual_GET.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_Fabricators_UPD.sql" />
+    <Build Include="Settings\Stored Procedures\Declaration_fabricators_add.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">
