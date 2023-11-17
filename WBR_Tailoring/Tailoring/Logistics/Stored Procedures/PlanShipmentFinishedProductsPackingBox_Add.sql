@@ -93,6 +93,75 @@ AS
 		RETURN
 	END
 	
+	DECLARE @cnt_fab INT = 0
+	SELECT @cnt_fab = COUNT(DISTINCT f.fabricator_id)
+	       FROM   Logistics.PackingBoxDetail pbd
+	              INNER JOIN Manufactory.ProductUnicCode puc
+	                   ON  puc.product_unic_code = pbd.product_unic_code
+	              INNER JOIN Manufactory.Cutting c
+	                   ON  c.cutting_id = puc.cutting_id
+	              INNER JOIN Planing.SketchPlanColorVariantTS AS spcvt
+	                   ON  spcvt.spcvts_id = c.spcvts_id
+	              INNER JOIN Planing.SketchPlanColorVariant AS spcv
+	                   ON  spcv.spcv_id = spcvt.spcv_id
+	              INNER JOIN Settings.Fabricators AS f
+	                   ON  f.fabricator_id = spcv.sew_fabricator_id
+	       WHERE  EXISTS (
+	                  SELECT 1
+	                  FROM   @tab dt
+	                  WHERE  dt.id = pbd.packing_box_id
+	              )
+	              OR  EXISTS (
+	                      SELECT 1
+	                      FROM   Logistics.PlanShipmentFinishedProductsPackingBox sfpb
+	                      WHERE  sfpb.sfp_id = @sfp_id
+	                             AND sfpb.packing_box_id = pbd.packing_box_id);
+	
+	IF @cnt_fab > 1
+	begin                  	
+	SELECT @error_text = 'После добавления коробок, в отгрузке окажутся коробки от разных производителей ' + CHAR(10) +(
+	           SELECT string_agg(v2.error_text, CHAR(10))
+	           FROM   (
+	                      SELECT + 'Производитель: ' + v.fabricator_name + ', коробки: ' + string_agg(v.packing_box_id, '; ') 
+	                             error_text
+	                      FROM   (
+	                                 SELECT DISTINCT f.fabricator_name,
+	                                        CAST(pbd.packing_box_id AS VARCHAR(MAX)) packing_box_id
+	                                 FROM   Logistics.PackingBoxDetail pbd
+	                                        INNER JOIN Manufactory.ProductUnicCode puc
+	                                             ON  puc.product_unic_code = pbd.product_unic_code
+	                                        INNER JOIN Manufactory.Cutting c
+	                                             ON  c.cutting_id = puc.cutting_id
+	                                        INNER JOIN Planing.SketchPlanColorVariantTS AS spcvt
+	                                             ON  spcvt.spcvts_id = c.spcvts_id
+	                                        INNER JOIN Planing.SketchPlanColorVariant AS spcv
+	                                             ON  spcv.spcv_id = spcvt.spcv_id
+	                                        INNER JOIN Settings.Fabricators AS f
+	                                             ON  f.fabricator_id = spcv.sew_fabricator_id
+	                                 WHERE  EXISTS (
+	                                            SELECT 1
+	                                            FROM   @tab dt
+	                                            WHERE  dt.id = pbd.packing_box_id
+	                                        )
+	                                        OR  EXISTS (
+	                                                SELECT 1
+	                                                FROM   Logistics.PlanShipmentFinishedProductsPackingBox sfpb
+	                                                WHERE  sfpb.sfp_id = @sfp_id
+	                                                       AND sfpb.packing_box_id = pbd.packing_box_id
+	                                            )
+	                             )v
+	                      GROUP BY
+	                             v.fabricator_name
+	                  ) v2
+	)
+	end
+
+	IF @error_text IS NOT NULL
+	BEGIN
+		RAISERROR('%s', 16, 1, @error_text)
+		RETURN
+	END
+	
 	BEGIN TRY
 		BEGIN TRANSACTION 	
 		
