@@ -1,4 +1,4 @@
-﻿--exec [Products].[ProdArticle_GetByWBFv2] 11512, 1
+﻿
 CREATE PROCEDURE [Products].[ProdArticle_GetByWBFv2]
 	@pa_id INT,
 	@fabricator_id INT,
@@ -106,8 +106,8 @@ AS
 				when dt.declaration_type_id = 2 then dt.declaration_number 
 				else null
 			end  certificate_name,
-			dt.start_date,
-			dt.end_date,
+			FORMAT (dt.start_date, 'dd.MM.yyyy', 'en-us') start_date,
+			FORMAT (dt.end_date, 'dd.MM.yyyy', 'en-us') end_date,
 			s.ct_id,
 			oa_ct.consist_type_id,
 			'Россия' country_name,
@@ -119,7 +119,7 @@ AS
 				when f.taxation = 0  then '0'
 				when f.taxation = 1  then k.tax
 			end tax
-	FROM	Products.ProdArticle pa   
+	FROM	 Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id 
 			INNER JOIN	Products.Brand b
@@ -183,7 +183,7 @@ AS
 					AND dt.fabricator_id = f.fabricator_id
 			OUTER APPLY (
 			      	SELECT	';' + c.contents_name
-			      	FROM	Products.SketchContent sc   
+			      	FROM	 Products.SketchContent sc   
 			      			INNER JOIN	Products.[Content] c
 			      				ON	c.contents_id = sc.contents_id
 			      	WHERE	sc.sketch_id = s.sketch_id
@@ -209,7 +209,7 @@ AS
 				ON panfw.pan_id = pan.pan_id		  
 			OUTER APPLY (
 			      	SELECT	';' + c.color_name
-			      	FROM	Products.ProdArticleNomenclatureColor panc   
+			      	FROM	 Products.ProdArticleNomenclatureColor panc   
 			      			INNER JOIN	Products.Color c
 			      				ON	c.color_cod = panc.color_cod
 			      	WHERE	panc.pan_id = pan.pan_id
@@ -223,7 +223,7 @@ AS
 							AND pan.nm_id IS NULL 
 							AND NOT EXISTS(
 			              	SELECT	1
-			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
+			              	FROM	 Wildberries.ProdArticleNomenclatureForWB panfw
 			              	WHERE	panfw.pan_id = pan.pan_id AND panfw.fabricator_id = @fabricator_id 
 							)) OR @for_upd = 1) 
 	
@@ -248,7 +248,7 @@ AS
 	--3
 	SELECT	c.consist_name,
 			pac.percnt
-	FROM	Products.ProdArticleConsist pac   
+	FROM	 Products.ProdArticleConsist pac   
 			INNER JOIN	Products.Consist c
 				ON	c.consist_id = pac.consist_id
 	WHERE	pac.pa_id = @pa_id

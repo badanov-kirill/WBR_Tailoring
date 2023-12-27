@@ -4,11 +4,13 @@
     [INN]             VARCHAR (20)  NOT NULL,
     [activ]           INT           NOT NULL,
     [taxation]        INT           NULL,
-    [token]           VARCHAR (200) NULL,
+    [token]           VARCHAR (MAX) NULL,
     [EANLogin]        VARCHAR (100) NULL,
     [EANPass]         VARCHAR (100) NULL,
     CONSTRAINT [PK_fabricator] PRIMARY KEY CLUSTERED ([fabricator_id] ASC)
 );
+
+
 
 
 

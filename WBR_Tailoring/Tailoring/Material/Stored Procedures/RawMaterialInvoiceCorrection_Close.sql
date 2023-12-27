@@ -20,6 +20,7 @@ AS
 	DECLARE @invoice_name VARCHAR(30)
 	DECLARE @upload_doc_type_id TINYINT = 6
 	DECLARE @doc_id INT
+	declare @fabricator_id int
 	
 	DECLARE @upload_buh_invoice_detail TABLE (
 	        	invoice_name VARCHAR(30) NOT NULL,
@@ -50,7 +51,8 @@ AS
 			@suppliercontract_code = sc.suppliercontract_code,
 			@doc_dt = rmic.create_dt,
 			@invoice_name = rmic.buch_num,
-			@doc_id = rmic.rmic_id
+			@doc_id = rmic.rmic_id,
+			@fabricator_id = rmincm.fabricator_id
 	FROM	(VALUES(@rmic_id))v(rmic_id)   
 			LEFT JOIN	Material.RawMaterialInvoiceCorrection rmic   
 			INNER JOIN	Material.RawMaterialInvoice rmi
@@ -160,6 +162,8 @@ AS
 		WHERE	doc_id = @doc_id
 				AND	upload_doc_type_id = @upload_doc_type_id		
 		
+		IF ISNULL(@fabricator_id, 1) = 1
+		BEGIN		
 		INSERT INTO Synchro.UploadBuh_DocInvoiceDetail
 			(
 				doc_id,
@@ -182,6 +186,7 @@ AS
 				id.ttn_name,
 				id.ttn_dt
 		FROM	@upload_buh_invoice_detail id
+		END
 		
 		DELETE	
 		FROM	Synchro.UploadBuh_Doc
@@ -191,7 +196,7 @@ AS
 		IF EXISTS(
 		   	SELECT	1
 		   	FROM	@upload_buh_invoice_detail
-		   )
+		) AND ISNULL(@fabricator_id, 1) = 1
 		BEGIN
 		    INSERT INTO Synchro.UploadBuh_Doc
 		    	(

@@ -23,6 +23,8 @@ CREATE SCHEMA [Material]
 
 
 
+
+
 GO
 CREATE SCHEMA Qualifiers
     AUTHORIZATION [dbo];
@@ -67,6 +69,8 @@ CREATE SCHEMA [Settings]
 
 
 
+
+
 GO	
 CREATE SCHEMA Documents
 	AUTHORIZATION [dbo];
@@ -74,6 +78,8 @@ CREATE SCHEMA Documents
 GO
 CREATE SCHEMA [Products]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -123,10 +129,14 @@ CREATE SCHEMA [Manufactory]
 
 
 
+
+
     
 GO
 CREATE SCHEMA [Logistics]
     AUTHORIZATION [dbo];
+
+
 
 
 
@@ -164,6 +174,8 @@ CREATE SCHEMA [Planing]
 
 
 
+
+
 GO
 CREATE SCHEMA [Technology]
     AUTHORIZATION [dbo];
@@ -173,6 +185,8 @@ CREATE SCHEMA [Technology]
 GO 
 CREATE SCHEMA [Synchro]
     AUTHORIZATION [dbo];
+
+
 
 
 

@@ -1,6 +1,4 @@
-﻿
-
-CREATE PROCEDURE [Settings].[Declaration_add]
+﻿CREATE PROCEDURE [Settings].[Declaration_add]
 	@declaration_number  VARCHAR(200),
 	@start_date DATE,
 	@end_date DATE,
@@ -24,4 +22,4 @@ INSERT INTO [Settings].[Declarations]
            ,@end_date
 		   ,@declaration_type_id);
 
-SELECT IDENT_CURRENT ('Settings.Declarations') as id ; --последний вставленный идентификатор в рамках текущего сеанса
+SELECT SCOPE_IDENTITY() as id ; --последний вставленный идентификатор в рамках текущего сеанса

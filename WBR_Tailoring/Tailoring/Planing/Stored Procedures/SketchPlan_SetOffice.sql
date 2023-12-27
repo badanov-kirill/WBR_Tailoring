@@ -103,7 +103,8 @@ AS
 		
 		UPDATE	c
 		SET 	office_id          = spcv.sew_office_id,
-				cutting_tariff     = os.cutting_tariff
+				cutting_tariff     = os.cutting_tariff,
+				fabricator_id	   = spcv.sew_fabricator_id
 		FROM	Manufactory.Cutting c
 				INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
 					ON	spcvt.spcvts_id = c.spcvts_id

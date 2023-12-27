@@ -31,6 +31,7 @@ AS
 	DECLARE @is_uniq_operation BIT = 1
 	DECLARE @is_pacing_operation BIT = 0
 	DECLARE @pants_id INT
+	DECLARE @fabricator_id int
 	
 	DECLARE @proc_id INT	
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
@@ -93,13 +94,15 @@ AS
 	      	                   --WHEN @operation_id = @modification_operation THEN 'Операция "На стирку" запрещена'
 	      	                   WHEN @operation_id IN (@to_packaging_operation, @after_packing_of_se, @repair_and_to_packaging_operation, @packaging_operation) 
 	      	                        AND spcvc.create_dt IS NULL THEN 'На это товар не посчитана себестоимость.'
+	      	                   WHEN spcv.sew_fabricator_id IS NULL THEN 'Не заполнен производитель цветоварианта'
 	      	                   ELSE NULL
 	      	              END,
 			@spcv_id = spcvt.spcv_id,
 			@spcvts_id = spcvt.spcvts_id,
 			@sketch_id = sp.sketch_id,
 			@pants_id = puc.pants_id,
-			@is_pacing_operation = CASE WHEN @operation_id IN (@packaging_operation, @repair_and_to_packaging_operation) THEN 1 ELSE 0 END
+			@is_pacing_operation = CASE WHEN @operation_id IN (@packaging_operation, @repair_and_to_packaging_operation) THEN 1 ELSE 0 END,
+			@fabricator_id = spcv.sew_fabricator_id			
 	FROM	(VALUES(@product_unic_code))v(product_unic_code)   
 			LEFT JOIN	Manufactory.ProductUnicCode AS puc   
 			INNER JOIN	Manufactory.Operation o
@@ -150,12 +153,26 @@ AS
 		BEGIN
 			SELECT	@error_text = CASE 
 	          						   WHEN pb.packing_box_id IS NULL THEN 'Коробка не валидная, используйте другой шк'
-	          						   WHEN pb.close_dt IS NOT NULL THEN 'Коробка ' + CAST(pb.packing_box_id AS VARCHAR(10)) + ' закрыта. Используйте новую коробку.'	          	                   
+	          						   WHEN pb.close_dt IS NOT NULL THEN 'Коробка ' + CAST(pb.packing_box_id AS VARCHAR(10)) + ' закрыта. Используйте новую коробку.'	
+	          						   WHEN oa.othen_fabricator = 1 THEN 'В коробке ' + CAST(pb.packing_box_id AS VARCHAR(10)) + ' уже лежат вещи другого производителя.'       	                   
 	          						   ELSE NULL
 	          					  END
 			FROM	(VALUES(@packing_box_id))v(packing_box_id)   
 	    			LEFT JOIN	Logistics.PackingBox pb
-	    				ON pb.packing_box_id = v.packing_box_id   
+	    				ON pb.packing_box_id = v.packing_box_id 
+	    			OUTER APPLY (SELECT TOP(1) 1 othen_fabricator
+	    			             FROM Logistics.PackingBoxDetail AS pbd 
+	    			             INNER JOIN Manufactory.ProductUnicCode AS puc ON puc.product_unic_code = pbd.product_unic_code  								  
+									INNER JOIN	Manufactory.Cutting c   
+									INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+									INNER JOIN Planing.SketchPlanColorVariant spcv									
+										ON spcv.spcv_id = spcvt.spcv_id	
+										ON	spcvt.spcvts_id = c.spcvts_id
+										ON	c.cutting_id = puc.cutting_id
+	    			             WHERE pbd.packing_box_id = v.packing_box_id
+	    								AND spcv.sew_fabricator_id != @fabricator_id
+	    			
+	    			)  oa
 	    			
 			IF @error_text IS NOT NULL
 			BEGIN

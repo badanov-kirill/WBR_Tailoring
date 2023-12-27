@@ -15,7 +15,7 @@ AS
 	DECLARE @cv_status_placing TINYINT = 12 --Назначен в цех
 	DECLARE @cv_status_rm_issue TINYINT = 14 --На выдаче материалов
 	DECLARE @covering_reserv TABLE (spcv_id INT, spcvc_id INT, shkrm_id INT, okei_id INT, quantity DECIMAL(9, 3), pre_cost DECIMAL(9, 2))
-	
+
 	DECLARE @proc_id INT	
 	EXECUTE @proc_id = History.ProcId_GetByName @procid = @@PROCID
 	
@@ -269,10 +269,13 @@ AS
 		SET 	employee_id             = @employee_id,
 				dt                      = @dt,
 				planing_employee_id     = @employee_id,
-				planing_dt              = @dt
+				planing_dt              = @dt,
+				fabricator_id			= spcv.sew_fabricator_id
 		FROM	Manufactory.Cutting c
 				INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
 					ON	spcvt.spcvts_id = c.spcvts_id
+				INNER JOIN Planing.SketchPlanColorVariant spcv
+					ON spcv.spcv_id = spcvt.spcv_id
 				INNER JOIN	@spcv_tab d
 					ON	d.spcv_id = spcvt.spcv_id
 		

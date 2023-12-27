@@ -125,6 +125,54 @@ AS
 	    RAISERROR('%s', 16, 1, @error_text)
 	    RETURN
 	END  
+	
+	SELECT @error_text = 'После переноса в коробке ' + CAST(vg.packing_box_id AS VARCHAR(10)) +
+	       ' будут вещи разных производителей'
+	FROM   (
+	           SELECT v.packing_box_id,
+	                  COUNT(DISTINCT ISNULL(v.sew_fabricator_id, 1)) cnt_fab
+	           FROM   (
+	                      SELECT @dst_packing_box_id packing_box_id,
+	                             spcv.sew_fabricator_id
+	                      FROM   (VALUES(@pants_id, @barcode))dt(pants, barcode)
+	                             LEFT JOIN Products.ProdArticleNomenclatureTechSize pants
+	                                  ON  pants.pants_id = dt.pants
+	                             INNER JOIN Manufactory.ProductUnicCode puc
+	                                  ON  puc.pants_id = pants.pants_id
+	                             INNER JOIN Logistics.PackingBoxDetail pbd
+	                                  ON  pbd.product_unic_code = puc.product_unic_code
+	                                  AND pbd.packing_box_id = @src_packing_box_id
+	                                  AND pbd.barcode = dt.barcode
+	                             INNER JOIN Manufactory.Cutting c
+	                             INNER JOIN Planing.SketchPlanColorVariantTS spcvt
+	                             INNER JOIN Planing.SketchPlanColorVariant spcv
+	                                  ON  spcv.spcv_id = spcvt.spcv_id
+	                                  ON  spcvt.spcvts_id = c.spcvts_id
+	                                  ON  c.cutting_id = puc.cutting_id 
+	                      UNION ALL
+	                      SELECT pbd.packing_box_id,
+	                             spcv.sew_fabricator_id
+	                      FROM   Logistics.PackingBoxDetail AS pbd
+	                             INNER JOIN Manufactory.ProductUnicCode AS puc
+	                                  ON  puc.product_unic_code = pbd.product_unic_code
+	                             INNER JOIN Manufactory.Cutting c
+	                             INNER JOIN Planing.SketchPlanColorVariantTS spcvt
+	                             INNER JOIN Planing.SketchPlanColorVariant spcv
+	                                  ON  spcv.spcv_id = spcvt.spcv_id
+	                                  ON  spcvt.spcvts_id = c.spcvts_id
+	                                  ON  c.cutting_id = puc.cutting_id
+	                      WHERE  pbd.packing_box_id = @dst_packing_box_id
+	                  ) v
+	           GROUP BY
+	                  v.packing_box_id
+	       ) vg
+	WHERE  vg.cnt_fab > 1
+	
+	IF @error_text IS NOT NULL
+	BEGIN
+	    RAISERROR('%s', 16, 1, @error_text)
+	    RETURN
+	END
 		
 	BEGIN TRY
 		BEGIN TRANSACTION
