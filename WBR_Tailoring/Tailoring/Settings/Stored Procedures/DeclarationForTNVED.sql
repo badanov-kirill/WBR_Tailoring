@@ -1,11 +1,10 @@
-﻿
-CREATE PROCEDURE [Settings].[DeclarationForTNVED]
+﻿CREATE PROCEDURE [Settings].[DeclarationForTNVED]
 @subject_id INT,
 @ct_id INT,
 @consist_type_id INT 
 
 AS
-select sd.declaration_id, sd.declaration_number + ' c: '+ cast(sd.end_date as char(10)) +'  по: ' + cast(sd.end_date as char(10)) as declarationFull
+select sd.declaration_id, cast(sd.declaration_number as char(40)) + ' c: '+ cast(FORMAT(sd.start_date, 'dd.MM.yyyy') as char(10)) +'  по: ' + cast(FORMAT(sd.end_date, 'dd.MM.yyyy') as char(10)) as declarationFull
 from  Products.TNVED_Settigs tnvds
 	INNER JOIN Products.TNVED t
 		ON	t.tnved_id = tnvds.tnved_id 

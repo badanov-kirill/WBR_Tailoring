@@ -9,7 +9,7 @@ AS
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
 	--case when @actual = 0 then @actual is null end;
 SELECT * FROM (	
-	SELECT  declaration_id,
+	SELECT  d.declaration_id,
 			d.declaration_number,
 			d.start_date,
 			d.end_date,
@@ -19,7 +19,7 @@ SELECT * FROM (
 			else (0)end as actual,
 			dt.declaration_type_id,
 			dt.declaration_type
-	FROM	Settings.Declarations d
+	FROM	 Settings.Declarations d
 		inner join Settings.Declaration_types dt 
 			on dt.declaration_type_id = d.declaration_type_id
 	WHERE	(@declaration_id IS NULL

@@ -2,7 +2,7 @@
 	@declaration_number  VARCHAR(200),
 	@start_date DATE,
 	@end_date DATE,
-	@type INT
+	@declaration_type_id INT
 AS
 
 IF @start_date > @end_date
@@ -20,6 +20,6 @@ INSERT INTO [Settings].[Declarations]
            (@declaration_number
            ,@start_date
            ,@end_date
-		   ,@type);
+		   ,@declaration_type_id);
 
 SELECT SCOPE_IDENTITY() as id ; --последний вставленный идентификатор в рамках текущего сеанса

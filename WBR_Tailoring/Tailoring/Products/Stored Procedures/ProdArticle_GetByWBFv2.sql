@@ -1,4 +1,4 @@
-﻿--exec [Products].[ProdArticle_GetByWBFv2] 11512, 1
+﻿
 CREATE PROCEDURE [Products].[ProdArticle_GetByWBFv2]
 	@pa_id INT,
 	@fabricator_id INT,
@@ -99,15 +99,15 @@ AS
 			t.tnved_cod,
 			t.tnved_id,
 			case 
-				when sd.declaration_type_id = 1 then sd.declaration_number 
+				when dt.declaration_type_id = 1 then dt.declaration_number 
 				else null
 			end  declaration_name,
 			case 
-				when sd.declaration_type_id = 2 then sd.declaration_number 
+				when dt.declaration_type_id = 2 then dt.declaration_number 
 				else null
 			end  certificate_name,
-			sd.start_date,
-			sd.end_date,
+			FORMAT (dt.start_date, 'dd.MM.yyyy', 'en-us') start_date,
+			FORMAT (dt.end_date, 'dd.MM.yyyy', 'en-us') end_date,
 			s.ct_id,
 			oa_ct.consist_type_id,
 			'Россия' country_name,
@@ -119,7 +119,7 @@ AS
 				when f.taxation = 0  then '0'
 				when f.taxation = 1  then k.tax
 			end tax
-	FROM	Products.ProdArticle pa   
+	FROM	 Products.ProdArticle pa   
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id 
 			INNER JOIN	Products.Brand b
@@ -165,14 +165,25 @@ AS
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id 
-			LEFT JOIN Settings.Declarations_TNVED dt
-				ON dt.tnved_id = t.tnved_id
-			LEFT JOIN  Settings.Declarations sd
-				ON sd.declaration_id = dt.declaration_id
+			LEFT JOIN (
+				select sd.declaration_number
+					,sd.start_date
+					,sd.end_date
+					,sd.declaration_type_id
+					,dt.tnved_id
+					,df.fabricator_id
+				from Settings.Declarations_TNVED dt
+				inner join Settings.Declarations sd
+					ON sd.declaration_id = dt.declaration_id
 					AND GETDATE() between sd.start_date and sd.end_date
+				inner join Settings.Declaration_Fabricators df
+					ON df.declaration_id = sd.declaration_id
+			)dt
+					ON dt.tnved_id = t.tnved_id
+					AND dt.fabricator_id = f.fabricator_id
 			OUTER APPLY (
 			      	SELECT	';' + c.contents_name
-			      	FROM	Products.SketchContent sc   
+			      	FROM	 Products.SketchContent sc   
 			      			INNER JOIN	Products.[Content] c
 			      				ON	c.contents_id = sc.contents_id
 			      	WHERE	sc.sketch_id = s.sketch_id
@@ -181,7 +192,7 @@ AS
 	WHERE	pa.pa_id = @pa_id
 			
 	--1
-	SELECT	pan.pan_id,
+	SELECT	top(5) pan.pan_id,
 			pan.nm_id,
 			pan.sa,
 			mc.color_name main_color,
@@ -198,7 +209,7 @@ AS
 				ON panfw.pan_id = pan.pan_id		  
 			OUTER APPLY (
 			      	SELECT	';' + c.color_name
-			      	FROM	Products.ProdArticleNomenclatureColor panc   
+			      	FROM	 Products.ProdArticleNomenclatureColor panc   
 			      			INNER JOIN	Products.Color c
 			      				ON	c.color_cod = panc.color_cod
 			      	WHERE	panc.pan_id = pan.pan_id
@@ -212,7 +223,7 @@ AS
 							AND pan.nm_id IS NULL 
 							AND NOT EXISTS(
 			              	SELECT	1
-			              	FROM	Wildberries.ProdArticleNomenclatureForWB panfw
+			              	FROM	 Wildberries.ProdArticleNomenclatureForWB panfw
 			              	WHERE	panfw.pan_id = pan.pan_id AND panfw.fabricator_id = @fabricator_id 
 							)) OR @for_upd = 1) 
 	
@@ -237,7 +248,7 @@ AS
 	--3
 	SELECT	c.consist_name,
 			pac.percnt
-	FROM	Products.ProdArticleConsist pac   
+	FROM	 Products.ProdArticleConsist pac   
 			INNER JOIN	Products.Consist c
 				ON	c.consist_id = pac.consist_id
 	WHERE	pac.pa_id = @pa_id
