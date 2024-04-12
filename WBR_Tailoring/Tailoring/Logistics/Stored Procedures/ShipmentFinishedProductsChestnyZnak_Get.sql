@@ -20,9 +20,15 @@ AS
 			INNER JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 				ON	pucczi.oczdi_id = oczdi.oczdi_id   
 			INNER JOIN	Manufactory.ProductUnicCode puc
-				ON	puc.product_unic_code = pucczi.product_unic_code   
+				ON	puc.product_unic_code = pucczi.product_unic_code  
+			INNER JOIN Manufactory.OrderChestnyZnakDetail AS oczd
+				ON oczd.oczd_id = oczdi.oczd_id
+			INNER JOIN Planing.SketchPlanColorVariantTS AS spcvt
+				ON spcvt.spcvts_id = oczd.spcvts_id
+			INNER JOIN Planing.SketchPlanColorVariant AS spcv
+				ON spcv.spcv_id = spcvt.spcv_id 
 			LEFT JOIN	Manufactory.EANCode e
-				ON	e.pants_id = puc.pants_id   
+				ON	e.pants_id = puc.pants_id   AND e.fabricator_id = spcv.sew_fabricator_id 
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 				ON	pants.pants_id = puc.pants_id   
 			INNER JOIN	Products.ProdArticleNomenclature pan

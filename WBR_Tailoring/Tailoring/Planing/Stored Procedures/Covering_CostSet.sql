@@ -293,6 +293,7 @@ AS
 				ON pants.pan_id = pan.pan_id AND pants.ts_id = spcvt.ts_id
 			LEFT JOIN Manufactory.EANCode e
 				ON e.pants_id = pants.pants_id 
+				AND e.fabricator_id = st.fabricator_id
 			OUTER APPLY (
 			      	SELECT	ISNULL(SUM(ca.actual_count), 0) actual_count
 			      	FROM	Manufactory.Cutting cut   

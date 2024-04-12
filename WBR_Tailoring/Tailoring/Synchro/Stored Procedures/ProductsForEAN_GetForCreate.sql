@@ -15,7 +15,7 @@ AS
 		      	SELECT	pfe.pants_id, pfe.fabricator_id 
 		      	FROM	Synchro.ProductsForEAN pfe   
 		      			LEFT JOIN	Synchro.ProductsForEANCnt pfec
-		      				ON	pfec.pants_id = pfe.pants_id
+		      				ON	pfec.pants_id = pfe.pants_id AND pfec.fabricator_id = pfe.fabricator_id
 		      	WHERE	pfe.dt_create IS NULL
 		      			AND	ISNULL(pfec.cnt_create, 0) < 10
 		      ) s

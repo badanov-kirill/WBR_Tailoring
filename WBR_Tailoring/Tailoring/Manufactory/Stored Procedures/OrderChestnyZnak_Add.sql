@@ -71,7 +71,8 @@ AS
 				ON	pants.pan_id = pan.pan_id
 				AND	pants.ts_id = spcvt.ts_id   
 			LEFT JOIN	Manufactory.EANCode e
-				ON	e.pants_id = pants.pants_id   
+				ON	e.pants_id = pants.pants_id
+				AND e.fabricator_id = spcv.sew_fabricator_id				    
 			OUTER APPLY (
 			      	SELECT	TOP(1) 1 need_cz
 			      	FROM	Products.ProdArticle pa   
