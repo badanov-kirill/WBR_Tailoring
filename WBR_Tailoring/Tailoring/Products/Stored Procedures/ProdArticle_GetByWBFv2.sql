@@ -240,6 +240,7 @@ AS
 				ON	ts.ts_id = pants.ts_id   
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id
+				AND e.fabricator_id = @fabricator_id
 			LEFT JOIN Wildberries.ProdArticleNomenclatureTSForWB pantw
 				ON pantw.pants_id = e.pants_id 
 	WHERE	pan.pa_id = @pa_id

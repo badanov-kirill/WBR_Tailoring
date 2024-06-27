@@ -32,9 +32,7 @@ AS
 			INNER JOIN	Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 				ON pucczi.oczdi_id = oczdi.oczdi_id   
 			INNER JOIN	Manufactory.ProductUnicCode puc
-				ON	puc.product_unic_code = pucczi.product_unic_code   
-			LEFT JOIN	Manufactory.EANCode e
-				ON	e.pants_id = puc.pants_id   
+				ON	puc.product_unic_code = pucczi.product_unic_code 			  
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 				ON	pants.pants_id = puc.pants_id   
 			INNER JOIN	Products.ProdArticleNomenclature pan
@@ -68,7 +66,10 @@ AS
 				ON	(spcv.sew_office_id IS NOT NULL
 				AND	os.office_id = spcv.sew_office_id)
 				OR	(spcv.sew_office_id IS NULL
-				AND	os.is_main_wh = 1)   
+				AND	os.is_main_wh = 1)  
+			LEFT JOIN	Manufactory.EANCode e
+				ON	e.pants_id = puc.pants_id 	
+				 AND e.fabricator_id = spcv.sew_fabricator_id
 			OUTER APPLY (
 			      	SELECT	', ' + c.consist_name + ' ' + CASE 
 			      	      	                                   WHEN ISNULL(pac.percnt, 0) = 0 THEN ''

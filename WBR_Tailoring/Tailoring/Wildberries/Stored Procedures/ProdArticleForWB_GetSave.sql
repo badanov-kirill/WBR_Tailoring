@@ -40,7 +40,7 @@ AS
 			      	FROM	Products.ProdArticleNomenclature pan
 			      	INNER JOIN Products.ProdArticleNomenclatureTechSize pants ON pants.pan_id = pan.pan_id
 			      	INNER JOIN Manufactory.EANCode e ON e.pants_id = pants.pants_id
-			      	WHERE	pan.pa_id = pa.pa_id
+			      	WHERE	pan.pa_id = pa.pa_id AND e.fabricator_id = f.fabricator_id
 			      	FOR XML	PATH('')
 			      ) oaean(x)
 	WHERE	pafw.send_dt IS NOT NULL

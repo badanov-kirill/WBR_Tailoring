@@ -441,10 +441,12 @@ AS
 				INNER JOIN	Products.ProdArticleNomenclature pan
 					ON	pan.pan_id = spcv.pan_id   
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
-					ON	pants.pan_id = pan.pan_id   
+					ON	pants.pan_id = pan.pan_id 
+				LEFT JOIN   Settings.Fabricators f 
+					ON f.fabricator_id = spcv.sew_fabricator_id
 				LEFT JOIN	Synchro.ProductsForEAN pfe
-					ON	pfe.pants_id = pants.pants_id
-				CROSS JOIN Settings.Fabricators f
+					ON	pfe.pants_id = pants.pants_id 
+					AND pfe.fabricator_id = f.fabricator_id				
 		WHERE	pfe.pants_id IS NULL
 				AND f.activ = 1;
 		

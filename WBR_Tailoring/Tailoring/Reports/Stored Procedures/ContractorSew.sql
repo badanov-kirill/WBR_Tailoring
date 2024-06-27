@@ -20,7 +20,8 @@ AS
 			END                   pre_price,
 			spcv.spcv_id,
 			oa_sketch_cost_job.cost_job,
-			oa_spent.spent_amount
+			oa_spent.spent_amount,
+			ISNULL(oa_cut_am.perimeter * oa_cut_am.cutting_tariff, 0) cut_amount
 	FROM	Planing.SketchPlanColorVariant spcv   
 			JOIN	Settings.OfficeSetting os
 				ON	os.office_id = spcv.sew_office_id   
@@ -62,7 +63,14 @@ AS
 			      			INNER JOIN	Warehouse.SHKRawMaterialAmount sma
 			      				ON	sma.shkrm_id = cis.shkrm_id
 			      	WHERE	cd.spcv_id = spcv.spcv_id
-			      ) oa_spent 
+			      ) oa_spent 	
+			OUTER APPLY (
+			      	SELECT	AVG( c.perimeter) perimeter , AVG(c.cutting_tariff) cutting_tariff
+			      	FROM	Manufactory.Cutting c   
+			      			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
+			      				ON	spcvt.spcvts_id = c.spcvts_id 		      			
+			      	WHERE	spcvt.spcv_id = spcv.spcv_id
+			      ) oa_cut_am      		
 	WHERE	EXISTS (
 	     		SELECT	TOP(1) 1
 	     		FROM	Manufactory.ContractorSewCount csc   

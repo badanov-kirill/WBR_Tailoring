@@ -188,10 +188,12 @@ AS
 				ON	pan.pan_id = spcv.pan_id   
 			INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 				ON	pants.pan_id = pan.pan_id
-				AND	pants.ts_id = spcvt.ts_id   
-			LEFT JOIN	Manufactory.EANCode e
+				AND	pants.ts_id = spcvt.ts_id 
+			LEFT JOIN   Settings.Fabricators f 
+					ON f.fabricator_id = spcv.sew_fabricator_id  
+			LEFT JOIN	Synchro.ProductsForEAN e
 				ON	e.pants_id = pants.pants_id
-			CROSS JOIN Settings.Fabricators f
+				AND e.fabricator_id = f.fabricator_id	
 	WHERE	e.pants_id IS NULL
 			AND f.activ = 1; 
 

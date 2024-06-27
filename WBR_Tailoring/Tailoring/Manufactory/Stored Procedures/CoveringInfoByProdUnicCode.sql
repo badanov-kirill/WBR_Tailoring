@@ -28,10 +28,12 @@ AS
 					ON	pants.pan_id = pan.pan_id
 					AND	pants.ts_id = spcvt.ts_id   
 				LEFT JOIN	Manufactory.EANCode e
-					ON	e.pants_id = pants.pants_id   
+					ON	e.pants_id = pants.pants_id 
+				LEFT JOIN Settings.Fabricators f
+				  ON f.fabricator_id = c0.fabricator_id
 				LEFT JOIN	Synchro.ProductsForEAN se
 					ON	se.pants_id = pants.pants_id
-				CROSS JOIN Settings.Fabricators f
+					AND se.fabricator_id = f.fabricator_id				
 		WHERE	puc.product_unic_code = @product_unic_code
 				AND	e.pants_id IS NULL
 				AND	se.pants_id IS NULL
@@ -83,6 +85,7 @@ AS
 				AND	pants.ts_id = spcvt.ts_id   
 			LEFT JOIN	Manufactory.EANCode e
 				ON	e.pants_id = pants.pants_id   
+				AND c0.fabricator_id = e.fabricator_id
 			OUTER APPLY (
 			      	SELECT	SUM(oczd.cnt) cnt_ordered_cz
 			      	FROM	Manufactory.OrderChestnyZnakDetail oczd

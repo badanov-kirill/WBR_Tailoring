@@ -36,7 +36,7 @@ AS
 		
 		UPDATE	Synchro.ProductsForEAN
 		SET 	dt_create = @dt
-		WHERE	pants_id = @pants_id
+		WHERE	pants_id = @pants_id AND fabricator_id = @fabricator_id
 		
 		COMMIT TRANSACTION
 	END TRY

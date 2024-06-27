@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [Synchro].[ProductsForEAN_GetForCreate]
-	@fabricator_id INT = NULL
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -17,7 +17,8 @@ AS
 		      			LEFT JOIN	Synchro.ProductsForEANCnt pfec
 		      				ON	pfec.pants_id = pfe.pants_id AND pfec.fabricator_id = pfe.fabricator_id
 		      	WHERE	pfe.dt_create IS NULL
-		      			AND	ISNULL(pfec.cnt_create, 0) < 10
+		      			AND	ISNULL(pfec.cnt_create, 0) < 10	
+		      			AND pfe.fabricator_id = @fabricator_id	      			
 		      ) s
 				ON t.pants_id = s.pants_id AND  t.fabricator_id = s.fabricator_id
 		WHEN MATCHED THEN 
@@ -143,8 +144,7 @@ AS
 				                    			AND	ao.ao_id != 26
 				                    	FOR XML	PATH('')
 				                    )oal(x)
-			WHERE @fabricator_id IS NULL
-			OR	pfe.fabricator_id = @fabricator_id
+			WHERE pfe.fabricator_id = @fabricator_id
 	END TRY
 	BEGIN CATCH
 		IF @@TRANCOUNT > 0

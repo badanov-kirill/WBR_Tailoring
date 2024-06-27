@@ -35,8 +35,7 @@ AS
 			INNER JOIN	Products.Sketch s
 				ON	s.sketch_id = pa.sketch_id
 				ON	puc.product_unic_code = v.product_unic_code   
-			LEFT JOIN	Manufactory.EANCode e
-				ON	e.pants_id = puc.pants_id   
+			  
 			LEFT JOIN Manufactory.Cutting c
 				ON c.cutting_id = puc.cutting_id
 			LEFT JOIN Planing.SketchPlanColorVariantTS spcvt
@@ -58,6 +57,10 @@ AS
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id	
 			LEFT JOIN Products.TNVDFromChestnyZnak tcz
 				ON tcz.tnved_id = tnvds.tnved_id
+			LEFT JOIN Planing.SketchPlanColorVariant AS spcv ON spcv.spcv_id = spcvt.spcv_id				
+			LEFT JOIN	Manufactory.EANCode e
+				ON	e.pants_id = puc.pants_id 	
+				AND e.fabricator_id = spcv.sew_fabricator_id
 			OUTER APPLY (
 			      	SELECT	oczd.spcvts_id,
 			      			SUM(CASE WHEN oczdi.oczdi_id IS NOT NULL THEN 1 ELSE 0 END) cnt_km,
@@ -79,22 +82,22 @@ AS
 	END
 	
 	BEGIN TRY
-		INSERT INTO Synchro.ProductsForEAN
-			(
-				pants_id, fabricator_id
-			)
-		SELECT	pants2.pants_id, f.fabricator_id
-		FROM	Manufactory.ProductUnicCode puc   
-				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
-					ON	pants.pants_id = puc.pants_id   
-				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants2
-					ON	pants2.pan_id = pants.pan_id   
-				LEFT JOIN	Synchro.ProductsForEAN pfe
-					ON	pfe.pants_id = pants2.pants_id
-				CROSS JOIN Settings.Fabricators f				
-		WHERE	puc.product_unic_code = @product_unic_code
-				AND	pfe.pants_id IS NULL
-				AND f.activ = 1;
+		--INSERT INTO Synchro.ProductsForEAN
+		--	(
+		--		pants_id, fabricator_id
+		--	)
+		--SELECT	pants2.pants_id, f.fabricator_id
+		--FROM	Manufactory.ProductUnicCode puc  
+		--		INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
+		--			ON	pants.pants_id = puc.pants_id   
+		--		INNER JOIN	Products.ProdArticleNomenclatureTechSize pants2
+		--			ON	pants2.pan_id = pants.pan_id   
+		--		LEFT JOIN	Synchro.ProductsForEAN pfe
+		--			ON	pfe.pants_id = pants2.pants_id
+		--		CROSS JOIN Settings.Fabricators f				
+		--WHERE	puc.product_unic_code = @product_unic_code
+		--		AND	pfe.pants_id IS NULL
+		--		AND f.activ = 1;
 		
 		IF @need_chectny_znak = 1 AND @oczdi_id IS NULL
 		BEGIN 
@@ -152,8 +155,7 @@ AS
 				oczdi.intrnal91, 
 				oczdi.intrnal92
 		FROM	Manufactory.ProductUnicCode puc   
-				LEFT JOIN	Manufactory.EANCode e
-					ON	e.pants_id = puc.pants_id   
+				  
 				INNER JOIN	Products.ProdArticleNomenclatureTechSize pants
 					ON	pants.pants_id = puc.pants_id   
 				INNER JOIN	Products.ProdArticleNomenclature pan
@@ -182,7 +184,10 @@ AS
 				INNER JOIN	Planing.SketchPlan sp
 					ON	sp.sp_id = spcv.sp_id
 					ON	spcv.spcv_id = spcvt.spcv_id
-					ON	spcvt.spcvts_id = c.spcvts_id   
+					ON	spcvt.spcvts_id = c.spcvts_id 
+				LEFT JOIN	Manufactory.EANCode e
+					ON	e.pants_id = puc.pants_id 
+					AND e.fabricator_id = spcv.sew_fabricator_id					  
 				LEFT JOIN	Settings.OfficeSetting os
 					ON	(spcv.sew_office_id IS NOT NULL
 					AND	os.office_id = spcv.sew_office_id)
