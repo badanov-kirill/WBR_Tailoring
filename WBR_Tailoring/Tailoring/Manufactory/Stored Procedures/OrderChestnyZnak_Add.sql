@@ -8,7 +8,7 @@ AS
 	
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
-	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, need_cz BIT)
+	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, need_cz BIT, fabricator_id int )
 	DECLARE @order_chestny_znak_out TABLE (ocz_id INT)
 	
 	SELECT	@error_text = CASE 
@@ -50,7 +50,8 @@ AS
 			spcvts_id,
 			ean,
 			cnt,
-			need_cz
+			need_cz,
+			fabricator_id
 		)
 	SELECT	spcv.spcv_id,
 			spcvt.spcvts_id,
@@ -59,7 +60,8 @@ AS
 			CASE 
 			     WHEN oancz.need_cz = 1 THEN 1
 			     ELSE 0
-			END         need_cz
+			END         need_cz,
+			spcv.sew_fabricator_id
 	FROM	@spcvts_tab st   
 			INNER JOIN	Planing.SketchPlanColorVariantTS spcvt
 				ON	spcvt.spcvts_id = st.id   
@@ -107,6 +109,19 @@ AS
 	    RETURN
 	END
 	
+	IF EXISTS(SELECT 1 FROM @spcv_need_chestny_znak WHERE fabricator_id IS NULL)
+	BEGIN
+		RAISERROR('Есть товары без производителя с маркировкой ЧЗ, обратитесь к разработчику',16,1)
+		RETURN
+	END
+	
+	IF (SELECT COUNT(DISTINCT fabricator_id) FROM @spcv_need_chestny_znak) > 1
+	BEGIN
+		RAISERROR('Более одно производителя в выдаче, для товаров с маркировкой ЧЗ',16,1)
+		RETURN
+	END
+		
+	
 	IF EXISTS(
 	   	SELECT	1
 	   	FROM	@spcv_need_chestny_znak
@@ -127,19 +142,22 @@ AS
 				create_dt,
 				dt,
 				employee_id,
-				is_deleted
+				is_deleted,
+				fabricator_id
 			)OUTPUT	INSERTED.ocz_id
 			 INTO	@order_chestny_znak_out (
 			 		ocz_id
 			 	)
-		VALUES
-			(
+		select
 				@covering_id,
 				@dt,
 				@dt,
 				@employee_id,
-				0
-			)
+				0,
+				sncz.fabricator_id
+		FROM @spcv_need_chestny_znak AS sncz
+		WHERE sncz.need_cz = 1 AND sncz.cnt > 0
+		GROUP BY sncz.fabricator_id
 		
 		INSERT INTO Manufactory.OrderChestnyZnakDetail
 			(
@@ -154,6 +172,7 @@ AS
 				spcvcz.cnt
 		FROM	@spcv_need_chestny_znak spcvcz   
 				CROSS JOIN	@order_chestny_znak_out oczo
+		WHERE spcvcz.need_cz = 1 AND spcvcz.cnt > 0
 		
 		COMMIT TRANSACTION
 	END TRY

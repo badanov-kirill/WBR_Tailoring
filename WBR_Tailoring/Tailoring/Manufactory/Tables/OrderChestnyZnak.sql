@@ -9,5 +9,6 @@
 	employee_id     INT NOT NULL,
 	is_deleted      BIT NOT NULL,
 	sign_dt			DATETIME2(0) NULL,
-	ocz_uid			BINARY(16) NULL
+	ocz_uid			BINARY(16) NULL,
+	fabricator_id   INT NULL CONSTRAINT [FK_OrderChestnyZnak_fabricator_id] FOREIGN KEY REFERENCES Settings.Fabricators(fabricator_id)
 )

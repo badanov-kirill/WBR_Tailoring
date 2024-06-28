@@ -8,13 +8,15 @@ AS
 	SET XACT_ABORT ON
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
+	DECLARE @fabricator_id INT
 	
 	SELECT	@error_text = CASE 
 	      	                   WHEN ocz.ocz_id IS NULL THEN 'Заказа с номером ' + CAST(v.ocz_id AS VARCHAR(10)) + ' не существует.'
 	      	                   WHEN ocz.is_deleted = 1 THEN 'Заказ уже удален'
 	      	                   WHEN ocz.sign_dt IS NOT NULL THEN 'Заказ уже подписан.'
 	      	                   ELSE NULL
-	      	              END
+	      	              END,
+	      	@fabricator_id = ocz.fabricator_id              
 	FROM	(VALUES(@ocz_id))v(ocz_id)   
 			LEFT JOIN	Manufactory.OrderChestnyZnak ocz
 				ON	ocz.ocz_id = v.ocz_id
@@ -39,7 +41,8 @@ AS
 		     		signature_text     = @signature_text,
 		     		create_dt          = @dt,
 		     		employee_id        = @employee_id,
-		     		count_send         = 0
+		     		count_send         = 0,
+		     		fabricator_id	 = @fabricator_id
 		WHEN NOT MATCHED THEN 
 		     INSERT
 		     	(
@@ -48,7 +51,8 @@ AS
 		     		signature_text,
 		     		create_dt,
 		     		employee_id,
-		     		count_send
+		     		count_send,
+		     		fabricator_id
 		     	)
 		     VALUES
 		     	(
@@ -57,7 +61,8 @@ AS
 		     		@signature_text,
 		     		@dt,
 		     		@employee_id,
-		     		0
+		     		0,
+		     		@fabricator_id
 		     	);
 		
 		UPDATE	Manufactory.OrderChestnyZnak

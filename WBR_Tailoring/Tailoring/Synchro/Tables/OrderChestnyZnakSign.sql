@@ -7,5 +7,6 @@
 	employee_id        INT NOT NULL,
 	count_send         SMALLINT NOT NULL,
 	error_desc         VARCHAR(900) NULL,
-	error_dt           DATETIME2(0) NULL
+	error_dt           DATETIME2(0) NULL,
+	fabricator_id      INT NULL CONSTRAINT [FK_OrderChestnyZnakSign_fabricator_id] FOREIGN KEY REFERENCES Settings.Fabricators(fabricator_id)
 )

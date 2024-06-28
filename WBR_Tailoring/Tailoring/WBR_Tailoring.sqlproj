@@ -1671,6 +1671,7 @@
     <Build Include="Settings\Stored Procedures\Fabricators_Declaration_Actual_GET.sql" />
     <Build Include="Settings\Stored Procedures\Declaration_Fabricators_UPD.sql" />
     <Build Include="Settings\Stored Procedures\Declaration_fabricators_add.sql" />
+    <Build Include="Settings\Stored Procedures\FabricatorCzToken_Set.sql" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types">

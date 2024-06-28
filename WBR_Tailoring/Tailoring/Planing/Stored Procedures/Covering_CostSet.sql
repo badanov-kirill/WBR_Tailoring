@@ -10,8 +10,8 @@ AS
 	DECLARE @dt DATETIME2(0) = GETDATE()
 	DECLARE @error_text VARCHAR(MAX)
 	DECLARE @spcv_tab TABLE (spcv_id INT, pan_id INT, cost_rm DECIMAL(9, 2), cost_work DECIMAL(9, 2), cost_fix DECIMAL(9, 2), cost_add DECIMAL(9, 2), price_ru DECIMAL(9, 2), cost_cutting     DECIMAL(9, 2), cost_rm_without_nds DECIMAL(9, 2), fabricator_id INT)
-	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, order_num INT )
-	DECLARE @order_chestny_znak_out TABLE (ocz_id INT, order_num INT)
+	DECLARE @spcv_need_chestny_znak TABLE(spcv_id INT, spcvts_id INT, ean VARCHAR(14), cnt SMALLINT, order_num INT, fabricator_id int )
+	DECLARE @order_chestny_znak_out TABLE (ocz_id INT, order_num INT, fabricator_id int )
 	DECLARE @count_spcv_cz INT
 	DECLARE @season_local_id INT
 	DECLARE @pa_tab_for_wb TABLE(pa_id INT, fabricator_id INT)
@@ -278,12 +278,14 @@ AS
 			spcv_id,
 			spcvts_id, 
 			ean,
-			cnt
+			cnt,
+			fabricator_id
 		)
 	SELECT	st.spcv_id,
 			spcvt.spcvts_id,
 			e.ean,
-			ISNULL(oa_ac.actual_count, 0) - ISNULL(oa_cwo.write_off, 0) cnt
+			ISNULL(oa_ac.actual_count, 0) - ISNULL(oa_cwo.write_off, 0) cnt,
+			st.fabricator_id
 	FROM	@spcv_tab st   
 			INNER JOIN	Planing.SketchPlanColorVariant spcv
 				ON	spcv.spcv_id = st.spcv_id   
@@ -339,6 +341,18 @@ AS
 	IF EXISTS(SELECT 1 FROM @spcv_need_chestny_znak WHERE ean IS NULL)
 	BEGIN
 		RAISERROR('Не подгружены коды ЕАН, обратитесь к разработчику',16,1)
+		RETURN
+	END
+	
+	IF EXISTS(SELECT 1 FROM @spcv_need_chestny_znak WHERE fabricator_id IS NULL)
+	BEGIN
+		RAISERROR('Есть товары без производителя с маркировкой ЧЗ, обратитесь к разработчику',16,1)
+		RETURN
+	END
+	
+	IF (SELECT COUNT(DISTINCT fabricator_id) FROM @spcv_need_chestny_znak) > 1
+	BEGIN
+		RAISERROR('Более одно производителя в выдаче, для товаров с маркировкой ЧЗ',16,1)
 		RETURN
 	END
 	
@@ -660,10 +674,10 @@ AS
 		    ;
 		    MERGE Manufactory.OrderChestnyZnak t
 		    USING (
-		          	SELECT	sncz.order_num
+		          	SELECT	sncz.order_num, sncz.fabricator_id
 		          	FROM	@spcv_need_chestny_znak sncz
 		          	GROUP BY
-		          		sncz.order_num
+		          		sncz.order_num, sncz.fabricator_id
 		          ) s
 				ON t.ocz_id = NULL
 		    WHEN NOT MATCHED THEN
@@ -673,7 +687,8 @@ AS
 		    		create_dt,
 		    		dt,
 		    		employee_id,
-		    		is_deleted
+		    		is_deleted,
+		    		fabricator_id
 		    	)
 		    VALUES
 		    	(
@@ -681,13 +696,16 @@ AS
 		    		@dt,
 		    		@dt,
 		    		@employee_id,
-		    		0
+		    		0,
+		    		s.fabricator_id
 		    	)
 		    OUTPUT	INSERTED.ocz_id,
-		    		s.order_num
+		    		s.order_num,
+		    		s.fabricator_id
 		    INTO	@order_chestny_znak_out (
 		    		ocz_id,
-		    		order_num
+		    		order_num,
+		    		fabricator_id
 		    	);
 
 		   INSERT INTO Manufactory.OrderChestnyZnakDetail
@@ -704,6 +722,8 @@ AS
 		        FROM	@spcv_need_chestny_znak spcvcz   
 		        		INNER JOIN	@order_chestny_znak_out oczo
 		        			ON	oczo.order_num = spcvcz.order_num
+		        			AND oczo.fabricator_id = spcvcz.fabricator_id
+		        		
 
 		END
 		

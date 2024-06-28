@@ -10,7 +10,7 @@
 	[EANPass]             VARCHAR(100) NULL,
 	CZ_ConnectionID        VARCHAR(100) NULL,
 	CZ_omsId VARCHAR(100) NULL,
-	CZ_Token VARCHAR(100) NULL,
+	CZ_Token VARCHAR(3000) NULL,
 	CONSTRAINT [PK_fabricator] PRIMARY KEY CLUSTERED([fabricator_id] ASC)
 );
 
