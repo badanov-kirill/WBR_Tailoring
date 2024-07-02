@@ -11,6 +11,8 @@
 	CZ_ConnectionID        VARCHAR(100) NULL,
 	CZ_omsId VARCHAR(100) NULL,
 	CZ_Token VARCHAR(3000) NULL,
+	СontactPerson VARCHAR(512) NULL,
+	CZ_TokenDT DATETIME NULL,
 	CONSTRAINT [PK_fabricator] PRIMARY KEY CLUSTERED([fabricator_id] ASC)
 );
 

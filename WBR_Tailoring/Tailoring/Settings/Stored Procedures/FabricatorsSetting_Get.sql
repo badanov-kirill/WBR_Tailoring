@@ -12,9 +12,12 @@ AS
 	       f.token,
 	       f.EANLogin,
 	       f.EANPass,
+	       f.INN,
 	       f.CZ_ConnectionID,
 	       f.CZ_omsId,
-	       f.CZ_Token
+	       f.CZ_Token,
+	       f.CZ_TokenDT,
+	       f.СontactPerson
 	FROM   [Settings].Fabricators f
 	WHERE  (@fabricator_id IS NULL OR f.fabricator_id = @fabricator_id)
 	       AND (@fabricator_activ IS NULL OR f.activ = @fabricator_activ)

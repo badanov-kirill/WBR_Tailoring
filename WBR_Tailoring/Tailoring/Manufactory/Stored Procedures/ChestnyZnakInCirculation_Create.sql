@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [Manufactory].[ChestnyZnakInCirculation_Create]
-	@employee_id INT
+	@employee_id INT,
+	@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ COMMITTED
@@ -10,15 +11,18 @@ AS
 	
 	IF NOT EXISTS (
 	   	SELECT	1
-	   	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
+	   	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi
+	   			INNER JOIN Manufactory.OrderChestnyZnakDetail AS oczd ON oczd.oczd_id = oczdi.oczd_id
+	   			INNER JOIN Manufactory.OrderChestnyZnak AS ocz ON ocz.ocz_id = oczd.ocz_id
 	   			LEFT JOIN	Manufactory.ChestnyZnakInCirculationDetail czicd
-	   				ON	czicd.oczdi_id = oczdi.oczdi_id
+	   				ON	czicd.oczdi_id = oczdi.oczdi_id	   			
 	   			INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 					ON pucczi.oczdi_id = oczdi.oczdi_id
 				INNER JOIN Manufactory.ProductUnicCode puc
 					ON puc.product_unic_code = pucczi.product_unic_code
 	   	WHERE	czicd.oczdi_id IS NULL
 	   			AND	oczdi.oczd_id IS NOT NULL
+	   			AND ocz.fabricator_id = @fabricator_id
 	   )
 	BEGIN
 	    RAISERROR('Нет позиций для ввода в оборот', 16, 1)
@@ -31,7 +35,8 @@ AS
 		INSERT INTO Manufactory.ChestnyZnakInCirculation
 			(
 				dt,
-				employee_id
+				employee_id,
+				fabricator_id
 			)OUTPUT	INSERTED.czic_id
 			 INTO	@tab_out (
 			 		czic_id
@@ -39,7 +44,8 @@ AS
 		VALUES
 			(
 				@dt,
-				@employee_id
+				@employee_id,
+				@fabricator_id
 			)
 		
 		INSERT INTO Manufactory.ChestnyZnakInCirculationDetail
@@ -49,11 +55,14 @@ AS
 			)
 		SELECT TOP(100)	to1.czic_id,
 				oczdi.oczdi_id
-		FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
+		FROM	Manufactory.OrderChestnyZnakDetailItem oczdi
+				INNER JOIN Manufactory.OrderChestnyZnakDetail AS oczd ON oczd.oczd_id = oczdi.oczd_id
+	   			INNER JOIN Manufactory.OrderChestnyZnak AS ocz ON ocz.ocz_id = oczd.ocz_id
 				CROSS JOIN	@tab_out to1
 				INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 					ON pucczi.oczdi_id = oczdi.oczdi_id
 		WHERE	oczdi.oczd_id IS NOT NULL
+				AND ocz.fabricator_id = @fabricator_id
 				AND	NOT EXISTS (
 				   		SELECT	1
 				   		FROM	Manufactory.ChestnyZnakInCirculationDetail czicd

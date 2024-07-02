@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [Manufactory].[ChestnyZnakInCirculationDetail_GetFor]
+@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -14,7 +15,8 @@ AS
 			CAST(puc.packing_dt AS DATETIME) packing_dt
 	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
 			LEFT JOIN	Manufactory.OrderChestnyZnakDetail oczd
-				ON	oczd.oczd_id = oczdi.oczd_id   
+				ON	oczd.oczd_id = oczdi.oczd_id 
+			LEFT JOIN Manufactory.OrderChestnyZnak AS ocz ON ocz.ocz_id = oczd.ocz_id  
 			LEFT JOIN	Planing.SketchPlanColorVariantTS spcvt
 				ON	spcvt.spcvts_id = oczd.spcvts_id   
 			LEFT JOIN	Planing.SketchPlanColorVariant spcv
@@ -56,6 +58,7 @@ AS
 			LEFT JOIN Manufactory.ProductUnicCode puc
 				ON puc.product_unic_code = pucczi.product_unic_code
 	WHERE	oczdi.oczd_id IS NOT NULL
+			AND ocz.fabricator_id = @fabricator_id
 			AND	NOT EXISTS (
 			   		SELECT	1
 			   		FROM	Manufactory.ChestnyZnakInCirculationDetail czicd
