@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [Manufactory].[OrderChestnyZnak_GetForSignature]
-@fabricator_id INT = null
+@fabricator_id INT
 AS
 	SET NOCOUNT ON
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
@@ -13,4 +13,4 @@ AS
 	FROM	Manufactory.OrderChestnyZnak     ocz
 	WHERE	ocz.is_deleted = 0
 			AND	ocz.sign_dt IS NULL
-			AND (@fabricator_id IS NULL OR ocz.fabricator_id = @fabricator_id)
+			AND ocz.fabricator_id = @fabricator_id

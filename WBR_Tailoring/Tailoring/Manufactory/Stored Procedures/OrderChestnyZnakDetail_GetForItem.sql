@@ -20,10 +20,15 @@ AS
 				LOWER(dbo.bin2uid(ocz.ocz_uid)) ocz_uid,
 				oczd.ean,
 				oczd.cnt,
-				oczd.oczd_id
+				oczd.oczd_id, 
+				ocz.fabricator_id,
+				f.CZ_Token,
+				f.CZ_TokenDT,
+				f.CZ_omsId
 		FROM	Manufactory.OrderChestnyZnak ocz   
 				INNER JOIN	Manufactory.OrderChestnyZnakDetail oczd
-					ON	oczd.ocz_id = ocz.ocz_id   
+					ON	oczd.ocz_id = ocz.ocz_id
+				INNER JOIN Settings.Fabricators AS f ON f.fabricator_id = ocz.fabricator_id   
 				INNER JOIN	@tab_out c
 					ON	oczd.oczd_id = c.oczd_id
 	END TRY

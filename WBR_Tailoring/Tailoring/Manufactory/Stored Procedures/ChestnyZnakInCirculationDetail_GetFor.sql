@@ -7,11 +7,11 @@ AS
 	SELECT	'01' + oczdi.gtin01 + '21' + oczdi.serial21 cz,
 			t.tnved_cod,
 			CASE 
-			     WHEN oas.sertificate_type = 'C' THEN 'CONFORMITY_CERTIFICATE'
-			     WHEN oas.sertificate_type = 'D' THEN 'CONFORMITY_DECLARATION'
+			     WHEN oad.declaration_type_id = 2 THEN 'CONFORMITY_CERTIFICATE'
+			     WHEN oad.declaration_type_id = 1 THEN 'CONFORMITY_DECLARATION'
 			END         sertificate_type,
-			oas.sertificate_num,
-			CAST(oas.sertificate_dt AS DATETIME) sertificate_dt,
+			oad.declaration_number sertificate_num,
+			CAST(oad.start_date AS DATETIME) sertificate_dt,
 			CAST(puc.packing_dt AS DATETIME) packing_dt
 	FROM	Manufactory.OrderChestnyZnakDetailItem oczdi   
 			LEFT JOIN	Manufactory.OrderChestnyZnakDetail oczd
@@ -42,17 +42,33 @@ AS
 				AND	tnvds.consist_type_id = oa_ct.consist_type_id   
 			LEFT JOIN	Products.TNVED t
 				ON	t.tnved_id = tnvds.tnved_id   
-			OUTER APPLY (
-			      	SELECT	TOP(1) sert.sertificate_type,
-			      			sert.sertificate_num,
-			      			sert.sertificate_dt
-			      	FROM	Products.Sertificates sert   
-			      			INNER JOIN	Products.Sertificates_TNVD st
-			      				ON	st.sertificate_id = sert.sertificate_id
-			      	WHERE	st.tnvd_cod = LEFT(t.tnved_cod, 4)
-			      	ORDER BY
-			      		sert.finish_dt DESC
-			      )     oas
+			--OUTER APPLY (
+			--      	SELECT	TOP(1) sert.sertificate_type,
+			--      			sert.sertificate_num,
+			--      			sert.sertificate_dt
+			--      	FROM	Products.Sertificates sert   
+			--      			INNER JOIN	Products.Sertificates_TNVD st
+			--      				ON	st.sertificate_id = sert.sertificate_id
+			--      	WHERE	st.tnvd_cod = LEFT(t.tnved_cod, 4)
+			--      	ORDER BY
+			--      		sert.finish_dt DESC
+			--      )     oas
+			OUTER apply (
+				SELECT TOP(1) sd.declaration_number
+					,sd.start_date
+					,sd.end_date
+					,sd.declaration_type_id
+				from Settings.Declarations_TNVED dt
+				inner join Settings.Declarations sd
+					ON sd.declaration_id = dt.declaration_id
+					AND ocz.create_dt between sd.start_date and sd.end_date
+				inner join Settings.Declaration_Fabricators df
+					ON df.declaration_id = sd.declaration_id
+				WHERE dt.tnved_id = t.tnved_id
+					AND ocz.fabricator_id = df.fabricator_id 
+				ORDER BY sd.declaration_type_id, sd.end_date desc
+			)oad
+					
 			INNER JOIN Manufactory.ProductUnicCode_ChestnyZnakItem pucczi
 				ON pucczi.oczdi_id = oczdi.oczdi_id
 			LEFT JOIN Manufactory.ProductUnicCode puc
