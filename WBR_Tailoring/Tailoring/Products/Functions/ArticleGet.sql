@@ -20,6 +20,7 @@ BEGIN
 	     WHEN @brand_id = 6 THEN 'Ar'
 	     WHEN @brand_id = 7 THEN 'Dr'
 	     WHEN @brand_id = 8 THEN 'KB'
+	     WHEN @brand_id = 8 THEN 'SV'
 	     ELSE ''
 	END + CAST(@st_id AS VARCHAR(9)) + '-' + CAST(@model_number AS VARCHAR(9)) + '-' + SUBSTRING(CAST(@model_year AS VARCHAR(4)), 3, 2) + @season + @artpostfix
 END
