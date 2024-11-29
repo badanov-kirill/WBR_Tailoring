@@ -22,7 +22,7 @@ BEGIN
 	     WHEN @brand_id = 6 THEN 'ar'
 	     WHEN @brand_id = 7 THEN 'dr'
 	     WHEN @brand_id = 8 THEN 'KB'
-	     WHEN @brand_id = 8 THEN 'sv'
+	     WHEN @brand_id = 9 THEN 'sv'
 	     ELSE ''
 	END 
 	+
